@@ -1,0 +1,4 @@
+tmp/**
+frontend/dist/**
+frontend/package-lock.json
+.idea/**
