@@ -29,17 +29,7 @@ Thumbs.db
 
 # === IntelliJ / JetBrains ===
 *.iml
-backend/.mvn/
-backend/target/
-backend/src/main/resources/http/
-!backend/src/main/resources/http/
-backend/src/main/resources/http/*
-!backend/src/main/resources/http/*.http
-!backend/src/main/resources/http/http-client.env.json
 **/http-client.private.env.json
-backend/logs
-backend/storage/
-backend/.idea
 
 # === Editor caches ===
 .vscode/
@@ -51,8 +41,6 @@ backend/.idea
 # === Sensitive ===
 docker-compose.yml
 **/application.properties
-backend/src/main/resources/application.properties
-backend/src/main/resources/http/http-client.env.json
 # === TakT ===
 .tt_cache
 

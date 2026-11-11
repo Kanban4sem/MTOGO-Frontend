@@ -6,6 +6,7 @@
     "!**/dist/**",
     "!**/tmp/**",
     "!.agents/**",
+    "!.claude/**",
   ],
   "config": {
     "MD004": { "style": "dash" },

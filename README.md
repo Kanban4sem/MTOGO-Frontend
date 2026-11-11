@@ -24,6 +24,12 @@ Then let the dev container inherit your login. On Mac add this line to `~/.zprof
 export GH_TOKEN=$(/opt/homebrew/bin/gh auth token)
 ```
 
+On Windows, run this once in PowerShell instead:
+
+```powershell
+[Environment]::SetEnvironmentVariable("GH_TOKEN", (gh auth token), "User")
+```
+
 Restart your terminal and VS Code afterwards.
 
 ### 3. Open the repository in the dev container
@@ -66,10 +72,15 @@ Rules:
 ## Run, lint and build
 
 ```bash
-cd frontend
 npm run dev      # dev server on http://localhost:5173
 npm run lint     # ESLint
-npm run build    # production build in frontend/dist
+npm run build    # production build in dist/
 ```
 
-The API base URL is set in `frontend/src/api/client.js` and points to the backend on `http://localhost:7070/v1`.
+The API base URL is set in `src/api/client.js` and points to the backend on `http://localhost:7070/v1`.
+
+## How we work
+
+- [CONTRIBUTING](CONTRIBUTING.md): issues, workflow, commit messages, quality gates and ADRs
+- [Coding standards](docs/coding-standards.md) and [Definition of Done](docs/definition-of-done.md)
+- [AI workflow](docs/ai-workflow.md) and [`AGENTS.md`](AGENTS.md): how we work with AI agents

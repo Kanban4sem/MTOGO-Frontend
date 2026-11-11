@@ -56,7 +56,7 @@ inventory:
 
   - id: frontend-verify
     name: Frontend lint and build (React + Vite)
-    command: cd frontend && npm ci && npm run lint && npm run build
+    command: npm ci && npm run lint && npm run build
 
   - id: fix-markdown
     name: Fix all fixable markdown issues

@@ -10,7 +10,7 @@
     }
   },
   "forwardPorts": [5173],
-  "postCreateCommand": "gh ext install devx-cafe/gh-insitu && gh insitu run post-create && cd frontend && npm ci",
+  "postCreateCommand": "gh ext install devx-cafe/gh-insitu && gh insitu run post-create && npm ci",
   "customizations": {
     "vscode": {
       "extensions": [

@@ -1,5 +1,6 @@
 tmp/**
-frontend/dist/**
-frontend/package-lock.json
+dist/**
+package-lock.json
 .idea/**
 .agents/**
+.claude/**
