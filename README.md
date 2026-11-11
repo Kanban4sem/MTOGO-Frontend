@@ -77,7 +77,19 @@ npm run lint     # ESLint
 npm run build    # production build in dist/
 ```
 
-The API base URL is set in `src/api/client.js` and points to the backend on `http://localhost:7070/v1`.
+The app calls the API on the relative path `/v1` (set in `src/api/client.js`). In development, the Vite dev server forwards `/v1` to the backend on `http://localhost:8080`, so start the backend first.
+
+## Docker image
+
+Build the app first, then the image:
+
+```bash
+npm run build
+docker build -t mtogo-frontend .
+docker run -p 8081:80 mtogo-frontend
+```
+
+The app is now on `http://localhost:8081`. nginx serves `dist/` and sends unknown paths to `index.html`, so React Router handles deep links. After a few seconds `docker ps` shows the container as `healthy`. API calls to `/v1` only work behind the reverse proxy on the server.
 
 ## How we work
 

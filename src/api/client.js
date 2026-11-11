@@ -2,8 +2,8 @@
 // _______
 // src/api/client.js
 
-// Development only for now.
-const BASE_URL = 'http://localhost:7070/v1'
+// Relative, so the same build works locally (Vite proxy) and on the server (reverse proxy)
+const BASE_URL = '/v1'
 
 export async function client(endpoint, options = {}) {
   // ---- SETUP ----------------------------------------------------------------------------------------------------------
