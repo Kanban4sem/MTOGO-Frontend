@@ -1,6 +1,6 @@
 # Agent Instructions
 
-**Version:** 2.0 · **Date:** 2026-11-11
+**Version:** 2.1 · **Date:** 2026-11-11
 
 MTOGO is a food delivery platform built with Kanban and trunk-based development using TakT. This repository holds the frontend (React). The backend (Spring Boot) lives in `MTOGO-Backend`, which has its own copy of the documents below.
 
@@ -47,7 +47,7 @@ The developer's guide to the flow is [AI workflow](docs/ai-workflow.md).
 - **ADRs:** `docs/adr/<number>-<slug>.md` with a three-digit number, in the format from [Architecture decisions](CONTRIBUTING.md#architecture-decisions). This replaces `ADR-FORMAT.md` in the `domain-modeling` skill. An ADR lives in the repository that owns the decision. The backend owns the API contract, so decisions that affect both repositories are usually in `MTOGO-Backend`; link to them instead of copying them.
 - **Glossary:** `docs/glossary.md`. Wherever a skill names `GLOSSARY.md` or `CONTEXT.md`, use this file.
 - **Domain model:** a draft class diagram of the whole domain lives in `MTOGO-Backend` at `docs/domain-model.md`. Read it with `gh api repos/Kanban4sem/MTOGO-Backend/contents/docs/domain-model.md -H "Accept: application/vnd.github.raw"`. It is a starting point, not decided.
-- **Shared documents:** CONTRIBUTING, the Definition of Done, the AI workflow, the glossary and the general sections of the coding standards have a copy in `MTOGO-Backend`. When you change one, propose a linked issue there, as described in [Changing the documents](CONTRIBUTING.md#changing-the-documents).
+- **Shared documents:** CONTRIBUTING, the Definition of Done, the AI workflow, the glossary, the minimum viable product and the general sections of the coding standards have a copy in `MTOGO-Backend`. When you change one, propose a linked issue there, as described in [Changing the documents](CONTRIBUTING.md#changing-the-documents).
 
 ## Changelog
 
@@ -57,3 +57,4 @@ How to change this document is described in [CONTRIBUTING](CONTRIBUTING.md#chang
 | ------- | ---------- | --------------------------------------------------------------------- | -------- |
 | 1.0     | 2026-11-10 | First version                                                         | MTOGO#32 |
 | 2.0     | 2026-11-11 | Moved from `MTOGO`. Feature flags, ADR ownership and shared documents | #3       |
+| 2.1     | 2026-11-11 | The minimum viable product is a shared document                       | #12      |
