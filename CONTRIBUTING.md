@@ -1,10 +1,10 @@
 # Contributing
 
-**Version:** 2.1 · **Date:** 2026-11-11
+**Version:** 2.2 · **Date:** 2026-11-11
 
 MTOGO is developed with Kanban and trunk-based development using [TakT](https://github.com/devx-cafe/gh-tt). Every change starts as an issue and ends as one commit on `main`.
 
-This repository holds the frontend. The backend lives in [MTOGO-Backend](https://github.com/Kanban4sem/MTOGO-Backend), which has its own copy of this document.
+This repository holds the backend. The frontend lives in [MTOGO-Frontend](https://github.com/Kanban4sem/MTOGO-Frontend), which has its own copy of this document.
 
 - [Definition of Done](docs/definition-of-done.md): when an issue is finished
 - [Coding standards](docs/coding-standards.md): how code is written, tested and documented
@@ -127,7 +127,58 @@ Releases follow [Semantic Versioning 2.0](https://semver.org/). Create the tag w
 
 Decisions that are hard to reverse are recorded as Architecture Decision Records (ADRs) in `docs/adr/`, named `<number>-<title>.md` (`001-framework.md`). Each ADR has the sections Status, Context, Decision, Alternatives and Consequences. An ADR is proposed and accepted through an issue, and its Status links to that issue: `Proposed` while the issue is in progress, `Accepted` once the team agrees, before the issue is delivered.
 
-An ADR lives in the repository that owns the decision, and the other repository links to it instead of keeping a copy. The backend owns the API contract, so most decisions that affect both repositories are recorded in [MTOGO-Backend](https://github.com/Kanban4sem/MTOGO-Backend/tree/main/docs/adr).
+An ADR lives in the repository that owns the decision, and the other repository links to it instead of keeping a copy. The backend owns the API contract, so most decisions that affect both repositories are recorded here.
+
+## Feature flags
+
+### Add
+
+Declare the flag in AppProperties and application.properties, defaulting to false. Add its environment variable to .env.example with false, and set its value in each environment’s .env. Ensure the startup configuration passes it to Spring Boot. Never commit .env.
+
+Examples:
+
+```properties
+app.login-enabled=${FEATURE_LOGIN_ENABLED:false}
+```
+
+```dotenv
+FEATURE_LOGIN_ENABLED=true
+```
+
+### Use
+
+Protect unfinished behaviour with the flag. Frontend flags are fetched from the backend. Backend behaviour must also be protected where applicable.
+
+### Test
+
+Verify the feature with the flag enabled, disabled and unset.
+
+### Remove
+
+Create a linked follow-up issue when adding a temporary flag. Once fully released, remove its configuration, conditional checks and obsolete flag-specific tests.
+
+### Frontend Handle
+
+Frontend handles Feature Flags with conditional statements and fetches from our endpoint listed here.
+Flags are loaded once during start-up and saved in memory.
+
+Missing flags and failed requests are treated as false.
+
+```http
+GET /v1/features
+```
+
+```json
+{
+  "loginEnabled": false
+}
+```
+
+```jsx
+{
+  flags.loginEnabled && <LoginButton />;
+}
+```
 
 ## Working with AI
 
@@ -140,7 +191,7 @@ An ADR lives in the repository that owns the decision, and the other repository 
 
 This applies to this document, the Definition of Done, the coding standards, the AGENTS document, the AI workflow, the glossary and the minimum viable product.
 
-This document, the Definition of Done, the AI workflow, the glossary, the minimum viable product and the general sections of the coding standards are shared with [MTOGO-Backend](https://github.com/Kanban4sem/MTOGO-Backend), which keeps its own copy. A change to a shared document gets a linked issue in both repositories, so the copies stay the same.
+This document, the Definition of Done, the AI workflow, the glossary, the minimum viable product and the general sections of the coding standards are shared with [MTOGO-Frontend](https://github.com/Kanban4sem/MTOGO-Frontend), which keeps its own copy. A change to a shared document gets a linked issue in both repositories, so the copies stay the same.
 
 1. Create an issue that describes the change.
 2. Agree on it as a team.
@@ -155,5 +206,6 @@ This document, the Definition of Done, the AI workflow, the glossary, the minimu
 | ------- | ---------- | ------------------------------------------------------------------------- | -------- |
 | 1.0     | 2026-11-10 | First version                                                             | -        |
 | 1.1     | 2026-11-10 | Glossary, issue per repository, ADR status, one-line commits, AI workflow | MTOGO#32 |
-| 2.0     | 2026-11-11 | Moved from `MTOGO`. Linked issues for shared documents, ADR ownership     | #3       |
-| 2.1     | 2026-11-11 | The minimum viable product is a shared document                           | #12      |
+| 2.0     | 2026-11-11 | Moved from `MTOGO`. Linked issues for shared documents, ADR ownership     | #5       |
+| 2.1     | 2026-11-11 | The minimum viable product is a shared document                           | #19      |
+| 2.2     | 2026-11-11 | ADR Documentation for Feature Flags added                                 | #7       |
