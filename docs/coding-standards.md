@@ -1,6 +1,6 @@
 # Coding Standards
 
-**Version:** 2.0 · **Date:** 2026-11-11
+**Version:** 3.0 · **Date:** 2026-11-12
 
 ## Overview
 
@@ -13,7 +13,6 @@ The general rules under [Naming](#naming), the sections [REST API and JSON](#res
 | [CONTRIBUTING](../CONTRIBUTING.md)          | How do we work and deliver?               |
 | [Definition of Done](definition-of-done.md) | When is an issue finished?                |
 | This document                               | How do we structure, write and test code? |
-| `.editorconfig`                             | How is code formatted?                    |
 
 Exact versions live in `package.json`. Technology choices are recorded as ADRs in `docs/adr/`, or in `MTOGO-Backend` when they affect both repositories. Add or upgrade a dependency only through an issue the team has agreed on, and prefer what the project already has.
 
@@ -21,10 +20,10 @@ Good design reduces complexity. If a rule here makes the code more complicated, 
 
 ## Formatting
 
-- `.editorconfig` is the source of truth for indentation, line endings, encoding and line length.
+- The tool configuration is the source of truth for formatting: `.prettierrc.json` for Prettier and `eslint.config.js` for ESLint.
 - Prettier formats JavaScript, CSS and Markdown. ESLint checks JavaScript.
 - Format the code you change, but do not reformat unrelated code.
-- Change formatting rules only in `.editorconfig` or the tool configuration, in a separate issue.
+- Change formatting rules only in the tool configuration, in a separate issue.
 
 ## Naming
 
@@ -118,9 +117,10 @@ The backend generates the API documentation with springdoc-openapi. The specific
 
 ## Changelog
 
-| Version | Date       | Change                                  | Issue    |
-| ------- | ---------- | --------------------------------------- | -------- |
-| 1.0     | 2026-11-10 | First version                           | -        |
-| 1.1     | 2026-11-10 | API changes get a linked frontend issue | MTOGO#32 |
-| 1.2     | 2026-11-10 | Fixes to Frontend Architecture          | MTOGO#33 |
-| 2.0     | 2026-11-11 | Moved from `MTOGO`, frontend rules only | #3       |
+| Version | Date       | Change                                          | Issue    |
+| ------- | ---------- | ----------------------------------------------- | -------- |
+| 1.0     | 2026-11-10 | First version                                   | -        |
+| 1.1     | 2026-11-10 | API changes get a linked frontend issue         | MTOGO#32 |
+| 1.2     | 2026-11-10 | Fixes to Frontend Architecture                  | MTOGO#33 |
+| 2.0     | 2026-11-11 | Moved from `MTOGO`, frontend rules only         | #3       |
+| 3.0     | 2026-11-12 | The tool configuration replaces `.editorconfig` | #23      |
