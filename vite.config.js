@@ -19,6 +19,9 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0', // IPv4
+    watch: {
+      usePolling: existsSync('/.dockerenv'), // Vite reload of changes. Important!
+    },
     proxy: {
       '/v1': `http://${backendHost}:8080`,
     },

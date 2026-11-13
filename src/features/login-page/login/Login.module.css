@@ -1,0 +1,14 @@
+.login {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.login h1,
+.login p {
+  margin: 0;
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}

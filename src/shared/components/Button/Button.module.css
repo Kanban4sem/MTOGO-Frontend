@@ -1,0 +1,48 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--mtogo-color);
+  border-radius: var(--mtogo-border-radius);
+  background: var(--mtogo-color);
+  color: var(--mtogo-surface);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  cursor: pointer;
+}
+
+.s {
+  min-height: 2rem;
+  padding: calc(var(--mtogo-component-padding) / 4)
+    calc(var(--mtogo-component-padding) / 2);
+}
+
+.m {
+  min-height: 2.75rem;
+  padding: calc(var(--mtogo-component-padding) / 2)
+    var(--mtogo-component-padding);
+}
+
+.l {
+  min-height: 3.25rem;
+  padding: calc(var(--mtogo-component-padding) * 0.75)
+    calc(var(--mtogo-component-padding) * 1.5);
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--mtogo-color-hover);
+  background: var(--mtogo-color-hover);
+}
+
+.button:active:not(:disabled) {
+  border-color: var(--mtogo-active);
+  background: var(--mtogo-active);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
