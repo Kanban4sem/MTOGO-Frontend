@@ -1,8 +1,14 @@
 {
-  "overrides": [
-    {
-      "files": ["*.js", "*.jsx"],
-      "options": { "semi": false, "singleQuote": true }
-    }
-  ]
+	"useTabs": true,
+	"tabWidth": 4,
+	"overrides": [
+		{
+			"files": "*.md",
+			"options": { "useTabs": false, "tabWidth": 2 }
+		},
+		{
+			"files": ["*.js", "*.jsx"],
+			"options": { "semi": false, "singleQuote": true }
+		}
+	]
 }

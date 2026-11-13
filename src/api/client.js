@@ -6,48 +6,48 @@
 const BASE_URL = '/v1'
 
 export async function client(endpoint, options = {}) {
-  // ---- SETUP ----------------------------------------------------------------------------------------------------------
+	// ---- SETUP ----------------------------------------------------------------------------------------------------------
 
-  const url = `${BASE_URL}${endpoint}`
-  const token = localStorage.getItem('access_token')
+	const url = `${BASE_URL}${endpoint}`
+	const token = localStorage.getItem('access_token')
 
-  // DEBUG FOR NOW
-  console.log('[API REQUEST]')
-  console.log('URL:', url)
-  console.log('METHOD:', options.method || 'GET')
-  console.log('BODY:', options.body || null)
+	// DEBUG FOR NOW
+	console.log('[API REQUEST]')
+	console.log('URL:', url)
+	console.log('METHOD:', options.method || 'GET')
+	console.log('BODY:', options.body || null)
 
-  // ---- CONFIG --------------------------------------------------------------------------------------------------------
+	// ---- CONFIG --------------------------------------------------------------------------------------------------------
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && {
-        Authorization: `Bearer ${token}`,
-      }),
-      ...(options.headers || {}),
-    },
-    ...options,
-  }
+	const config = {
+		headers: {
+			'Content-Type': 'application/json',
+			...(token && {
+				Authorization: `Bearer ${token}`,
+			}),
+			...(options.headers || {}),
+		},
+		...options,
+	}
 
-  // ---- REQUEST -------------------------------------------------------------------------------------------------------
+	// ---- REQUEST -------------------------------------------------------------------------------------------------------
 
-  const response = await fetch(url, config)
+	const response = await fetch(url, config)
 
-  const data = await response.json().catch(() => null)
+	const data = await response.json().catch(() => null)
 
-  // ---- ERROR HANDLE --------------------------------------------------------------------------------------------------
+	// ---- ERROR HANDLE --------------------------------------------------------------------------------------------------
 
-  if (!response.ok) {
-    const error = new Error(data?.message || 'API request failed')
+	if (!response.ok) {
+		const error = new Error(data?.message || 'API request failed')
 
-    error.status = response.status
-    error.data = data
+		error.status = response.status
+		error.data = data
 
-    console.error(error)
+		console.error(error)
 
-    throw error
-  }
+		throw error
+	}
 
-  return data
+	return data
 }

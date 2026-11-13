@@ -6,15 +6,17 @@ import { useContext } from 'react'
 import { FeatureFlagsContext } from '@/shared/context/FeatureFlagsContext.jsx'
 
 export function useFeatureFlags() {
-  const flags = useContext(FeatureFlagsContext)
+	const flags = useContext(FeatureFlagsContext)
 
-  if (flags === null) {
-    throw new Error('useFeatureFlags must be used within FeatureFlagsProvider')
-  }
+	if (flags === null) {
+		throw new Error(
+			'useFeatureFlags must be used within FeatureFlagsProvider',
+		)
+	}
 
-  function isEnabled(flagName) {
-    return flags[flagName] === true
-  }
+	function isEnabled(flagName) {
+		return flags[flagName] === true
+	}
 
-  return { isEnabled }
+	return { isEnabled }
 }

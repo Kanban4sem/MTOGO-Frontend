@@ -9,30 +9,30 @@ import { FeatureFlagsContext } from '@/shared/context/FeatureFlagsContext.jsx'
 let startupRequest
 
 function loadStartupFlags() {
-  startupRequest ??= getFeatureFlags().catch(() => ({}))
-  return startupRequest
+	startupRequest ??= getFeatureFlags().catch(() => ({}))
+	return startupRequest
 }
 
 export function FeatureFlagsProvider({ children }) {
-  const [flags, setFlags] = useState({})
+	const [flags, setFlags] = useState({})
 
-  useEffect(() => {
-    let active = true
+	useEffect(() => {
+		let active = true
 
-    loadStartupFlags().then((loadedFlags) => {
-      if (active) {
-        setFlags(loadedFlags ?? {})
-      }
-    })
+		loadStartupFlags().then((loadedFlags) => {
+			if (active) {
+				setFlags(loadedFlags ?? {})
+			}
+		})
 
-    return () => {
-      active = false
-    }
-  }, [])
+		return () => {
+			active = false
+		}
+	}, [])
 
-  return (
-    <FeatureFlagsContext.Provider value={flags}>
-      {children}
-    </FeatureFlagsContext.Provider>
-  )
+	return (
+		<FeatureFlagsContext.Provider value={flags}>
+			{children}
+		</FeatureFlagsContext.Provider>
+	)
 }

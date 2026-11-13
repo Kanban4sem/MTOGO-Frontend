@@ -1,28 +1,28 @@
 .register {
-  display: grid;
-  gap: 1.5rem;
+	display: grid;
+	gap: 1.5rem;
 }
 
 .register h1,
 .register p {
-  margin: 0;
+	margin: 0;
 }
 
 .form,
 .step:not([hidden]) {
-  display: grid;
-  gap: 1rem;
+	display: grid;
+	gap: 1rem;
 }
 
 .stepIndicator {
-  color: var(--mtogo-text-secondary);
+	color: var(--mtogo-text-secondary);
 }
 
 .actions {
-  display: flex;
-  gap: 1rem;
+	display: flex;
+	gap: 1rem;
 }
 
 .actions > button {
-  flex: 1;
+	flex: 1;
 }

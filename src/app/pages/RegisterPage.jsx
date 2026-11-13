@@ -5,7 +5,7 @@
 import { RegisterCard } from '@/features/register-page/index.jsx'
 
 function RegisterPage() {
-  return <RegisterCard />
+	return <RegisterCard />
 }
 
 export default RegisterPage
