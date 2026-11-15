@@ -12,12 +12,14 @@ export const REGISTER_STEPS = [
 				fields: [
 					{
 						name: 'firstName',
+						maxLength: 100,
 						label: 'Fornavn',
 						autoComplete: 'given-name',
 						required: true,
 					},
 					{
 						name: 'lastName',
+						maxLength: 100,
 						label: 'Efternavn',
 						autoComplete: 'family-name',
 						required: true,
@@ -26,6 +28,7 @@ export const REGISTER_STEPS = [
 			},
 			{
 				name: 'email',
+				maxLength: 254,
 				label: 'Email',
 				type: 'email',
 				autoComplete: 'email',
@@ -33,6 +36,8 @@ export const REGISTER_STEPS = [
 			},
 			{
 				name: 'password',
+				minLength: 8,
+				maxLength: 72,
 				label: 'Password',
 				type: 'password',
 				autoComplete: 'new-password',
@@ -40,6 +45,8 @@ export const REGISTER_STEPS = [
 			},
 			{
 				name: 'confirmPassword',
+				minLength: 8,
+				maxLength: 72,
 				label: 'Gentag password',
 				type: 'password',
 				autoComplete: 'new-password',
@@ -56,6 +63,7 @@ export const REGISTER_STEPS = [
 				fields: [
 					{
 						name: 'phoneNumber',
+						maxLength: 30,
 						label: 'Telefonnummer',
 						type: 'tel',
 						autoComplete: 'tel',
@@ -80,11 +88,13 @@ export const REGISTER_STEPS = [
 						fields: [
 							{
 								name: 'postalCode',
+								maxLength: 20,
 								label: 'Postnummer',
 								autoComplete: 'postal-code',
 							},
 							{
 								name: 'city',
+								maxLength: 100,
 								label: 'By',
 								autoComplete: 'address-level2',
 							},
@@ -92,6 +102,7 @@ export const REGISTER_STEPS = [
 					},
 					{
 						name: 'country',
+						maxLength: 100,
 						label: 'Land',
 						autoComplete: 'country-name',
 					},

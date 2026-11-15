@@ -1,0 +1,122 @@
+.header {
+	border-bottom: 1px solid var(--mtogo-border);
+	background: var(--mtogo-surface);
+}
+
+.nav {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: calc(var(--mtogo-component-padding) * 2);
+	padding: var(--mtogo-component-padding);
+	padding-inline: calc(var(--mtogo-component-padding) * 3);
+}
+
+.brand {
+	color: var(--mtogo-brand-blue);
+	font-size: var(--mtogo-title-size);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	text-decoration: none;
+}
+
+.brand:hover {
+	color: var(--mtogo-brand-blue);
+}
+
+.entries {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: calc(var(--mtogo-component-padding) * 1.5);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: var(--mtogo-text-secondary);
+	font-weight: 500;
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: var(--mtogo-component-padding);
+	margin-left: auto;
+}
+
+.link,
+.account {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.75rem;
+	font-weight: 600;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.link {
+	padding: calc(var(--mtogo-component-padding) / 2)
+		var(--mtogo-component-padding);
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	color: var(--mtogo-text-primary);
+}
+
+.account {
+	padding: calc(var(--mtogo-component-padding) / 2)
+		var(--mtogo-component-padding);
+	border: 1px solid var(--mtogo-color);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-color);
+	color: var(--mtogo-surface);
+}
+
+.account:hover {
+	border-color: var(--mtogo-color-hover);
+	background: var(--mtogo-color-hover);
+	color: var(--mtogo-surface);
+}
+
+.logout {
+	border-color: var(--mtogo-border);
+	background: transparent;
+	color: var(--mtogo-text-primary);
+}
+
+.logout:hover:not(:disabled) {
+	border-color: var(--mtogo-border);
+	background: var(--mtogo-muted);
+}
+
+.loading {
+	color: var(--mtogo-text-secondary);
+}
+
+.error {
+	margin: 0;
+	padding: var(--mtogo-component-padding);
+	padding-inline: calc(var(--mtogo-component-padding) * 3);
+	color: var(--mtogo-error-text);
+}
+
+@media (max-width: 60rem) {
+	.nav {
+		gap: var(--mtogo-component-padding);
+		padding-inline: calc(var(--mtogo-component-padding) * 1.5);
+	}
+
+	.entries {
+		order: 1;
+		flex-basis: 100%;
+	}
+}
+
+@media (max-width: 30rem) {
+	.actions {
+		gap: calc(var(--mtogo-component-padding) / 2);
+	}
+
+	.account {
+		padding-inline: calc(var(--mtogo-component-padding) / 2);
+	}
+}

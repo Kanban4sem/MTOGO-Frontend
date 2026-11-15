@@ -1,0 +1,11 @@
+.indicator {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.75rem;
+	padding: calc(var(--mtogo-component-padding) / 2);
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	color: var(--mtogo-text-primary);
+	font-weight: 600;
+}

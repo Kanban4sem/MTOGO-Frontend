@@ -10,8 +10,15 @@ import { useRegister } from './Register.hooks.js'
 import styles from './Register.module.css'
 
 function Register() {
-	const { stepIndex, headingRef, isLastStep, handleSubmit, goBack } =
-		useRegister()
+	const {
+		stepIndex,
+		headingRef,
+		isLastStep,
+		handleSubmit,
+		goBack,
+		error,
+		isSubmitting,
+	} = useRegister()
 
 	return (
 		<section className={styles.register} aria-labelledby="register-title">
@@ -22,23 +29,43 @@ function Register() {
 				Trin {stepIndex + 1} af {REGISTER_STEPS.length} ·{' '}
 				{REGISTER_STEPS[stepIndex].label}
 			</p>
-			<form className={styles.form} onSubmit={handleSubmit}>
+			{error && <p role="alert">{error}</p>}
+			<form
+				className={styles.form}
+				onSubmit={handleSubmit}
+				aria-busy={isSubmitting}
+			>
 				{REGISTER_STEPS.map(({ name, fields }, index) => (
-					<div
+					<fieldset
 						key={name}
 						className={styles.step}
 						hidden={stepIndex !== index}
+						disabled={stepIndex !== index || isSubmitting}
 					>
+						<legend className={styles.stepLegend}>
+							{REGISTER_STEPS[index].label}
+						</legend>
 						<FormFields fields={fields} />
-					</div>
+					</fieldset>
 				))}
 				<div className={styles.actions}>
 					{stepIndex > 0 && (
-						<Button label="Tilbage" onClick={goBack} />
+						<Button
+							label="Tilbage"
+							onClick={goBack}
+							disabled={isSubmitting}
+						/>
 					)}
 					<Button
-						label={isLastStep ? 'Opret konto' : 'Gå videre'}
+						label={
+							isSubmitting
+								? 'Opretter konto…'
+								: isLastStep
+									? 'Opret konto'
+									: 'Gå videre'
+						}
 						type="submit"
+						disabled={isSubmitting}
 					/>
 				</div>
 			</form>
