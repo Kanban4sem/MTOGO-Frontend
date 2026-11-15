@@ -175,3 +175,102 @@ a {
 	border-radius: var(--mtogo-border-radius);
 	background: var(--mtogo-surface);
 }
+
+:root {
+	font-family: "Inter", "Segoe UI", sans-serif;
+	color: #25251f;
+	background: #faf9f6;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	--color-background: #faf9f6;
+	--color-surface: #fff;
+	--color-text: #25251f;
+	--color-muted: #74746b;
+	--color-accent: #ec5b2a;
+	--color-accent-hover: #ce4417;
+	--color-accent-soft: #fff0e7;
+	--color-border: #e7e5df;
+	--color-success: #47714f;
+	--color-success-soft: #eef4ed;
+	--color-dark: #292d27;
+	--color-on-dark: #fffdf6;
+	--color-secondary: #eeeadd;
+	--page-width: 1180px;
+	--page-gutter: clamp(20px, 5vw, 64px);
+	--shadow-restaurant-hover: 0 2px 8px rgb(0 0 0 / 8%);
+	--shadow-menu-item-hover: 0 4px 1px rgb(0 0 0 / 25%);
+	--shadow-card: 0 16px 50px rgb(37 37 31 / 6%);
+	--transition: 180ms ease;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+	scroll-padding-top: 28px;
+}
+
+body {
+	margin: 0;
+	min-width: 320px;
+}
+
+button,
+input {
+	font: inherit;
+}
+
+button,
+a {
+	-webkit-tap-highlight-color: transparent;
+}
+
+a {
+	color: inherit;
+}
+
+button,
+a,
+input {
+	outline-offset: 5px;
+}
+
+:focus-visible {
+	outline: 3px solid var(--color-accent);
+}
+
+img {
+	display: block;
+	max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+p {
+	margin-top: 0;
+}
+
+button {
+	cursor: pointer;
+}
+
+::selection {
+	background: var(--color-accent-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		transition: none !important;
+		animation: none !important;
+	}
+}

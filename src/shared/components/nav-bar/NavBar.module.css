@@ -13,11 +13,38 @@
 }
 
 .brand {
+	display: inline-flex;
+	align-items: center;
 	color: var(--mtogo-brand-blue);
 	font-size: var(--mtogo-title-size);
 	font-weight: 800;
 	letter-spacing: -0.04em;
 	text-decoration: none;
+}
+
+.brandIcon {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	margin-right: 10px;
+	border-radius: var(--mtogo-border-radius);
+	color: var(--mtogo-surface);
+	background: var(--color-accent);
+	font-size: 30px;
+}
+
+.brandDot {
+	color: var(--color-accent);
+}
+
+.entries a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.entries a:hover {
+	color: var(--mtogo-color-hover);
 }
 
 .brand:hover {

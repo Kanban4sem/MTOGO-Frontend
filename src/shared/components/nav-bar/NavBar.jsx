@@ -18,11 +18,14 @@ function NavBar() {
 					to="/"
 					aria-label="MTOGO forside"
 				>
-					MTOGO
+					<span className={styles.brandIcon} aria-hidden="true">
+						m.
+					</span>
+					MTOGO<span className={styles.brandDot}>.</span>
 				</Link>
 				<ul className={styles.entries}>
 					<li>
-						<span>Restauranter</span>
+						<a href="/#restaurants">Restauranter</a>
 					</li>
 					<li>
 						<span>For virksomheder</span>

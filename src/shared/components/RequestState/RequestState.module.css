@@ -1,0 +1,31 @@
+.state {
+	padding: 56px 24px;
+	text-align: center;
+	border: 1px dashed var(--color-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--color-surface);
+}
+
+.symbol {
+	display: inline-grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	margin-bottom: 20px;
+	border-radius: var(--mtogo-border-radius);
+	color: var(--color-accent);
+	background: var(--color-accent-soft);
+	font-size: 25px;
+}
+
+.state h2 {
+	margin-bottom: 12px;
+	font-size: 22px;
+}
+
+.state p {
+	margin: 0 auto;
+	max-width: 460px;
+	line-height: 1.7;
+	color: var(--color-muted);
+}
