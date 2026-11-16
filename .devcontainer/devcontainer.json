@@ -7,8 +7,13 @@
 		"ghcr.io/devcontainers/features/python:1": {},
 		"ghcr.io/devcontainers/features/node:2.1.1": {
 			"version": "24"
-		}
+		},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
 	},
+	"mounts": [
+		"source=mtogo-claude,target=/home/vscode/.claude,type=volume",
+		"source=mtogo-codex,target=/home/vscode/.codex,type=volume"
+	],
 	"forwardPorts": [5173],
 	"postCreateCommand": "gh ext install devx-cafe/gh-insitu && gh insitu run post-create && npm ci",
 	"customizations": {
@@ -17,7 +22,9 @@
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
 				"DavidAnson.vscode-markdownlint",
-				"streetsidesoftware.code-spell-checker"
+				"streetsidesoftware.code-spell-checker",
+				"anthropic.claude-code",
+				"openai.chatgpt"
 			],
 			"settings": {
 				"[javascript]": {
@@ -37,6 +44,9 @@
 				}
 			}
 		}
+	},
+	"containerEnv": {
+		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
 	},
 	"remoteEnv": {
 		"GH_TOKEN": "${localEnv:GH_TOKEN}"
