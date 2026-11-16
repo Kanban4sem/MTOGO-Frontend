@@ -1,18 +1,12 @@
 # Coding Standards
 
-**Version:** 3.0 · **Date:** 2026-11-12
+**Version:** 4.0 · **Date:** 2026-11-16
 
 ## Overview
 
 These standards keep the code consistent, readable and easy to change. This copy covers the frontend. `MTOGO-Backend` has its own copy with the backend rules.
 
 The general rules under [Naming](#naming), the sections [REST API and JSON](#rest-api-and-json), [Documentation files](#documentation-files) and [Comments](#comments) (apart from the Javadoc rule, which is backend only) are shared with `MTOGO-Backend`. Change them through a linked issue in both repositories, as described in [CONTRIBUTING](../CONTRIBUTING.md#changing-the-documents).
-
-| Source                                      | Answers                                   |
-| ------------------------------------------- | ----------------------------------------- |
-| [CONTRIBUTING](../CONTRIBUTING.md)          | How do we work and deliver?               |
-| [Definition of Done](definition-of-done.md) | When is an issue finished?                |
-| This document                               | How do we structure, write and test code? |
 
 Exact versions live in `package.json`. Technology choices are recorded as ADRs in `docs/adr/`, or in `MTOGO-Backend` when they affect both repositories. Add or upgrade a dependency only through an issue the team has agreed on, and prefer what the project already has.
 
@@ -27,7 +21,7 @@ Good design reduces complexity. If a rule here makes the code more complicated, 
 
 ## Naming
 
-Names describe what something is or does in domain language. One concept keeps one name in every layer (`Order` → `OrderDTO` → `/orders`). Avoid abbreviations and vague names such as `data`, `info`, `handle` or `manager`. If a good name is hard to find, the design is probably unclear.
+Names describe what something is or does in [domain language](../CONTRIBUTING.md#language). One concept keeps one name in every layer (`Order` → `OrderDTO` → `/orders`). Avoid abbreviations and vague names such as `data`, `info`, `handle` or `manager`. If a good name is hard to find, the design is probably unclear.
 
 ### JavaScript and React
 
@@ -102,11 +96,11 @@ The backend returns errors as [`ProblemDetail`](https://docs.spring.io/spring-fr
 
 ## Testing
 
-Every change ships with tests. The [Definition of Done](definition-of-done.md) requires that behaviour is covered. This section defines how.
+Every change to behaviour ships with tests. A change to documentation or configuration only does not need them. The [Definition of Done](definition-of-done.md) requires that behaviour is covered. This section defines how.
 
 ### Frontend tests
 
-There is no test framework yet. Until one is chosen, `npm run lint` must pass and the change is checked manually against the running API.
+There is no test framework yet. Until one is chosen, a change to behaviour is covered by `npm run lint` passing and manual checks against the running API. When the issue has a spec, the checks are listed in it.
 
 ## API documentation
 
@@ -115,12 +109,37 @@ The backend generates the API documentation with springdoc-openapi. The specific
 - Build against the specification, not against the backend's code.
 - A frontend change that needs a change to the API gets a linked issue in `MTOGO-Backend` (see [Issues](../CONTRIBUTING.md#issues)).
 
+## Feature flags
+
+[CONTRIBUTING](../CONTRIBUTING.md#feature-flags) says when a flag is needed and how it is tested. The backend declares the flags. In the frontend:
+
+- `FeatureFlagsProvider` fetches the flags from `GET /v1/features` once at startup and keeps them in memory.
+- A missing flag and a failed request both count as false.
+- Show the unfinished feature with conditional rendering on `isEnabled` from `useFeatureFlags`, and remove the condition once the feature is fully released.
+
+```http
+GET /v1/features
+```
+
+```json
+{
+  "authEnabled": false
+}
+```
+
+```jsx
+const { isEnabled } = useFeatureFlags();
+
+return isEnabled("authEnabled") && <LoginButton />;
+```
+
 ## Changelog
 
-| Version | Date       | Change                                          | Issue    |
-| ------- | ---------- | ----------------------------------------------- | -------- |
-| 1.0     | 2026-11-10 | First version                                   | -        |
-| 1.1     | 2026-11-10 | API changes get a linked frontend issue         | MTOGO#32 |
-| 1.2     | 2026-11-10 | Fixes to Frontend Architecture                  | MTOGO#33 |
-| 2.0     | 2026-11-11 | Moved from `MTOGO`, frontend rules only         | #3       |
-| 3.0     | 2026-11-12 | The tool configuration replaces `.editorconfig` | #23      |
+| Version | Date       | Change                                                                    | Issue    |
+| ------- | ---------- | ------------------------------------------------------------------------- | -------- |
+| 1.0     | 2026-11-10 | First version                                                             | -        |
+| 1.1     | 2026-11-10 | API changes get a linked frontend issue                                   | MTOGO#32 |
+| 1.2     | 2026-11-10 | Fixes to Frontend Architecture                                            | MTOGO#33 |
+| 2.0     | 2026-11-11 | Moved from `MTOGO`, frontend rules only                                   | #3       |
+| 3.0     | 2026-11-12 | The tool configuration replaces `.editorconfig`                           | #23      |
+| 4.0     | 2026-11-16 | Tests for changes to behaviour, feature flag steps, each rule stated once | #26      |
