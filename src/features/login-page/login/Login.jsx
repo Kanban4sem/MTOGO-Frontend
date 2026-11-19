@@ -10,13 +10,23 @@ import { useLogin } from './Login.hooks.js'
 import styles from './Login.module.css'
 
 function Login() {
-	const { error, isSubmitting, handleSubmit, registered, initialEmail } =
-		useLogin()
+	const {
+		error,
+		isSubmitting,
+		handleSubmit,
+		returnTo,
+		registered,
+		sessionExpired,
+		initialEmail,
+	} = useLogin()
 
 	return (
 		<section className={styles.login} aria-labelledby="login-title">
 			<h1 id="login-title">Log ind</h1>
 			{error && <p role="alert">{error}</p>}
+			{sessionExpired && (
+				<p role="status">Din session er udløbet. Log ind igen.</p>
+			)}
 			{registered && (
 				<p role="status">Din konto er oprettet. Du kan nu logge ind.</p>
 			)}
@@ -41,7 +51,10 @@ function Login() {
 				/>
 			</form>
 			<p>
-				Har du ikke en konto? <Link to="/register">Opret en konto</Link>
+				Har du ikke en konto?{' '}
+				<Link to="/register" state={{ returnTo }}>
+					Opret en konto
+				</Link>
 			</p>
 		</section>
 	)

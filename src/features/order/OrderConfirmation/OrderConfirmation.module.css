@@ -1,0 +1,142 @@
+.confirmation {
+	display: grid;
+	gap: 24px;
+	padding-top: 18px;
+}
+
+.intro {
+	padding: clamp(28px, 5vw, 60px);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--color-success-soft);
+}
+
+.intro h1 {
+	margin-bottom: 12px;
+	font-size: clamp(32px, 4.5vw, 52px);
+	letter-spacing: -0.05em;
+}
+
+.intro p {
+	margin: 0;
+	color: var(--color-muted);
+	font-size: 15px;
+}
+
+.intro strong {
+	color: var(--color-text);
+}
+
+.intro .status {
+	margin-bottom: 12px;
+	color: var(--color-success);
+}
+
+.intro .status strong {
+	color: var(--color-success);
+}
+
+.details {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+	align-items: start;
+	gap: 24px;
+}
+
+.card {
+	padding: 20px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--color-surface);
+}
+
+.card h2 {
+	margin-bottom: 16px;
+	font-size: 21px;
+	letter-spacing: -0.03em;
+}
+
+.lines {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.lines th,
+.lines td {
+	padding: 10px 0;
+	border-bottom: 1px solid var(--color-border);
+	text-align: right;
+	white-space: nowrap;
+}
+
+.lines th:first-child {
+	padding-right: 12px;
+	text-align: left;
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+.lines td {
+	padding-left: 12px;
+}
+
+.lines thead th {
+	color: var(--color-muted);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.lines tfoot th,
+.lines tfoot td {
+	border-bottom: 0;
+	font-size: 16px;
+	font-weight: 700;
+}
+
+.address {
+	font-style: normal;
+	line-height: 1.7;
+	overflow-wrap: anywhere;
+}
+
+.home {
+	justify-self: start;
+	font-weight: 600;
+}
+
+@media (max-width: 660px) {
+	.details {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.lines thead {
+		display: none;
+	}
+
+	.lines tbody tr {
+		display: grid;
+		grid-template-columns: repeat(3, auto);
+		justify-content: space-between;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.lines tbody th {
+		grid-column: 1 / -1;
+		padding: 0 0 4px;
+	}
+
+	.lines tbody th,
+	.lines tbody td {
+		border-bottom: 0;
+	}
+
+	.lines tbody td {
+		padding: 0;
+		text-align: left;
+	}
+
+	.lines tbody td::before {
+		content: attr(data-label) ": ";
+		color: var(--color-muted);
+	}
+}

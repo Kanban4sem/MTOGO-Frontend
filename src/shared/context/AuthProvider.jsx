@@ -9,16 +9,26 @@ import { AuthContext } from '@/shared/context/AuthContext.jsx'
 
 export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null)
+	const [isSessionExpired, setIsSessionExpired] = useState(false)
 	const [isLoading, setIsLoading] = useState(() =>
 		Boolean(localStorage.getItem('access_token')),
 	)
 	const sessionVersion = useRef(0)
+	// A 401 only means an expired session when someone was logged in, not for a stale token at startup.
+	const userRef = useRef(null)
+
+	useEffect(() => {
+		userRef.current = user
+	}, [user])
 
 	useEffect(() => {
 		let active = true
 
-		function clearUser() {
+		function clearUser(event) {
 			sessionVersion.current += 1
+			setIsSessionExpired(
+				event?.detail?.expired === true && userRef.current !== null,
+			)
 			setUser(null)
 			setIsLoading(false)
 		}
@@ -66,6 +76,7 @@ export function AuthProvider({ children }) {
 		sessionVersion.current += 1
 		try {
 			const currentUser = await signIn(credentials)
+			setIsSessionExpired(false)
 			setUser(currentUser)
 			return currentUser
 		} finally {
@@ -78,6 +89,7 @@ export function AuthProvider({ children }) {
 		try {
 			await signOut()
 		} finally {
+			setIsSessionExpired(false)
 			setUser(null)
 			setIsLoading(false)
 		}
@@ -89,6 +101,7 @@ export function AuthProvider({ children }) {
 				user,
 				isAuthenticated: user !== null,
 				isLoading,
+				isSessionExpired,
 				login,
 				logout,
 			}}

@@ -10,6 +10,14 @@ The domain language of MTOGO. Code, issues, specs and documentation call each co
 A customer's paid request for menu items from one restaurant, delivered to one delivery address.
 _Avoid_: Purchase, transaction, basket
 
+**Basket**:
+The menu items and quantities a customer has picked from one restaurant before placing an order.
+_Avoid_: Cart, draft order
+
+**Basket total**:
+The sum of menu price times quantity over a basket, shown as a preview before paying. The order total is calculated when the order is placed.
+_Avoid_: Order total, cart total
+
 **Order line**:
 One menu item on an order with its quantity, and the item's name and unit price as they were when the order was placed.
 _Avoid_: Order item, cart item

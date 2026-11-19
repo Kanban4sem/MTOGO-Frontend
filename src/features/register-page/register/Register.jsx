@@ -18,6 +18,7 @@ function Register() {
 		goBack,
 		error,
 		isSubmitting,
+		returnTo,
 	} = useRegister()
 
 	return (
@@ -70,7 +71,10 @@ function Register() {
 				</div>
 			</form>
 			<p>
-				Har du allerede en konto? <Link to="/login">Log ind</Link>
+				Har du allerede en konto?{' '}
+				<Link to="/login" state={{ returnTo }}>
+					Log ind
+				</Link>
 			</p>
 		</section>
 	)

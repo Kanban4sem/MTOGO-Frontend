@@ -1,0 +1,64 @@
+.bottom {
+	display: none;
+}
+
+.limit {
+	margin: 0;
+}
+
+/* Out of flow while empty, but still rendered so screen readers announce the message when it appears. */
+.limit:empty {
+	position: absolute;
+}
+
+.bar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.75rem;
+	padding: calc(var(--mtogo-component-padding) / 2)
+		var(--mtogo-component-padding);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-color);
+	color: var(--mtogo-surface);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.bar:hover {
+	background: var(--mtogo-color-hover);
+	color: var(--mtogo-surface);
+}
+
+@media (max-width: 900px) {
+	.bottom {
+		position: sticky;
+		bottom: 0;
+		z-index: 5;
+		display: grid;
+		gap: 8px;
+		margin-inline: calc(var(--page-gutter) * -1);
+		padding: 12px var(--page-gutter);
+		background: var(--color-background);
+	}
+
+	.bottom:has(.bar) {
+		border-top: 1px solid var(--color-border);
+	}
+
+	.limit {
+		color: var(--mtogo-error-text);
+		font-size: 13px;
+	}
+
+	.limits {
+		margin: 0;
+		color: var(--color-muted);
+		font-size: 13px;
+	}
+
+	.bar {
+		justify-content: space-between;
+		gap: 12px;
+	}
+}

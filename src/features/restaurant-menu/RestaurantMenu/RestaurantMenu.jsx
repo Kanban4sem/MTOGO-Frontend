@@ -1,16 +1,23 @@
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
+import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import { useRestaurantMenu } from './RestaurantMenu.hooks.js'
+import AddToBasketButton from '@/features/restaurant-menu/AddToBasketButton/AddToBasketButton.jsx'
+import BasketBottomBar from '@/features/restaurant-menu/BasketBottomBar/BasketBottomBar.jsx'
+import BasketSidePanel from '@/features/restaurant-menu/BasketSidePanel/BasketSidePanel.jsx'
+import NewBasketDialog from '@/features/restaurant-menu/NewBasketDialog/NewBasketDialog.jsx'
+import {
+	useMenuBasket,
+	useRestaurantMenu,
+} from '@/features/restaurant-menu/RestaurantMenu/RestaurantMenu.hooks.js'
 import styles from './RestaurantMenu.module.css'
 
 export default function RestaurantMenu({ restaurantId }) {
 	const { restaurant, menus, isLoading, error } =
 		useRestaurantMenu(restaurantId)
-	const itemCount = menus.reduce(
-		(count, menu) => count + menu.items.length,
-		0,
-	)
+	const { isEnabled } = useFeatureFlags()
+	const isOrderingEnabled =
+		isEnabled('orderingEnabled') && restaurant !== null
 
 	return (
 		<div className={styles.page}>
@@ -43,75 +50,124 @@ export default function RestaurantMenu({ restaurantId }) {
 							</p>
 						</div>
 					</header>
-					<div className={styles.menuBar}>
-						<span>Vores menu</span>
-						<span>
-							{itemCount} {itemCount === 1 ? 'ret' : 'retter'}
-						</span>
-					</div>
-					{menus.length === 0 ? (
-						<RequestState title="Menuen er på vej">
-							Restauranten har ingen aktiv menu lige nu. Kig forbi
-							igen senere.
-						</RequestState>
+					{isOrderingEnabled ? (
+						<OrderableMenus restaurant={restaurant} menus={menus} />
 					) : (
-						menus.map((menu) => (
-							<section
-								key={menu.id}
-								className={styles.menu}
-								aria-labelledby={`menu-${menu.id}`}
-							>
-								<div className={styles.menuHeading}>
-									<h2 id={`menu-${menu.id}`}>{menu.name}</h2>
-									{menu.description && (
-										<p>{menu.description}</p>
-									)}
-								</div>
-								{menu.items.length === 0 ? (
-									<RequestState title="Køkkenet gør klar">
-										Denne menu har ingen tilgængelige retter
-										lige nu.
-									</RequestState>
-								) : (
-									<ul className={styles.items}>
-										{menu.items.map((item) => (
-											<li
-												key={item.id}
-												className={styles.item}
-											>
-												<FoodImage
-													className={styles.itemImage}
-													src={item.imageUrl}
-													alt={item.name}
-													loading="lazy"
-												/>
-												<div
-													className={
-														styles.itemDescription
-													}
-												>
-													<h3>{item.name}</h3>
-													{item.description && (
-														<p>
-															{item.description}
-														</p>
-													)}
-												</div>
-												<span className={styles.price}>
-													{formatPrice(item.price)}
-												</span>
-											</li>
-										))}
-									</ul>
-								)}
-							</section>
-						))
+						<Menus menus={menus} />
 					)}
-					<p className={styles.priceNote}>
-						Alle priser er i danske kroner.
-					</p>
 				</>
 			)}
 		</div>
 	)
+}
+
+function OrderableMenus({ restaurant, menus }) {
+	const basketRestaurant = { id: restaurant.id, name: restaurant.name }
+	const {
+		requestAdd,
+		menuItemAwaitingNewBasket,
+		startNewBasket,
+		keepBasket,
+	} = useMenuBasket(basketRestaurant)
+
+	return (
+		<>
+			<div className={styles.ordering}>
+				<div>
+					<Menus
+						menus={menus}
+						renderAddControl={(item) => (
+							<AddToBasketButton
+								restaurantId={restaurant.id}
+								menuItem={item}
+								onAdd={requestAdd}
+							/>
+						)}
+					/>
+				</div>
+				<BasketSidePanel />
+			</div>
+			<BasketBottomBar />
+			<NewBasketDialog
+				menuItem={menuItemAwaitingNewBasket}
+				onConfirm={startNewBasket}
+				onCancel={keepBasket}
+			/>
+		</>
+	)
+}
+
+function Menus({ menus, renderAddControl }) {
+	const itemCount = menus.reduce(
+		(count, menu) => count + menu.items.length,
+		0,
+	)
+
+	return (
+		<>
+			<div className={styles.menuBar}>
+				<span>Vores menu</span>
+				<span>
+					{itemCount} {itemCount === 1 ? 'ret' : 'retter'}
+				</span>
+			</div>
+			{menus.length === 0 ? (
+				<RequestState title="Menuen er på vej">
+					Restauranten har ingen aktiv menu lige nu. Kig forbi igen
+					senere.
+				</RequestState>
+			) : (
+				menus.map((menu) => (
+					<section
+						key={menu.id}
+						className={styles.menu}
+						aria-labelledby={`menu-${menu.id}`}
+					>
+						<div className={styles.menuHeading}>
+							<h2 id={`menu-${menu.id}`}>{menu.name}</h2>
+							{menu.description && <p>{menu.description}</p>}
+						</div>
+						{menu.items.length === 0 ? (
+							<RequestState title="Køkkenet gør klar">
+								Denne menu har ingen tilgængelige retter lige
+								nu.
+							</RequestState>
+						) : (
+							<ul className={styles.items}>
+								{menu.items.map((item) => (
+									<li key={item.id} className={styles.item}>
+										<FoodImage
+											className={styles.itemImage}
+											src={item.imageUrl}
+											alt={item.name}
+											loading="lazy"
+										/>
+										<div className={styles.itemDescription}>
+											<h3>{item.name}</h3>
+											{item.description && (
+												<p>{item.description}</p>
+											)}
+										</div>
+										{renderAddControl ? (
+											<div className={styles.order}>
+												<Price price={item.price} />
+												{renderAddControl(item)}
+											</div>
+										) : (
+											<Price price={item.price} />
+										)}
+									</li>
+								))}
+							</ul>
+						)}
+					</section>
+				))
+			)}
+			<p className={styles.priceNote}>Alle priser er i danske kroner.</p>
+		</>
+	)
+}
+
+function Price({ price }) {
+	return <span className={styles.price}>{formatPrice(price)}</span>
 }

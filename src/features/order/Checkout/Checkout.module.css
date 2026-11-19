@@ -1,0 +1,129 @@
+.checkout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+	grid-template-areas:
+		"title title"
+		"form basket";
+	align-items: start;
+	gap: 24px 32px;
+	padding-top: 18px;
+}
+
+.title {
+	grid-area: title;
+	margin: 0;
+	font-size: clamp(32px, 4.5vw, 52px);
+	letter-spacing: -0.05em;
+}
+
+.basket {
+	grid-area: basket;
+	position: sticky;
+	top: 24px;
+	display: grid;
+	gap: 16px;
+	padding: 20px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--color-surface);
+}
+
+.basket h2,
+.group legend {
+	margin: 0;
+	font-size: 21px;
+	font-weight: 700;
+	letter-spacing: -0.03em;
+}
+
+.back {
+	font-size: 13px;
+}
+
+.form {
+	grid-area: form;
+	display: grid;
+	gap: 24px;
+}
+
+.group {
+	display: grid;
+	gap: 16px;
+	min-width: 0;
+	margin: 0;
+	padding: 20px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--color-surface);
+}
+
+.group legend {
+	float: left;
+	width: 100%;
+	margin-bottom: 4px;
+}
+
+.option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 2.75rem;
+	padding: 0 12px;
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.option:has(input:checked) {
+	border-color: var(--mtogo-color);
+	background: var(--mtogo-highlight);
+}
+
+.option input {
+	accent-color: var(--mtogo-color);
+}
+
+.card {
+	display: grid;
+	gap: 16px;
+}
+
+.note {
+	margin: 0;
+	color: var(--color-muted);
+	font-size: 13px;
+}
+
+.failure {
+	display: grid;
+	gap: 8px;
+	padding: 16px;
+	border: 1px solid var(--mtogo-status-error);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-error-surface);
+	color: var(--mtogo-error-text);
+}
+
+.failure p {
+	margin: 0;
+}
+
+.failure a {
+	color: var(--mtogo-error-text);
+	font-weight: 600;
+}
+
+@media (max-width: 900px) {
+	.checkout {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"title"
+			"basket"
+			"form";
+	}
+
+	.basket {
+		position: static;
+	}
+}

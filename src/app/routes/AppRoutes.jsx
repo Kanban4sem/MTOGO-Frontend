@@ -6,7 +6,14 @@ import RegisterPage from '@/app/pages/RegisterPage.jsx'
 import ProfilePage from '@/app/pages/ProfilePage.jsx'
 import HomePage from '@/app/pages/HomePage.jsx'
 import RestaurantMenuPage from '@/app/pages/RestaurantMenuPage.jsx'
-import RequestState from '@/shared/components/RequestState/RequestState.jsx'
+import CheckoutPage from '@/app/pages/CheckoutPage.jsx'
+import OrderConfirmationPage from '@/app/pages/OrderConfirmationPage.jsx'
+import NotFoundPage from '@/app/pages/NotFoundPage.jsx'
+import {
+	CHECKOUT_PATH,
+	ORDER_CONFIRMATION_ROUTE,
+	RESTAURANT_MENU_ROUTE,
+} from '@/shared/data/paths.js'
 
 function AppRoutes() {
 	return (
@@ -16,17 +23,15 @@ function AppRoutes() {
 					<Route path="/" element={<HomePage />} />
 					<Route path="/profile" element={<ProfilePage />} />
 					<Route
-						path="/restaurant/:restaurantId/menu"
+						path={RESTAURANT_MENU_ROUTE}
 						element={<RestaurantMenuPage />}
 					/>
+					<Route path={CHECKOUT_PATH} element={<CheckoutPage />} />
 					<Route
-						path="*"
-						element={
-							<RequestState title="Denne side er ikke på menuen">
-								<a href="/">Gå tilbage til forsiden</a>
-							</RequestState>
-						}
+						path={ORDER_CONFIRMATION_ROUTE}
+						element={<OrderConfirmationPage />}
 					/>
+					<Route path="*" element={<NotFoundPage />} />
 				</Route>
 				<Route element={<AuthLayout />}>
 					<Route path="/login" element={<LoginPage />} />

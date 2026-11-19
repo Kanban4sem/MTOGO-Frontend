@@ -1,0 +1,49 @@
+.side {
+	position: sticky;
+	top: 24px;
+	display: grid;
+	gap: 16px;
+	max-height: calc(100vh - 48px);
+	overflow-y: auto;
+	padding: 20px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--color-surface);
+}
+
+.side h2 {
+	margin: 0;
+	font-size: 21px;
+	letter-spacing: -0.03em;
+}
+
+.empty {
+	margin: 0;
+	color: var(--color-muted);
+	line-height: 1.7;
+}
+
+.checkout {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.75rem;
+	padding: calc(var(--mtogo-component-padding) / 2)
+		var(--mtogo-component-padding);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-color);
+	color: var(--mtogo-surface);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.checkout:hover {
+	background: var(--mtogo-color-hover);
+	color: var(--mtogo-surface);
+}
+
+@media (max-width: 900px) {
+	.side {
+		display: none;
+	}
+}

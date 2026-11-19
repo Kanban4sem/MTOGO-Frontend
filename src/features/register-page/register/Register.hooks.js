@@ -3,13 +3,16 @@
 // src/features/register-page/register/Register.hooks.js
 
 import { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { registerAccount } from '@/shared/services/userService.js'
 import { getAuthErrorMessage } from '@/shared/utils/authErrors.js'
 import { REGISTER_STEPS } from './registerFields.js'
 
 export function useRegister() {
 	const navigate = useNavigate()
+	const { state } = useLocation()
+	// The address login should return to, kept through registration.
+	const returnTo = state?.returnTo
 	const [stepIndex, setStepIndex] = useState(0)
 	const [error, setError] = useState('')
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -62,7 +65,11 @@ export function useRegister() {
 			registrationRef.current = {}
 			navigate('/login', {
 				replace: true,
-				state: { registered: true, email: registration.email },
+				state: {
+					registered: true,
+					email: registration.email,
+					returnTo,
+				},
 			})
 		} catch (error) {
 			setError(getAuthErrorMessage(error))
@@ -87,5 +94,6 @@ export function useRegister() {
 		goBack,
 		error,
 		isSubmitting,
+		returnTo,
 	}
 }

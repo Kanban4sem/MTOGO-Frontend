@@ -104,6 +104,19 @@
 	color: var(--mtogo-surface);
 }
 
+.basketCount {
+	display: inline-grid;
+	place-items: center;
+	min-width: 1.5rem;
+	height: 1.5rem;
+	margin-left: 0.5rem;
+	padding-inline: 0.25rem;
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-badge-color);
+	color: var(--mtogo-color-hover);
+	font-size: 13px;
+}
+
 .logout {
 	border-color: var(--mtogo-border);
 	background: transparent;

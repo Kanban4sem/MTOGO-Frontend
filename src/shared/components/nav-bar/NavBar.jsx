@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
 import LanguageIndicator from '@/shared/components/language-indicator/LanguageIndicator.jsx'
+import { CHECKOUT_PATH } from '@/shared/data/paths.js'
+import { useBasket } from '@/shared/hooks/useBasket.js'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
+import { formatItemCount } from '@/shared/utils/basketMessages.js'
 import { useNavBar } from './NavBar.hooks.js'
 import styles from './NavBar.module.css'
 
@@ -9,6 +12,7 @@ function NavBar() {
 	const { isAuthenticated, isLoading, isLoggingOut, error, handleLogout } =
 		useNavBar()
 	const { isEnabled } = useFeatureFlags()
+	const { itemCount } = useBasket()
 
 	return (
 		<header className={styles.header}>
@@ -35,6 +39,18 @@ function NavBar() {
 					</li>
 				</ul>
 				<div className={styles.actions}>
+					{isEnabled('orderingEnabled') && itemCount > 0 && (
+						<Link
+							className={styles.link}
+							to={CHECKOUT_PATH}
+							aria-label={`Kurv, ${formatItemCount(itemCount)}`}
+						>
+							Kurv
+							<span className={styles.basketCount}>
+								{itemCount}
+							</span>
+						</Link>
+					)}
 					{isLoading ? (
 						<span className={styles.loading} role="status">
 							Henter loginstatus…

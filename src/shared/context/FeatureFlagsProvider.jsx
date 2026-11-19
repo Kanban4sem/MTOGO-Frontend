@@ -14,7 +14,8 @@ function loadStartupFlags() {
 }
 
 export function FeatureFlagsProvider({ children }) {
-	const [flags, setFlags] = useState({})
+	// null until the flags have loaded, so a flagged route can wait instead of looking missing.
+	const [flags, setFlags] = useState(null)
 
 	useEffect(() => {
 		let active = true
@@ -31,7 +32,9 @@ export function FeatureFlagsProvider({ children }) {
 	}, [])
 
 	return (
-		<FeatureFlagsContext.Provider value={flags}>
+		<FeatureFlagsContext.Provider
+			value={{ flags: flags ?? {}, isLoading: flags === null }}
+		>
 			{children}
 		</FeatureFlagsContext.Provider>
 	)

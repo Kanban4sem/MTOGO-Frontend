@@ -5,9 +5,10 @@
 import { useId } from 'react'
 import styles from './Input.module.css'
 
-function Input({ label, size = 'm', id, className, ...options }) {
+function Input({ label, size = 'm', id, className, error, ...options }) {
 	const generatedId = useId()
 	const inputId = id ?? generatedId
+	const errorId = `${inputId}-error`
 	const sizeClass = styles[size] ?? styles.m
 
 	return (
@@ -21,7 +22,16 @@ function Input({ label, size = 'm', id, className, ...options }) {
 				className={[styles.input, sizeClass, className]
 					.filter(Boolean)
 					.join(' ')}
+				{...(error && {
+					'aria-invalid': true,
+					'aria-describedby': errorId,
+				})}
 			/>
+			{error && (
+				<p id={errorId} className={styles.error}>
+					{error}
+				</p>
+			)}
 		</div>
 	)
 }

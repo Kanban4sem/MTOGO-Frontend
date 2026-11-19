@@ -1,0 +1,130 @@
+.summary {
+	position: relative;
+	display: grid;
+	gap: 14px;
+}
+
+.restaurant {
+	margin: 0;
+	color: var(--color-muted);
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+
+.restaurant strong {
+	color: var(--color-text);
+}
+
+.lines {
+	display: grid;
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.line {
+	display: grid;
+	gap: 8px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--color-border);
+}
+
+.lineHeading {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.name {
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.subtotal {
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.controls {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.step {
+	display: inline-grid;
+	place-items: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	padding: 0;
+	border: 1px solid var(--mtogo-border);
+	background: var(--mtogo-surface);
+	color: var(--mtogo-text-primary);
+	font-size: 18px;
+	line-height: 1;
+}
+
+.step:hover:not(:disabled) {
+	border-color: var(--mtogo-color);
+	background: var(--mtogo-highlight);
+}
+
+.quantity {
+	min-width: 1.5rem;
+	font-weight: 700;
+	text-align: center;
+}
+
+.unitPrice {
+	color: var(--color-muted);
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.remove {
+	margin-left: auto;
+	padding: 0.25rem 0.5rem;
+	border-color: transparent;
+	background: transparent;
+	color: var(--mtogo-text-secondary);
+	font-size: 13px;
+	text-decoration: underline;
+}
+
+.remove:hover:not(:disabled) {
+	border-color: transparent;
+	background: transparent;
+	color: var(--mtogo-color-hover);
+}
+
+.limit {
+	margin: 0;
+	color: var(--mtogo-error-text);
+	font-size: 13px;
+}
+
+/* Out of the grid flow while empty, but still rendered so screen readers announce the message when it appears. */
+.limit:empty {
+	position: absolute;
+}
+
+.total {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+	font-size: 15px;
+}
+
+.total strong {
+	font-size: 19px;
+	white-space: nowrap;
+}
+
+.note {
+	margin: 0;
+	color: var(--color-muted);
+	font-size: 12px;
+}

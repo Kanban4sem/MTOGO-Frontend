@@ -1,0 +1,17 @@
+.add {
+	display: grid;
+	justify-items: end;
+	gap: 4px;
+}
+
+.reason {
+	color: var(--mtogo-error-text);
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+@media (max-width: 660px) {
+	.add {
+		justify-items: start;
+	}
+}
