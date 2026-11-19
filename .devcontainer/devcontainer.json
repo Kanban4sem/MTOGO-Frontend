@@ -7,15 +7,14 @@
 		"ghcr.io/devcontainers/features/python:1": {},
 		"ghcr.io/devcontainers/features/node:2.1.1": {
 			"version": "24"
-		},
-		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+		}
 	},
 	"mounts": [
 		"source=mtogo-claude,target=/home/vscode/.claude,type=volume",
 		"source=mtogo-codex,target=/home/vscode/.codex,type=volume"
 	],
 	"forwardPorts": [5173],
-	"postCreateCommand": "gh ext install devx-cafe/gh-insitu && gh insitu run post-create && npm ci",
+	"postCreateCommand": "gh ext install devx-cafe/gh-insitu && gh insitu run post-create install-agents && npm ci",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -46,7 +45,9 @@
 		}
 	},
 	"containerEnv": {
-		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+		"MTOGO_SKIP_CLAUDE": "${localEnv:MTOGO_SKIP_CLAUDE}",
+		"MTOGO_SKIP_CODEX": "${localEnv:MTOGO_SKIP_CODEX}"
 	},
 	"remoteEnv": {
 		"GH_TOKEN": "${localEnv:GH_TOKEN}"

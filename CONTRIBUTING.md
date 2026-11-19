@@ -1,10 +1,10 @@
 # Contributing
 
-**Version:** 5.0 · **Date:** 2026-11-16
+**Version:** 5.1 · **Date:** 2026-11-19
 
 MTOGO is developed with Kanban and trunk-based development using [TakT](https://github.com/devx-cafe/gh-tt). Every change starts as an issue and ends as one commit on `main`.
 
-This repository holds the backend. The frontend lives in [MTOGO-Frontend](https://github.com/Kanban4sem/MTOGO-Frontend), which has its own copy of this document.
+This repository holds the frontend. The backend lives in [MTOGO-Backend](https://github.com/Kanban4sem/MTOGO-Backend), which has its own copy of this document.
 
 - [Definition of Done](docs/definition-of-done.md): when an issue is finished
 - [Coding standards](docs/coding-standards.md): how code is written, tested and documented
@@ -109,7 +109,7 @@ Releases follow [Semantic Versioning 2.0](https://semver.org/). Create the tag w
 
 Decisions that are hard to reverse are recorded as Architecture Decision Records (ADRs) in `docs/adr/`, named `<number>-<title>.md` (`001-framework.md`). Each ADR has the sections Status, Context, Decision, Alternatives and Consequences. An ADR is proposed and accepted through an issue, and its Status links to that issue: `Proposed` while the issue is in progress, `Accepted` once the team agrees, before the issue is delivered.
 
-An ADR lives in the repository that owns the decision, and the other repository links to it instead of keeping a copy. The backend owns the API contract, so most decisions that affect both repositories are recorded here.
+An ADR lives in the repository that owns the decision, and the other repository links to it instead of keeping a copy. The backend owns the API contract, so most decisions that affect both repositories are recorded in [MTOGO-Backend](https://github.com/Kanban4sem/MTOGO-Backend/tree/main/docs/adr).
 
 ## Feature flags
 
@@ -125,7 +125,7 @@ The [AI workflow](docs/ai-workflow.md) describes how we take an issue from the b
 
 ## Changing the documents
 
-These rules apply to the documents below. A change to a document shared with [MTOGO-Frontend](https://github.com/Kanban4sem/MTOGO-Frontend) gets a linked issue in both repositories, so the copies stay the same.
+These rules apply to the documents below. A change to a document shared with [MTOGO-Backend](https://github.com/Kanban4sem/MTOGO-Backend) gets a linked issue in both repositories, so the copies stay the same.
 
 | Document               | Shared with the other repository           |
 | ---------------------- | ------------------------------------------ |
@@ -150,12 +150,13 @@ These rules apply to the documents below. A change to a document shared with [MT
 | ------- | ---------- | ------------------------------------------------------------------------- | --------------------------- |
 | 1.0     | 2026-11-10 | First version                                                             | -                           |
 | 1.1     | 2026-11-10 | Glossary, issue per repository, ADR status, one-line commits, AI workflow | MTOGO#32                    |
-| 2.0     | 2026-11-11 | Moved from `MTOGO`. Linked issues for shared documents, ADR ownership     | #5                          |
-| 2.1     | 2026-11-11 | The minimum viable product is a shared document                           | #19                         |
-| 2.2     | 2026-11-11 | ADR Documentation for Feature Flags added                                 | #7                          |
-| 3.0     | 2026-11-12 | Feature flags are added to and removed from `FeatureFlagsDTO`             | #30                         |
-| 3.1     | 2026-11-12 | Flag steps name the tests to update, one version bump per issue           | #33                         |
-| 4.0     | 2026-11-12 | Four-eyes on the issue before Ready, time spent and week labels on issues | #34                         |
+| 2.0     | 2026-11-11 | Moved from `MTOGO`. Linked issues for shared documents, ADR ownership     | Kanban4sem/MTOGO-Backend#5  |
+| 2.1     | 2026-11-11 | The minimum viable product is a shared document                           | Kanban4sem/MTOGO-Backend#19 |
+| 2.2     | 2026-11-11 | ADR Documentation for Feature Flags added                                 | Kanban4sem/MTOGO-Backend#7  |
+| 3.0     | 2026-11-12 | Feature flags are added to and removed from `FeatureFlagsDTO`             | Kanban4sem/MTOGO-Backend#30 |
+| 3.1     | 2026-11-12 | Flag steps name the tests to update, one version bump per issue           | Kanban4sem/MTOGO-Backend#33 |
+| 4.0     | 2026-11-12 | Four-eyes on the issue before Ready, time spent and week labels on issues | Kanban4sem/MTOGO-Backend#34 |
 | 4.1     | 2026-11-13 | Use the shared authentication flag in feature flag examples               | Kanban4sem/MTOGO-Backend#35 |
 | 4.2     | 2026-11-16 | Flag steps move to the coding standards, repeated rules link to one place | Kanban4sem/MTOGO-Backend#39 |
 | 5.0     | 2026-11-16 | TakT's work labels: a bug fix is `ad hoc` with Type Bug                   | Kanban4sem/MTOGO-Backend#47 |
+| 5.1     | 2026-11-19 | The frontend copy names this repository as the frontend                   | #33                         |
