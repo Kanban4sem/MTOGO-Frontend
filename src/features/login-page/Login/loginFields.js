@@ -1,7 +1,3 @@
-// Pathing
-// _______
-// src/features/login-page/login/loginFields.js
-
 export const LOGIN_FIELDS = [
 	{
 		name: 'email',

@@ -1,7 +1,3 @@
-// Pathing
-// _______
-// src/features/register-page/register/Register.hooks.js
-
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { registerAccount } from '@/shared/services/userService.js'

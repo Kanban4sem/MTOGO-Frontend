@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
-import LanguageIndicator from '@/shared/components/language-indicator/LanguageIndicator.jsx'
+import LanguageIndicator from '@/shared/components/LanguageIndicator/LanguageIndicator.jsx'
 import { CHECKOUT_PATH } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'

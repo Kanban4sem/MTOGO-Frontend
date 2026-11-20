@@ -8,12 +8,12 @@ import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import { PAYMENT_TOKENS } from '@/features/order/services/orderService.js'
-import { useCheckout } from '@/features/order/Checkout/Checkout.hooks.js'
+import { PAYMENT_TOKENS } from '@/features/checkout-page/services/orderService.js'
+import { useCheckout } from '@/features/checkout-page/Checkout/Checkout.hooks.js'
 import {
 	CARD_FIELDS,
 	PAYMENT_OPTIONS,
-} from '@/features/order/Checkout/checkoutFields.js'
+} from '@/features/checkout-page/Checkout/checkoutFields.js'
 import styles from './Checkout.module.css'
 
 export default function Checkout() {

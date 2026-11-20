@@ -1,7 +1,3 @@
-// Pathing
-// _______
-// src/features/register-page/register/registerFields.js
-
 export const REGISTER_STEPS = [
 	{
 		name: 'account',

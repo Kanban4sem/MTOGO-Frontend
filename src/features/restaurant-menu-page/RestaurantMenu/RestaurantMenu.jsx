@@ -2,14 +2,14 @@ import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import AddToBasketButton from '@/features/restaurant-menu/AddToBasketButton/AddToBasketButton.jsx'
-import BasketBottomBar from '@/features/restaurant-menu/BasketBottomBar/BasketBottomBar.jsx'
-import BasketSidePanel from '@/features/restaurant-menu/BasketSidePanel/BasketSidePanel.jsx'
-import NewBasketDialog from '@/features/restaurant-menu/NewBasketDialog/NewBasketDialog.jsx'
+import AddToBasketButton from '@/features/restaurant-menu-page/AddToBasketButton/AddToBasketButton.jsx'
+import BasketBottomBar from '@/features/restaurant-menu-page/BasketBottomBar/BasketBottomBar.jsx'
+import BasketSidePanel from '@/features/restaurant-menu-page/BasketSidePanel/BasketSidePanel.jsx'
+import NewBasketDialog from '@/features/restaurant-menu-page/NewBasketDialog/NewBasketDialog.jsx'
 import {
 	useMenuBasket,
 	useRestaurantMenu,
-} from '@/features/restaurant-menu/RestaurantMenu/RestaurantMenu.hooks.js'
+} from '@/features/restaurant-menu-page/RestaurantMenu/RestaurantMenu.hooks.js'
 import styles from './RestaurantMenu.module.css'
 
 export default function RestaurantMenu({ restaurantId }) {

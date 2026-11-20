@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import OrderConfirmation from '@/features/order/OrderConfirmation/OrderConfirmation.jsx'
+import OrderConfirmation from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.jsx'
 import FeatureFlagRoute from '@/app/routes/FeatureFlagRoute.jsx'
 
 export default function OrderConfirmationPage() {

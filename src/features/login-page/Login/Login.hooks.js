@@ -1,7 +1,3 @@
-// Pathing
-// _______
-// src/features/login-page/login/Login.hooks.js
-
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/shared/hooks/useAuth.js'

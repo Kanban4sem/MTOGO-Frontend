@@ -1,6 +1,6 @@
 # Coding Standards
 
-**Version:** 4.0 · **Date:** 2026-11-16
+**Version:** 4.1 · **Date:** 2026-11-20
 
 ## Overview
 
@@ -25,20 +25,20 @@ Names describe what something is or does in [domain language](../CONTRIBUTING.md
 
 ### JavaScript and React
 
-| Element                   | Convention               | Example                   |
-| ------------------------- | ------------------------ | ------------------------- |
-| Component file and folder | PascalCase, `.jsx`       | `OrderList/OrderList.jsx` |
-| Component styles          | Same name, `.module.css` | `OrderList.module.css`    |
-| Route-level component     | `Page` suffix            | `OrderDetailPage`         |
-| Layout component          | `Layout` suffix          | `AppLayout`               |
-| Form component            | `Form` suffix            | `LoginForm`               |
-| Context                   | `<Name>Context.jsx`      | `AuthContext.jsx`         |
-| Service                   | `<feature>Service.js`    | `orderService.js`         |
-| Hook                      | `use` + PascalCase       | `useAuth`                 |
-| Other modules             | camelCase `.js`          | `dateHelpers.js`          |
-| Variable, function        | camelCase                | `orderList`               |
-| Constant                  | UPPER_SNAKE_CASE         | `BASE_URL`                |
-| Feature folder            | kebab-case               | `features/order-history/` |
+| Element                   | Convention               | Example                        |
+| ------------------------- | ------------------------ | ------------------------------ |
+| Component file and folder | PascalCase, `.jsx`       | `OrderList/OrderList.jsx`      |
+| Component styles          | Same name, `.module.css` | `OrderList.module.css`         |
+| Route-level component     | `Page` suffix            | `OrderDetailPage`              |
+| Layout component          | `Layout` suffix          | `AppLayout`                    |
+| Form component            | `Form` suffix            | `LoginForm`                    |
+| Context                   | `<Name>Context.jsx`      | `AuthContext.jsx`              |
+| Service                   | `<feature>Service.js`    | `orderService.js`              |
+| Hook                      | `use` + PascalCase       | `useAuth`                      |
+| Other modules             | camelCase `.js`          | `dateHelpers.js`               |
+| Variable, function        | camelCase                | `orderList`                    |
+| Constant                  | UPPER_SNAKE_CASE         | `BASE_URL`                     |
+| Page folder               | kebab-case, `-page`      | `features/order-history-page/` |
 
 ### REST API and JSON
 
@@ -64,12 +64,13 @@ src/
 ├── api/                           client.js: the only place that talks HTTP, /endpoints for SoC
 ├── app/                           App, layouts, routes, app-wide pages
 ├── features/
-│   └── <page>/                    SoC & Layers
-│       └── <feature>/             Components belonging to a page, .module.css, .hooks.js (logic)
-└── shared/                        Components, hooks, context, data, styles and utils used by more than one feature
+│   └── <name>-page/               One folder per page, kebab-case with a -page suffix
+│       ├── <Feature>/             Components belonging to the page, .module.css, .hooks.js (logic)
+│       └── services/              The page's services
+└── shared/                        Components, hooks, context, data, services, styles and utils used by more than one feature
 ```
 
-- **Components render, services fetch.** Components never call `fetch`. They use their feature's `services/<feature>Service.js`, which uses `client.js`.
+- **Components render, services fetch.** Components never call `fetch`. They use a service, `<feature>Service.js`, which uses `client.js`. A service used by one page lives in that page's `services/`, and one used by more than one page lives in `shared/services/`.
 - **Features do not import from each other.** Anything used by more than one feature moves to `shared/`.
 - Use absolute imports with the `@/` prefix.
 - The OpenAPI specification is the contract between the repositories (see [API documentation](#api-documentation)).
@@ -143,3 +144,4 @@ return isEnabled("authEnabled") && <LoginButton />;
 | 2.0     | 2026-11-11 | Moved from `MTOGO`, frontend rules only                                   | #3       |
 | 3.0     | 2026-11-12 | The tool configuration replaces `.editorconfig`                           | #23      |
 | 4.0     | 2026-11-16 | Tests for changes to behaviour, feature flag steps, each rule stated once | #26      |
+| 4.1     | 2026-11-20 | Where page folders and services go                                        | #36      |

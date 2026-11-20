@@ -1,7 +1,3 @@
-// Pathing
-// _______
-// src/features/register-page/register/Register.jsx
-
 import { Link } from 'react-router-dom'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'

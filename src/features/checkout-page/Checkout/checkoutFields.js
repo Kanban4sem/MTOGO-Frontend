@@ -1,5 +1,5 @@
 import { COUNTRY_NAMES } from '@/shared/data/countries.js'
-import { PAYMENT_TOKENS } from '@/features/order/services/orderService.js'
+import { PAYMENT_TOKENS } from '@/features/checkout-page/services/orderService.js'
 
 // No maxLength, so a longer address can be typed and gets a message instead of being cut off silently.
 export const DELIVERY_ADDRESS_FIELDS = [

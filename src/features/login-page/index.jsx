@@ -2,4 +2,4 @@
 // _______
 // src/features/login-page/index.jsx
 
-export { default as LoginCard } from './login/Login'
+export { default as LoginCard } from './Login/Login.jsx'

@@ -5,11 +5,11 @@ import { useBasket } from '@/shared/hooks/useBasket.js'
 import {
 	PAYMENT_TOKENS,
 	placeOrderFromBasket,
-} from '@/features/order/services/orderService.js'
+} from '@/features/checkout-page/services/orderService.js'
 import {
 	DELIVERY_ADDRESS_FIELDS,
 	validateDeliveryAddress,
-} from '@/features/order/Checkout/checkoutFields.js'
+} from '@/features/checkout-page/Checkout/checkoutFields.js'
 
 const BASKET_KEPT = 'Din kurv er gemt.'
 
