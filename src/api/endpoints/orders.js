@@ -17,3 +17,14 @@ export function getCustomerOrder(orderId, signal) {
 		cache: 'no-store',
 	})
 }
+
+export function getRestaurantOrders(signal) {
+	return client('/restaurant/orders', { signal, cache: 'no-store' })
+}
+
+export function patchRestaurantOrder(orderId, status) {
+	return client(`/restaurant/orders/${encodeURIComponent(orderId)}`, {
+		method: 'PATCH',
+		body: JSON.stringify({ status }),
+	})
+}

@@ -2,7 +2,12 @@ import { Link } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
 import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
 import LanguageIndicator from '@/shared/components/LanguageIndicator/LanguageIndicator.jsx'
-import { CHECKOUT_PATH, CUSTOMER_ORDERS_PATH } from '@/shared/data/paths.js'
+import {
+	CHECKOUT_PATH,
+	CUSTOMER_ORDERS_PATH,
+	RESTAURANT_ORDERS_PATH,
+	RESTAURANT_PROFILE_PATH,
+} from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatItemCount } from '@/shared/utils/basketMessages.js'
@@ -13,11 +18,20 @@ const PROFILE_LINKS = [
 	{ label: 'Profiloversigt', to: '/profile' },
 	{ label: 'Mine ordrer', to: CUSTOMER_ORDERS_PATH },
 ]
+const RESTAURANT_PROFILE_LINK = {
+	label: 'Virksomhedsprofil',
+	to: RESTAURANT_PROFILE_PATH,
+}
+const RESTAURANT_LINKS = [
+	{ label: 'Ordrer', to: RESTAURANT_ORDERS_PATH },
+	RESTAURANT_PROFILE_LINK,
+]
 
 function NavBar() {
 	const {
 		isAuthenticated,
 		isCustomer,
+		isRestaurant,
 		isLoading,
 		isLoggingOut,
 		error,
@@ -25,6 +39,7 @@ function NavBar() {
 	} = useNavBar()
 	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
+	const orderingEnabled = isEnabled('orderingEnabled')
 
 	return (
 		<header className={styles.header}>
@@ -51,7 +66,7 @@ function NavBar() {
 					</li>
 				</ul>
 				<div className={styles.actions}>
-					{isEnabled('orderingEnabled') && itemCount > 0 && (
+					{orderingEnabled && itemCount > 0 && (
 						<Link
 							className={styles.link}
 							to={CHECKOUT_PATH}
@@ -75,7 +90,17 @@ function NavBar() {
 								onClick={handleLogout}
 								disabled={isLoggingOut}
 							/>
-							{isCustomer && isEnabled('orderingEnabled') ? (
+							{isRestaurant ? (
+								<Dropdown
+									label="Restaurant"
+									links={
+										orderingEnabled
+											? RESTAURANT_LINKS
+											: [RESTAURANT_PROFILE_LINK]
+									}
+									buttonClassName={styles.account}
+								/>
+							) : isCustomer && orderingEnabled ? (
 								<Dropdown
 									label="Din profil"
 									links={PROFILE_LINKS}

@@ -8,6 +8,8 @@ import RestaurantMenuPage from '@/app/pages/RestaurantMenuPage.jsx'
 import CheckoutPage from '@/app/pages/CheckoutPage.jsx'
 import OrderConfirmationPage from '@/app/pages/OrderConfirmationPage.jsx'
 import CustomerOrdersPage from '@/app/pages/CustomerOrdersPage.jsx'
+import RestaurantOrdersPage from '@/app/pages/RestaurantOrdersPage.jsx'
+import RestaurantProfilePage from '@/app/pages/RestaurantProfilePage.jsx'
 import NotFoundPage from '@/app/pages/NotFoundPage.jsx'
 import {
 	CHECKOUT_PATH,
@@ -15,6 +17,8 @@ import {
 	CUSTOMER_ORDER_ROUTE,
 	ORDER_CONFIRMATION_ROUTE,
 	RESTAURANT_MENU_ROUTE,
+	RESTAURANT_ORDERS_PATH,
+	RESTAURANT_PROFILE_PATH,
 } from '@/shared/data/paths.js'
 
 function AppRoutes() {
@@ -24,6 +28,14 @@ function AppRoutes() {
 				<Route element={<HomeLayout />}>
 					<Route path="/" element={<HomePage />} />
 					<Route path="/profile" element={<ProfilePage />} />
+					<Route
+						path={RESTAURANT_ORDERS_PATH}
+						element={<RestaurantOrdersPage />}
+					/>
+					<Route
+						path={RESTAURANT_PROFILE_PATH}
+						element={<RestaurantProfilePage />}
+					/>
 					<Route
 						path={CUSTOMER_ORDERS_PATH}
 						element={<CustomerOrdersPage />}

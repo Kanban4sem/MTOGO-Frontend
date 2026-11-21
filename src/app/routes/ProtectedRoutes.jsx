@@ -5,15 +5,24 @@ import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 
 // The one place that sends a logged-out user to login, and back to the same address afterwards.
 // A 401 anywhere clears the session in the client, so an expired session lands here too.
-export default function ProtectedRoutes({ loginUnavailable, children }) {
-	const { isAuthenticated, isLoading, isSessionExpired } = useAuth()
+export default function ProtectedRoutes({
+	loginUnavailable,
+	requiredRole,
+	children,
+}) {
+	const { user, isAuthenticated, isLoading, isSessionExpired } = useAuth()
 	const { isEnabled, isLoading: areFlagsLoading } = useFeatureFlags()
 	const { pathname, search } = useLocation()
 
 	if (isLoading) {
 		return <RequestState title="Vi tjekker dit login…" isLoading />
 	}
-	if (isAuthenticated) return children
+	if (isAuthenticated) {
+		if (requiredRole && user.role !== requiredRole) {
+			return <RequestState title="Du har ikke adgang til denne side" />
+		}
+		return children
+	}
 	if (areFlagsLoading) {
 		return <RequestState title="Indlæser…" isLoading />
 	}

@@ -84,6 +84,8 @@ The app calls the API on the relative path `/v1` (set in `src/api/client.js`). I
 
 With `orderingEnabled` on, signed-in customers can open **Din profil → Mine ordrer** at `/profile/orders`. The list and detail pages read the customer's orders from `/v1/customer/orders` and `/v1/customer/orders/{id}`.
 
+Restaurant users can open **Restaurant → Virksomhedsprofil** to see the signed-in account's details. With `orderingEnabled` on, **Restaurant → Ordrer** lists their restaurant's orders newest first and lets them filter by status. The page uses `GET /v1/restaurant/orders` to list orders and `PATCH /v1/restaurant/orders/{id}` to accept or reject a placed order or mark an accepted order as ready.
+
 ## Docker image
 
 Build the app first, then the image:

@@ -1,0 +1,28 @@
+.options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding: 0.5rem;
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-surface);
+}
+
+.options button {
+	min-height: 2.75rem;
+	padding-inline: 0.85rem;
+	border-color: transparent;
+	background: transparent;
+	color: var(--mtogo-text-primary);
+	font-weight: 600;
+}
+
+.options button:hover:not(:disabled) {
+	border-color: var(--mtogo-border);
+	background: var(--mtogo-muted);
+}
+
+.options button[aria-pressed="true"] {
+	border-color: var(--mtogo-active);
+	background: var(--mtogo-badge-color);
+}
