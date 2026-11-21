@@ -12,3 +12,10 @@ export const ORDER_CONFIRMATION_ROUTE = '/orders/:orderId'
 export function getOrderConfirmationPath(orderId) {
 	return `/orders/${orderId}`
 }
+
+export const CUSTOMER_ORDERS_PATH = '/profile/orders'
+export const CUSTOMER_ORDER_ROUTE = `${CUSTOMER_ORDERS_PATH}/:orderId`
+
+export function getCustomerOrderPath(orderId) {
+	return `${CUSTOMER_ORDERS_PATH}/${orderId}`
+}

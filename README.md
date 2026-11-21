@@ -82,6 +82,8 @@ npm run build    # production build in dist/
 
 The app calls the API on the relative path `/v1` (set in `src/api/client.js`). In development, the Vite dev server forwards `/v1` to the backend on `http://localhost:8080`, so start the backend first.
 
+With `orderingEnabled` on, signed-in customers can open **Din profil → Mine ordrer** at `/profile/orders`. The list and detail pages read the customer's orders from `/v1/customer/orders` and `/v1/customer/orders/{id}`.
+
 ## Docker image
 
 Build the app first, then the image:

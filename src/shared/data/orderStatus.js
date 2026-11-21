@@ -1,5 +1,4 @@
-// The backend sends English status codes and leaves the Danish names to the frontend.
-// Every view that shows an order status reads it here, so the names don't drift.
+// Fallback for order responses that contain only a status code.
 export const ORDER_STATUS_NAMES = {
 	PLACED: 'Afgivet',
 	ACCEPTED: 'Accepteret',
@@ -9,6 +8,6 @@ export const ORDER_STATUS_NAMES = {
 	DELIVERED: 'Leveret',
 }
 
-export function getOrderStatusName(status) {
-	return ORDER_STATUS_NAMES[status] ?? status
+export function getOrderStatusName(status, statusName) {
+	return statusName ?? ORDER_STATUS_NAMES[status] ?? status
 }

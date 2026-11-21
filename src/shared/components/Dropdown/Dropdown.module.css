@@ -1,0 +1,42 @@
+.dropdown {
+	position: relative;
+}
+
+.chevron {
+	display: inline-block;
+	width: 0.45em;
+	height: 0.45em;
+	margin-inline-start: 0.65em;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: translateY(-25%) rotate(45deg);
+}
+
+.links {
+	position: absolute;
+	z-index: 10;
+	inset-block-start: 100%;
+	inset-inline-end: 0;
+	min-width: 10rem;
+	margin: 0;
+	padding: 0.25rem;
+	list-style: none;
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-surface);
+	box-shadow: var(--mtogo-dropdown-shadow);
+}
+
+.links a {
+	display: block;
+	padding: 0.65rem 0.75rem;
+	border-radius: var(--mtogo-border-radius);
+	color: var(--mtogo-text-primary);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.links a:hover,
+.links a:focus-visible {
+	background: var(--mtogo-highlight);
+}

@@ -1,0 +1,116 @@
+.page {
+	max-width: 48rem;
+	margin: 0 auto;
+	padding-block: clamp(1.5rem, 5vw, 3.5rem);
+}
+
+.page > a {
+	display: inline-block;
+	margin-bottom: 1rem;
+	font-weight: 600;
+}
+
+.page h1 {
+	margin-bottom: 1.25rem;
+	font-size: clamp(1.75rem, 4vw, 2.5rem);
+	overflow-wrap: anywhere;
+}
+
+.orders,
+.lines {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.orders {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.orderLink,
+.receipt {
+	padding: 1rem;
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-surface);
+}
+
+.orderLink {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	align-items: center;
+	gap: 0.5rem 1rem;
+	color: var(--mtogo-text-primary);
+	text-decoration: none;
+}
+
+.orderLink:hover {
+	border-color: var(--mtogo-color);
+	color: var(--mtogo-text-primary);
+}
+
+.orderLink:hover strong {
+	text-decoration: underline;
+}
+
+.orderStatus {
+	width: fit-content;
+	padding: 0.2em 0.65em;
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-badge-color);
+	color: var(--mtogo-text-primary);
+	font-weight: 600;
+}
+
+.orderMeta {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	color: var(--mtogo-text-secondary);
+}
+
+.receipt h2 {
+	margin-bottom: 0.5rem;
+	font-size: 1.1rem;
+}
+
+.lines li,
+.total {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-block: 0.75rem;
+}
+
+.lines li {
+	border-bottom: 1px solid var(--mtogo-border);
+	overflow-wrap: anywhere;
+}
+
+.lines p {
+	margin: 0.15rem 0 0;
+	color: var(--mtogo-text-secondary);
+}
+
+.lines li > span,
+.total strong {
+	white-space: nowrap;
+}
+
+.total {
+	margin: 0;
+	padding-bottom: 0;
+	font-weight: 600;
+}
+
+@media (max-width: 30rem) {
+	.orderLink {
+		grid-template-columns: 1fr auto;
+	}
+
+	.orderLink strong {
+		grid-column: 1 / -1;
+	}
+}

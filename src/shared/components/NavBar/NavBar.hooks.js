@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 
 export function useNavBar() {
-	const { isAuthenticated, isLoading, logout } = useAuth()
+	const { user, isAuthenticated, isLoading, logout } = useAuth()
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
 	const [error, setError] = useState('')
 
@@ -21,5 +22,12 @@ export function useNavBar() {
 		}
 	}
 
-	return { isAuthenticated, isLoading, isLoggingOut, error, handleLogout }
+	return {
+		isAuthenticated,
+		isCustomer: user?.role === USER_ROLES.CUSTOMER,
+		isLoading,
+		isLoggingOut,
+		error,
+		handleLogout,
+	}
 }

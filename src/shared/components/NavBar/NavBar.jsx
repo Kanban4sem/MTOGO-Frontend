@@ -1,16 +1,28 @@
 import { Link } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
+import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
 import LanguageIndicator from '@/shared/components/LanguageIndicator/LanguageIndicator.jsx'
-import { CHECKOUT_PATH } from '@/shared/data/paths.js'
+import { CHECKOUT_PATH, CUSTOMER_ORDERS_PATH } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatItemCount } from '@/shared/utils/basketMessages.js'
 import { useNavBar } from './NavBar.hooks.js'
 import styles from './NavBar.module.css'
 
+const PROFILE_LINKS = [
+	{ label: 'Profiloversigt', to: '/profile' },
+	{ label: 'Mine ordrer', to: CUSTOMER_ORDERS_PATH },
+]
+
 function NavBar() {
-	const { isAuthenticated, isLoading, isLoggingOut, error, handleLogout } =
-		useNavBar()
+	const {
+		isAuthenticated,
+		isCustomer,
+		isLoading,
+		isLoggingOut,
+		error,
+		handleLogout,
+	} = useNavBar()
 	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
 
@@ -63,9 +75,17 @@ function NavBar() {
 								onClick={handleLogout}
 								disabled={isLoggingOut}
 							/>
-							<Link className={styles.account} to="/profile">
-								Din profil
-							</Link>
+							{isCustomer && isEnabled('orderingEnabled') ? (
+								<Dropdown
+									label="Din profil"
+									links={PROFILE_LINKS}
+									buttonClassName={styles.account}
+								/>
+							) : (
+								<Link className={styles.account} to="/profile">
+									Din profil
+								</Link>
+							)}
 						</>
 					) : isEnabled('authEnabled') ? (
 						<>
