@@ -1,8 +1,5 @@
-// Pathing
-// _______
-// src/app/layouts/AuthLayout.jsx
-
 import { Helmet } from 'react-helmet-async'
+import { Link } from 'react-router-dom'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 
 function AuthLayout({ title, children }) {
@@ -11,8 +8,10 @@ function AuthLayout({ title, children }) {
 	return (
 		<div className="authLayout">
 			<Helmet title={title} />
-			{/* Page Specific */}
 			<main>
+				<Link className="authBackLink" to="/">
+					Tilbage til forsiden
+				</Link>
 				{isEnabled('authEnabled') ? (
 					children
 				) : (

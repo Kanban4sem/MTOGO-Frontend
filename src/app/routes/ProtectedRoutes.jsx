@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { useAuth } from '@/shared/hooks/useAuth.js'
@@ -8,6 +9,7 @@ import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 export default function ProtectedRoutes({
 	loginUnavailable,
 	requiredRole,
+	deniedLayout: DeniedLayout = Fragment,
 	children,
 }) {
 	const { user, isAuthenticated, isLoading, isSessionExpired } = useAuth()
@@ -19,14 +21,20 @@ export default function ProtectedRoutes({
 	}
 	if (isAuthenticated) {
 		if (requiredRole && user.role !== requiredRole) {
-			return <RequestState title="Du har ikke adgang til denne side" />
+			return (
+				<DeniedLayout>
+					<RequestState title="Du har ikke adgang til denne side" />
+				</DeniedLayout>
+			)
 		}
 		return children
 	}
 	if (areFlagsLoading) {
 		return <RequestState title="Indlæser…" isLoading />
 	}
-	if (!isEnabled('authEnabled')) return loginUnavailable
+	if (!isEnabled('authEnabled')) {
+		return <DeniedLayout>{loginUnavailable}</DeniedLayout>
+	}
 
 	return (
 		<Navigate

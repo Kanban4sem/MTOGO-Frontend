@@ -1,16 +1,21 @@
-.options {
+.options,
+.links {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.5rem;
+}
+
+.options {
 	padding: 0.5rem;
 	border: 1px solid var(--mtogo-border);
 	border-radius: var(--mtogo-border-radius);
 	background: var(--mtogo-surface);
 }
 
-.options button {
+.options button,
+.links a {
 	min-height: 2.75rem;
-	padding-inline: 0.85rem;
+	padding: 0.5rem 0.85rem;
 	border-color: transparent;
 	background: transparent;
 	color: var(--mtogo-text-primary);
@@ -25,4 +30,29 @@
 .options button[aria-pressed="true"] {
 	border-color: var(--mtogo-active);
 	background: var(--mtogo-badge-color);
+}
+
+.links {
+	flex-direction: column;
+}
+
+.links a {
+	display: flex;
+	align-items: center;
+	border-radius: var(--mtogo-border-radius);
+	text-decoration: none;
+}
+
+.links a:hover {
+	background: var(--mtogo-muted);
+}
+
+.links a[aria-current="page"] {
+	background: var(--mtogo-badge-color);
+}
+
+@media (max-width: 42rem) {
+	.links {
+		flex-direction: row;
+	}
 }

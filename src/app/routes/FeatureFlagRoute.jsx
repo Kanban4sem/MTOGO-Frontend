@@ -4,8 +4,19 @@ import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 
 // A route behind a flag looks as if it does not exist while the flag is off.
 // While the flags load it waits, so a refresh doesn't flash the not-found page.
-export default function FeatureFlagRoute({ flag, children }) {
+export default function FeatureFlagRoute({
+	flag,
+	deniedLayout: DeniedLayout = Fragment,
+	children,
+}) {
 	const { isEnabled, isLoading } = useFeatureFlags()
 	if (isLoading) return <RequestState title="Indlæser…" isLoading />
-	return isEnabled(flag) ? children : <NotFoundPage />
+	return isEnabled(flag) ? (
+		children
+	) : (
+		<DeniedLayout>
+			<NotFoundPage />
+		</DeniedLayout>
+	)
 }
+import { Fragment } from 'react'

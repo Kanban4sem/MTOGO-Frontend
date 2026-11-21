@@ -1,0 +1,29 @@
+.brand {
+	display: inline-flex;
+	align-items: center;
+	color: var(--mtogo-brand-blue);
+	font-size: var(--mtogo-title-size);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	text-decoration: none;
+}
+
+.brand:hover {
+	color: var(--mtogo-brand-blue);
+}
+
+.icon {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	margin-inline-end: 10px;
+	border-radius: var(--mtogo-border-radius);
+	color: var(--mtogo-surface);
+	background: var(--color-accent);
+	font-size: 30px;
+}
+
+.dot {
+	color: var(--color-accent);
+}

@@ -26,6 +26,7 @@ export function useNavBar() {
 		isAuthenticated,
 		isCustomer: user?.role === USER_ROLES.CUSTOMER,
 		isRestaurant: user?.role === USER_ROLES.RESTAURANT,
+		isDeliveryAgent: user?.role === USER_ROLES.DELIVERY_AGENT,
 		isLoading,
 		isLoggingOut,
 		error,

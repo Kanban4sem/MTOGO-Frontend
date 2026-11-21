@@ -49,8 +49,6 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 25px 0;
-	margin-bottom: 35px;
-	border-bottom: 1px solid var(--color-border);
 	font-size: 13px;
 }
 
@@ -61,6 +59,17 @@
 
 .menuBar > span:last-child {
 	color: var(--color-muted);
+}
+
+.menuDivider {
+	margin: 0;
+	border: 0;
+	border-block-start: 1px solid var(--color-border);
+}
+
+.menus,
+.basketRail {
+	padding-block-start: 2rem;
 }
 
 .menu {
@@ -148,9 +157,15 @@
 
 .ordering {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+	grid-template-columns: minmax(0, 1fr) minmax(296px, 356px);
 	align-items: start;
-	gap: 32px;
+	gap: 1rem;
+}
+
+.basketRail {
+	align-self: stretch;
+	padding-inline-start: 1rem;
+	border-inline-start: 1px solid var(--color-border);
 }
 
 .ordering .item {
@@ -166,6 +181,10 @@
 @media (max-width: 900px) {
 	.ordering {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.basketRail {
+		display: none;
 	}
 }
 

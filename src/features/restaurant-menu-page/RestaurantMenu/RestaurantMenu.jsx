@@ -52,6 +52,8 @@ export default function RestaurantMenu({ restaurantId }) {
 							</p>
 						</div>
 					</header>
+					<MenuBar menus={menus} />
+					<hr className={styles.menuDivider} />
 					{isOrderingEnabled ? (
 						<OrderableMenus restaurant={restaurant} menus={menus} />
 					) : (
@@ -75,19 +77,19 @@ function OrderableMenus({ restaurant, menus }) {
 	return (
 		<>
 			<div className={styles.ordering}>
-				<div>
-					<Menus
-						menus={menus}
-						renderAddControl={(item) => (
-							<AddToBasketButton
-								restaurantId={restaurant.id}
-								menuItem={item}
-								onAdd={requestAdd}
-							/>
-						)}
-					/>
+				<Menus
+					menus={menus}
+					renderAddControl={(item) => (
+						<AddToBasketButton
+							restaurantId={restaurant.id}
+							menuItem={item}
+							onAdd={requestAdd}
+						/>
+					)}
+				/>
+				<div className={styles.basketRail}>
+					<BasketSidePanel />
 				</div>
-				<BasketSidePanel />
 			</div>
 			<BasketBottomBar />
 			<NewBasketDialog
@@ -99,20 +101,25 @@ function OrderableMenus({ restaurant, menus }) {
 	)
 }
 
-function Menus({ menus, renderAddControl }) {
+function MenuBar({ menus }) {
 	const itemCount = menus.reduce(
 		(count, menu) => count + menu.items.length,
 		0,
 	)
 
 	return (
-		<>
-			<div className={styles.menuBar}>
-				<span>Vores menu</span>
-				<span>
-					{itemCount} {itemCount === 1 ? 'ret' : 'retter'}
-				</span>
-			</div>
+		<div className={styles.menuBar}>
+			<span>Vores menu</span>
+			<span>
+				{itemCount} {itemCount === 1 ? 'ret' : 'retter'}
+			</span>
+		</div>
+	)
+}
+
+function Menus({ menus, renderAddControl }) {
+	return (
+		<div className={styles.menus}>
 			{menus.length === 0 ? (
 				<RequestState title="Menuen er på vej">
 					Restauranten har ingen aktiv menu lige nu. Kig forbi igen
@@ -166,7 +173,7 @@ function Menus({ menus, renderAddControl }) {
 				))
 			)}
 			<p className={styles.priceNote}>Alle priser er i danske kroner.</p>
-		</>
+		</div>
 	)
 }
 

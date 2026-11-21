@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import BrandLink from '@/shared/components/BrandLink/BrandLink.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
 import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
 import LanguageIndicator from '@/shared/components/LanguageIndicator/LanguageIndicator.jsx'
 import {
 	CHECKOUT_PATH,
 	CUSTOMER_ORDERS_PATH,
+	DASHBOARD_PATH,
 	RESTAURANT_ORDERS_PATH,
 	RESTAURANT_PROFILE_PATH,
 } from '@/shared/data/paths.js'
@@ -26,12 +28,14 @@ const RESTAURANT_LINKS = [
 	{ label: 'Ordrer', to: RESTAURANT_ORDERS_PATH },
 	RESTAURANT_PROFILE_LINK,
 ]
+const DELIVERY_AGENT_LINKS = [{ label: 'Dashboard', to: DASHBOARD_PATH }]
 
 function NavBar() {
 	const {
 		isAuthenticated,
 		isCustomer,
 		isRestaurant,
+		isDeliveryAgent,
 		isLoading,
 		isLoggingOut,
 		error,
@@ -44,16 +48,7 @@ function NavBar() {
 	return (
 		<header className={styles.header}>
 			<nav className={styles.nav} aria-label="Hovednavigation">
-				<Link
-					className={styles.brand}
-					to="/"
-					aria-label="MTOGO forside"
-				>
-					<span className={styles.brandIcon} aria-hidden="true">
-						m.
-					</span>
-					MTOGO<span className={styles.brandDot}>.</span>
-				</Link>
+				<BrandLink />
 				<ul className={styles.entries}>
 					<li>
 						<a href="/#restaurants">Restauranter</a>
@@ -100,10 +95,15 @@ function NavBar() {
 									}
 									buttonClassName={styles.account}
 								/>
-							) : isCustomer && orderingEnabled ? (
+							) : orderingEnabled &&
+							  (isCustomer || isDeliveryAgent) ? (
 								<Dropdown
 									label="Din profil"
-									links={PROFILE_LINKS}
+									links={
+										isDeliveryAgent
+											? DELIVERY_AGENT_LINKS
+											: PROFILE_LINKS
+									}
 									buttonClassName={styles.account}
 								/>
 							) : (

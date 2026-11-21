@@ -86,6 +86,8 @@ With `orderingEnabled` on, signed-in customers can open **Din profil → Mine or
 
 Restaurant users can open **Restaurant → Virksomhedsprofil** to see the signed-in account's details. With `orderingEnabled` on, **Restaurant → Ordrer** lists their restaurant's orders newest first and lets them filter by status. The page uses `GET /v1/restaurant/orders` to list orders and `PATCH /v1/restaurant/orders/{id}` to accept or reject a placed order or mark an accepted order as ready.
 
+With `orderingEnabled` on, signed-in delivery agents can open **Din profil → Dashboard** at `/dashboard` to take orders that are ready for pickup. **Ordrer** at `/dashboard/orders` shows their active and completed deliveries. The dashboard uses `GET /v1/delivery-agent/orders` to list orders and `PATCH /v1/delivery-agent/orders/{id}` to take an order, mark it as picked up and mark it as delivered.
+
 ## Docker image
 
 Build the app first, then the image:

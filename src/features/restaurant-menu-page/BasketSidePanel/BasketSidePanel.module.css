@@ -41,9 +41,3 @@
 	background: var(--mtogo-color-hover);
 	color: var(--mtogo-surface);
 }
-
-@media (max-width: 900px) {
-	.side {
-		display: none;
-	}
-}

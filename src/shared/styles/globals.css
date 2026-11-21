@@ -186,6 +186,11 @@ a {
 	background: var(--mtogo-surface);
 }
 
+.authBackLink {
+	display: inline-block;
+	margin-bottom: 1rem;
+}
+
 :root {
 	font-family: "Inter", "Segoe UI", sans-serif;
 	color: #25251f;

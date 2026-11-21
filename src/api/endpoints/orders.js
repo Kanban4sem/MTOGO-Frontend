@@ -28,3 +28,14 @@ export function patchRestaurantOrder(orderId, status) {
 		body: JSON.stringify({ status }),
 	})
 }
+
+export function getDeliveryAgentOrders(signal) {
+	return client('/delivery-agent/orders', { signal, cache: 'no-store' })
+}
+
+export function patchDeliveryAgentOrder(orderId, action) {
+	return client(`/delivery-agent/orders/${encodeURIComponent(orderId)}`, {
+		method: 'PATCH',
+		body: JSON.stringify({ action }),
+	})
+}
