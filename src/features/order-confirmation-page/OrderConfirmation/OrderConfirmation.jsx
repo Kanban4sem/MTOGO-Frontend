@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { getCountryName } from '@/shared/data/countries.js'
 import { getOrderStatusName } from '@/shared/data/orderStatus.js'
@@ -13,7 +13,7 @@ export default function OrderConfirmation({ orderId }) {
 	if (!order || String(order.id) !== orderId) {
 		return (
 			<RequestState title={`Ordre nr. ${orderId} er afgivet`}>
-				Tak for din bestilling. <a href="/">Gå til forsiden</a>
+				Tak for din bestilling. <Link to="/">Gå til forsiden</Link>
 			</RequestState>
 		)
 	}
@@ -84,9 +84,9 @@ export default function OrderConfirmation({ orderId }) {
 					</address>
 				</section>
 			</div>
-			<a className={styles.home} href="/">
+			<Link className={styles.home} to="/">
 				Gå til forsiden
-			</a>
+			</Link>
 		</section>
 	)
 }

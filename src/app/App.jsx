@@ -1,7 +1,13 @@
+import { Helmet, HelmetProvider } from 'react-helmet-async'
 import AppRoutes from './routes/AppRoutes.jsx'
 
 function App() {
-	return <AppRoutes />
+	return (
+		<HelmetProvider>
+			<Helmet defaultTitle="MTOGO" titleTemplate="%s | MTOGO" />
+			<AppRoutes />
+		</HelmetProvider>
+	)
 }
 
 export default App

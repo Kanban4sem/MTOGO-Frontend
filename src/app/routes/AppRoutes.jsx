@@ -1,6 +1,5 @@
 import HomeLayout from '@/app/layouts/HomeLayout.jsx'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import AuthLayout from '@/app/layouts/AuthLayout.jsx'
 import LoginPage from '@/app/pages/LoginPage.jsx'
 import RegisterPage from '@/app/pages/RegisterPage.jsx'
 import ProfilePage from '@/app/pages/ProfilePage.jsx'
@@ -44,10 +43,8 @@ function AppRoutes() {
 					/>
 					<Route path="*" element={<NotFoundPage />} />
 				</Route>
-				<Route element={<AuthLayout />}>
-					<Route path="/login" element={<LoginPage />} />
-					<Route path="/register" element={<RegisterPage />} />
-				</Route>
+				<Route path="/login" element={<LoginPage />} />
+				<Route path="/register" element={<RegisterPage />} />
 			</Routes>
 		</BrowserRouter>
 	)

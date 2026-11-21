@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
@@ -21,6 +22,7 @@ export default function RestaurantMenu({ restaurantId }) {
 
 	return (
 		<div className={styles.page}>
+			<Helmet title={restaurant?.name || 'Restaurantmenu'} />
 			<a className={styles.back} href="/#restaurants">
 				<span aria-hidden="true">←</span> Alle restauranter
 			</a>

@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 import FeatureFlagRoute from '@/app/routes/FeatureFlagRoute.jsx'
 import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
@@ -11,6 +12,13 @@ export default function CustomerOrdersPage() {
 
 	return (
 		<FeatureFlagRoute flag="orderingEnabled">
+			<Helmet
+				title={
+					orderId === undefined
+						? 'Mine ordrer'
+						: `Ordre nr. ${orderId}`
+				}
+			/>
 			<ProtectedRoutes
 				loginUnavailable={
 					<RequestState title="Ordrevisning kræver login">

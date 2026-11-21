@@ -2,18 +2,19 @@
 // _______
 // src/app/layouts/AuthLayout.jsx
 
-import { Outlet } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 
-function AuthLayout() {
+function AuthLayout({ title, children }) {
 	const { isEnabled } = useFeatureFlags()
 
 	return (
 		<div className="authLayout">
+			<Helmet title={title} />
 			{/* Page Specific */}
 			<main>
 				{isEnabled('authEnabled') ? (
-					<Outlet />
+					children
 				) : (
 					<p>Login og registrering er ikke tilgængeligt lige nu.</p>
 				)}
