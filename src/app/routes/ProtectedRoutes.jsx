@@ -7,13 +7,16 @@ import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 // A 401 anywhere clears the session in the client, so an expired session lands here too.
 export default function ProtectedRoutes({ loginUnavailable, children }) {
 	const { isAuthenticated, isLoading, isSessionExpired } = useAuth()
-	const { isEnabled } = useFeatureFlags()
+	const { isEnabled, isLoading: areFlagsLoading } = useFeatureFlags()
 	const { pathname, search } = useLocation()
 
 	if (isLoading) {
 		return <RequestState title="Vi tjekker dit login…" isLoading />
 	}
 	if (isAuthenticated) return children
+	if (areFlagsLoading) {
+		return <RequestState title="Indlæser…" isLoading />
+	}
 	if (!isEnabled('authEnabled')) return loginUnavailable
 
 	return (
