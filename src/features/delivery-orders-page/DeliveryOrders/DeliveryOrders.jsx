@@ -19,6 +19,10 @@ const ASSIGNED_ACTIONS = {
 
 function OrderCard({ order, pendingOrderId, onChange }) {
 	const next = order.assignedToMe ? ASSIGNED_ACTIONS[order.status] : TAKE
+	const address = order.deliveryAddress
+	const deliveryAddress = address
+		? `${address.street}, ${address.postalCode} ${address.city}`
+		: null
 
 	return (
 		<details className={styles.card}>
@@ -26,6 +30,12 @@ function OrderCard({ order, pendingOrderId, onChange }) {
 				<span className={styles.orderTitle}>
 					<strong>Ordre nr. {order.id}</strong>
 					<span>{order.restaurantName}</span>
+					{!order.assignedToMe && (
+						<span>
+							Levering til:{' '}
+							{deliveryAddress ?? 'Adresse ikke tilgængelig'}
+						</span>
+					)}
 				</span>
 				<span className={styles.status}>
 					{getOrderStatusName(order.status, order.statusName)}
@@ -36,9 +46,13 @@ function OrderCard({ order, pendingOrderId, onChange }) {
 				className={styles.details}
 				aria-busy={pendingOrderId === order.id}
 			>
-				<p>
-					<strong>Levering til:</strong> Kommer snart
-				</p>
+				{order.assignedToMe && (
+					<p>
+						<strong>Levering til:</strong>{' '}
+						{deliveryAddress ??
+							(order.deliveryCity || 'Adresse ikke tilgængelig')}
+					</p>
+				)}
 				{next && (
 					<Button
 						label={next.label}

@@ -42,6 +42,11 @@ export default function Checkout() {
 function CheckoutForm() {
 	const { basket, total } = useBasket()
 	const {
+		defaultAddress,
+		useDefaultAddress,
+		setUseNewAddress,
+		isAddressLoading,
+		addressLoadFailed,
 		deliveryAddressFields,
 		paymentToken,
 		setPaymentToken,
@@ -74,9 +79,61 @@ function CheckoutForm() {
 				noValidate
 				aria-busy={isSubmitting}
 			>
-				<fieldset className={styles.group}>
+				<fieldset className={styles.group} disabled={isSubmitting}>
 					<legend>Leveringsadresse</legend>
-					<FormFields fields={deliveryAddressFields} />
+					{isAddressLoading && (
+						<p role="status" className={styles.note}>
+							Henter din standardadresse…
+						</p>
+					)}
+					{addressLoadFailed && (
+						<p role="status" className={styles.note}>
+							Vi kunne ikke hente din standardadresse. Du kan
+							indtaste leveringsadressen her.
+						</p>
+					)}
+					{defaultAddress && (
+						<>
+							<label className={styles.option}>
+								<input
+									type="radio"
+									name="deliveryAddressChoice"
+									checked={useDefaultAddress}
+									onChange={() => setUseNewAddress(false)}
+								/>
+								<span>
+									Brug min standardadresse:
+									<span className={styles.savedAddress}>
+										{defaultAddress.street},{' '}
+										{defaultAddress.postalCode}{' '}
+										{defaultAddress.city}
+									</span>
+								</span>
+							</label>
+							<label className={styles.option}>
+								<input
+									type="radio"
+									name="deliveryAddressChoice"
+									checked={!useDefaultAddress}
+									onChange={() => setUseNewAddress(true)}
+								/>
+								Indtast en anden adresse
+							</label>
+						</>
+					)}
+					{!isAddressLoading && (
+						<fieldset
+							className={styles.addressFields}
+							hidden={useDefaultAddress}
+							disabled={useDefaultAddress}
+						>
+							<FormFields fields={deliveryAddressFields} />
+							<label className={styles.option}>
+								<input type="checkbox" name="saveAsDefault" />
+								Gem som standardadresse efter godkendt betaling
+							</label>
+						</fieldset>
+					)}
 					<p className={styles.note}>Vi leverer kun i Danmark.</p>
 				</fieldset>
 				<fieldset className={styles.group} disabled={isSubmitting}>
@@ -121,7 +178,7 @@ function CheckoutForm() {
 							? 'Afgiver ordren…'
 							: `Betal og bestil · ${formatPrice(total)}`
 					}
-					disabled={isSubmitting}
+					disabled={isSubmitting || isAddressLoading}
 				/>
 			</form>
 		</div>

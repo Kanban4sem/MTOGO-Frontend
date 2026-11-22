@@ -63,6 +63,18 @@
 	margin-bottom: 4px;
 }
 
+.addressFields {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.addressFields:not([hidden]) {
+	display: grid;
+	gap: 16px;
+}
+
 .option {
 	display: flex;
 	align-items: center;
@@ -82,6 +94,11 @@
 
 .option input {
 	accent-color: var(--mtogo-color);
+}
+
+.savedAddress {
+	display: block;
+	font-weight: 400;
 }
 
 .card {

@@ -84,9 +84,11 @@ The app calls the API on the relative path `/v1` (set in `src/api/client.js`). I
 
 With `orderingEnabled` on, signed-in customers can open **Din profil → Mine ordrer** at `/profile/orders`. The list and detail pages read the customer's orders from `/v1/customer/orders` and `/v1/customer/orders/{id}`.
 
+At `/checkout`, customers can use their saved delivery address or enter an address for the current order. They can save the entered address as their default when payment succeeds. Checkout reads the profile from `GET /v1/users/me` and places orders through `POST /v1/orders`. Signing out clears the basket on that browser.
+
 Restaurant users can open **Restaurant → Virksomhedsprofil** to see the signed-in account's details. With `orderingEnabled` on, **Restaurant → Ordrer** lists their restaurant's orders newest first and lets them filter by status. The page uses `GET /v1/restaurant/orders` to list orders and `PATCH /v1/restaurant/orders/{id}` to accept or reject a placed order or mark an accepted order as ready.
 
-With `orderingEnabled` on, signed-in delivery agents can open **Din profil → Dashboard** at `/dashboard` to take orders that are ready for pickup. **Ordrer** at `/dashboard/orders` shows their active and completed deliveries. The dashboard uses `GET /v1/delivery-agent/orders` to list orders and `PATCH /v1/delivery-agent/orders/{id}` to take an order, mark it as picked up and mark it as delivered.
+With `orderingEnabled` on, signed-in delivery agents can open **Din profil → Dashboard** at `/dashboard` to take orders that are ready for pickup. **Ordrer** at `/dashboard/orders` shows the agent's active and completed deliveries. Both views show the full delivery addresses. The dashboard uses `GET /v1/delivery-agent/orders` to list orders and `PATCH /v1/delivery-agent/orders/{id}` to take an order, mark it as picked up and mark it as delivered.
 
 ## Docker image
 

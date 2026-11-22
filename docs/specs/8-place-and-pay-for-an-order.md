@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 1.0 · **Date:** 2026-11-19 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default
+**Version:** 2.0 · **Date:** 2026-11-22 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default
 
 ## Acceptance criteria
 
@@ -21,16 +21,16 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 6. A basket has at most 20 menu items, each with a quantity of 1–20. The basket states these limits. At a limit, the add and increase buttons are disabled and a message, announced to screen readers, explains why.
 7. The customer can raise and lower a quantity and remove a menu item. Lowering a quantity of 1 removes the menu item.
 8. The basket shows the basket total: menu price times quantity over its menu items, in DKK.
-9. The basket survives a page refresh and the detour through login.
+9. The basket survives a page refresh and the detour through login. Explicitly signing out clears the basket.
 10. On desktop, the menu page shows the basket as a sticky side panel next to the menu items. On mobile, it shows a sticky bottom bar with the number of items and the basket total that leads to checkout.
-11. The navigation bar shows a basket link with the number of items while the basket is not empty.
+11. The navigation bar shows a basket link with the number of items to guests and signed-in customers with a nonempty basket.
 
 12. A logged-out user who opens checkout is sent to login and, after logging in, back to checkout with the basket intact. Login without a return address, or with one outside the app, goes to the homepage.
 13. A logged-in user who is not a customer sees that only customers can order, and no checkout form.
 14. A customer with an empty basket sees that the basket is empty, with a link to the restaurants.
 15. A customer sees the basket's menu items, can change quantities and remove items, and sees the basket total before paying, labelled as a preview.
-16. A customer enters a delivery address: street, postal code and city. The country is shown as Denmark and cannot be changed.
-17. A delivery address is refused before sending when the street or city is blank or longer than 100 characters, or the postal code is not exactly four digits. Each field shows its own message.
+16. Checkout selects the customer's complete default delivery address when the profile has one. The customer sees the address and can place the order without entering it again or choose to enter another address. When the profile has only a postal code and city, checkout fills those fields and requires a street. With no profile address, all three fields start empty. The country is fixed to Denmark.
+17. An entered delivery address is refused before sending when the street or city is blank or longer than 100 characters, or the postal code is not exactly four digits. Each field shows its own message. An entered address applies to the current order. The customer can also choose to save it as the default, which takes effect after successful payment.
 18. A customer chooses between paying by card (simulated), the default, and simulating a declined payment. Under card payment, card number, expiry date and CVC fields are shown but disabled, with the note that the payment is simulated and no money is taken.
 19. "Betal og bestil", followed by the basket total, places the order. While the request runs, the button reads "Afgiver ordren…" and is disabled, so the order is not placed twice.
 
@@ -42,13 +42,15 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 25. When the session has expired, the user is sent to login with a message that the session has expired, and back to checkout, with the basket kept. Logging out shows no such message.
 26. When the user is not a customer, or ordering is switched off on the server, the basket is kept and a Danish message explains it.
 27. When the server fails or cannot be reached, the basket is kept and a Danish message asks the customer to try again. A server failure shows its error reference when the server gives one. A page that shows an error message gives a Danish message for a network failure instead of the browser's.
+28. When checkout cannot fetch the profile address, it tells the customer and offers manual address entry. An expired session follows the login flow in behaviour 25.
+29. The confirmation and the delivery agent's orders use the delivery address recorded on the order. Changing the profile's default leaves previous orders' addresses intact. The dashboard shows the street, postal code and city for available orders and for orders assigned to the signed-in agent.
 
 ## Implementation decisions
 
 - **Flag:** every ordering view and route checks `orderingEnabled` through the existing feature-flag hook. A missing flag counts as off, so the frontend check must be removed before or together with the backend flag: #34 and Kanban4sem/MTOGO-Backend#44.
-- **API:** a new order endpoint function calls `POST /v1/orders` through the existing client, with the customer's Bearer token. The request has `lines` (`menuItemId`, `quantity`), `deliveryAddress` (`street`, `postalCode`, `city`) and `paymentToken`. Prices and the country are never sent. A `201` returns the order (`id`, `restaurantId`, `status`, `channel`, `placedAt`, `total`, `deliveryAddress` with `country`, and `lines` with `menuItemId`, `name`, `unitPrice`, `quantity`, `subtotal`). Errors are ProblemDetail: `400` invalid input, `401` not logged in, `402` declined, `403` not a customer, `404` flag off, `409` not orderable. There is no `Location` header; the confirmation is found by `id`. The contract is owned by Kanban4sem/MTOGO-Backend#15 and is unchanged.
+- **API:** checkout reads `profile.address` from `GET /v1/users/me` each time the form opens. A profile address marked `isDefault` with a nonblank street is available for reuse. `POST /v1/orders` always sends `lines` (`menuItemId`, `quantity`), `paymentToken` and both address booleans, since the backend requires explicit booleans when reading the request. Reusing the default sets `useDefaultAddress: true` and omits `deliveryAddress`. Manual entry sends `deliveryAddress` (`street`, `postalCode`, `city`) and sets `useDefaultAddress: false`. The save checkbox sets `saveAsDefault`, which is false when unchecked or when using the default address. Requests use the customer's Bearer token. The order response and status codes follow the [backend ordering spec](https://github.com/Kanban4sem/MTOGO-Backend/blob/main/docs/specs/15-place-and-pay-for-an-order.md), updated by Kanban4sem/MTOGO-Backend#61. The delivery agent's order response includes `deliveryAddress` for ready, unassigned orders and orders assigned to the signed-in agent.
 - **Payment token:** card payment sends `mock-card`; the simulated decline sends `decline`.
-- **Basket:** a shared basket provider and hook, since the navigation bar, the menu page and checkout all use it. It holds the restaurant, and for each menu item its ID, name, price and quantity, and enforces the rules in behaviours 4–7. It is stored in `localStorage` under one key, read defensively, and emptied only after a `201`. The basket total uses the menu prices from `GET /v1/restaurants/{id}/menus`.
+- **Basket:** a shared basket provider and hook, since the navigation bar, the menu page and checkout all use it. It holds the restaurant, and for each menu item its ID, name, price and quantity, and enforces the rules in behaviours 4–7. It is stored in `localStorage` under one key, read defensively, and emptied after a `201` or when the user explicitly signs out. The basket total uses the menu prices from `GET /v1/restaurants/{id}/menus`.
 - **Order feature:** checkout and the order confirmation live in a new order feature; the add controls and the basket panel join the restaurant menu feature. Features share code only through the shared folder.
 - **Routes:** `/checkout` and `/orders/:orderId` under the home layout. The confirmation receives the `201` response in router state.
 - **Login return:** login reads a return address from router state and goes there after logging in, falling back to the homepage. Only paths inside the app are accepted, so a crafted link can't send the user to another site. A shared route guard sends a logged-out user to login with the current address and whether the session expired; checkout is behind it.
@@ -66,14 +68,18 @@ There is no frontend test framework yet, so `npm run lint` passes and these manu
 - **Access:** checkout logged out goes to login and back with the basket; a customer sees the form; a restaurant user sees the customers-only message; an empty basket shows the empty state; plain login still goes to the homepage (12–14).
 - **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and status Afgivet; a refresh keeps the confirmation, and the confirmation address opened in a new tab shows only the order number (15, 18–21).
 - **Declined payment:** the simulated decline gives the declined message and keeps the basket (22).
-- **Address:** blank street and city, 101 characters, and postal codes `123`, `12345` and `12a4` are refused in the browser; 100 characters and `1234` are accepted (16–17). A `400` from the backend, sent by bypassing the browser checks, shows its message (24).
+- **Address validation:** with manual entry, try blank street and city, 101 characters, and postal codes `123`, `12345` and `12a4`. Check that each invalid field shows its message. Try 100 characters and `1234` and confirm that the form submits. A `400` from the API shows its message (16–17, 24).
+- **Address selection:** open checkout as a seeded customer with only a postal code and city. Check that checkout fills those fields and requires a street. With a complete default, check that it is selected and checkout sends `useDefaultAddress: true` and `saveAsDefault: false` without an entered address. Select another address and check that an unchecked save box sends the new delivery address with both booleans set to false and leaves the default intact (16–17).
+- **Saving an address:** select a new address and check the save box. Simulate a declined payment and verify that the basket, the form and the existing profile address are retained. Then pay successfully, check that the request sent `saveAsDefault: true`, and reopen checkout in the same session to verify that the new default is selected (16–17, 20, 22).
+- **Address display:** verify that an available order card shows its street, postal code and city without opening the card. Check that the assigned agent still sees them after taking it and that a second agent no longer sees the taken order. Change the customer's default and check that the prior order still uses its original address (29).
+- **Profile lookup failure:** fail `GET /v1/users/me` during checkout while leaving order placement available. Check that checkout shows a message and the entered address can still be used (28).
 - **Errors:** an item made unavailable during checkout gives the `409` message with a link to the menu (23); a removed token gives the login detour with the expired-session message, and logging out and in again shows no such message (25); the API stopped gives the Danish connection message at checkout (27).
+- **Sign out:** put items in the basket, sign out and refresh. Check that the basket is empty, including in another open tab. Sign in as a delivery agent or restaurant user and check that the navigation bar has no basket link (9, 11). Also check that a session expiration still preserves the basket through sign-in (25).
 - **Layout:** mobile and desktop widths, keyboard-only use, and the disabled card fields (10, 18).
 
 ## Out of scope
 
 - Reading orders, order tracking and the `Location` header: #11, Kanban4sem/MTOGO-Backend#18 and #46. #11 has a comment to load the confirmation from the API.
-- Prefilling the delivery address from the customer's details: #14 has a comment.
 - Real payment and card input.
 - Delivery fees, service fees and commission.
 - A frontend test framework.
@@ -95,8 +101,16 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 - **Tests:** `npm run lint` and `npm run build` pass. The basket rules, including which limit stops an add, the reason for a blocked add button and the item count were checked at their boundaries with throwaway Node scripts (not committed). The API side was checked through the dev server's proxy with the request checkout sends: card payment gives `201` with the backend's total and status `PLACED`, the simulated decline `402`, a missing, invalid or logged-out token `401`, a street of 101 characters, postal code `123` and quantity 21 `400`, and a street of 100 characters and quantity 20 `201`. The checks in the browser, the flag switched off or unset, and the `409` for an unavailable menu item, which the API cannot set up, are for the developer to run. The checks that need a non-customer account (behaviours 13 and 26) moved to #9 and #10, since no restaurant or delivery agent account can be made yet.
 - **Follow-up:** #35 puts the profile page behind the same route guard. #9 and #10 have comments with the checks for a restaurant user and a delivery agent. Kanban4sem/MTOGO-Backend#55 seeds data that gives a `409` locally, so the check for behaviour 23 can run.
 
+### Spec 2.0 - 2026-11-22 - #44
+
+- **Built:** Checkout reads the current profile and lets the customer reuse a complete default delivery address, enter an address for one order, or save an entered address after successful payment. Profiles with only a postal code and city supply those fields for manual entry. Delivery agents see the recorded delivery address on available and assigned orders. Explicit sign-out clears the basket, and the navigation bar shows the basket link only to guests and customers.
+- **Deviations:** Checkout sends both booleans explicitly because Jackson rejects missing values for the backend request record's primitive fields. This issue uses the existing `orderingEnabled` flag.
+- **Tests:** The checks above cover the three address requests, legacy profiles, payment decline, existing orders, the agent's view and clearing the basket on sign-out. The developer will run lint and the manual checks against the API.
+- **Follow-up:** None.
+
 ## Changelog
 
-| Version | Date       | Change        | Issue |
-| ------- | ---------- | ------------- | ----- |
-| 1.0     | 2026-11-19 | First version | #8    |
+| Version | Date       | Change                                      | Issue |
+| ------- | ---------- | ------------------------------------------- | ----- |
+| 1.0     | 2026-11-19 | First version                               | #8    |
+| 2.0     | 2026-11-22 | Choose, save and display delivery addresses | #44   |

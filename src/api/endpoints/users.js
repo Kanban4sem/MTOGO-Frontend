@@ -16,8 +16,8 @@ export function loginUser(credentials) {
 	})
 }
 
-export function getCurrentUser() {
-	return client('/users/me')
+export function getCurrentUser(signal) {
+	return client('/users/me', { signal })
 }
 
 export function logoutUser() {

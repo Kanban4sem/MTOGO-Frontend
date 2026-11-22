@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getOrderConfirmationPath } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import { getSignedInUser } from '@/shared/services/userService.js'
 import {
 	PAYMENT_TOKENS,
 	placeOrderFromBasket,
@@ -47,7 +48,7 @@ function getCheckoutFailure(error) {
 	}
 }
 
-function withFieldState(fields, fieldErrors, isSubmitting) {
+function withFieldState(fields, fieldErrors, addressDefaults) {
 	return fields.map((field) =>
 		field.fields
 			? {
@@ -55,13 +56,14 @@ function withFieldState(fields, fieldErrors, isSubmitting) {
 					fields: withFieldState(
 						field.fields,
 						fieldErrors,
-						isSubmitting,
+						addressDefaults,
 					),
 				}
 			: {
 					...field,
 					error: fieldErrors[field.name],
-					disabled: field.disabled || isSubmitting,
+					defaultValue:
+						field.defaultValue ?? addressDefaults?.[field.name],
 				},
 	)
 }
@@ -70,29 +72,64 @@ export function useCheckout() {
 	const navigate = useNavigate()
 	const { basket, emptyBasket } = useBasket()
 	const [fieldErrors, setFieldErrors] = useState({})
+	const [addressRequest, setAddressRequest] = useState(null)
+	const [useNewAddress, setUseNewAddress] = useState(false)
 	const [paymentToken, setPaymentToken] = useState(PAYMENT_TOKENS.CARD)
 	const [failure, setFailure] = useState(null)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	// State only updates on the next render, so a second submit in the same tick needs the ref to be stopped.
 	const isSubmittingRef = useRef(false)
+	const profileAddress = addressRequest?.address
+	const defaultAddress =
+		profileAddress?.isDefault && profileAddress.street?.trim()
+			? profileAddress
+			: null
+	const useDefaultAddress = Boolean(defaultAddress && !useNewAddress)
+	const isAddressLoading = addressRequest === null
+
+	useEffect(() => {
+		const controller = new AbortController()
+		const { signal } = controller
+
+		async function loadProfileAddress() {
+			try {
+				const user = await getSignedInUser(signal)
+				if (!signal.aborted) {
+					setAddressRequest({ address: user.profile?.address })
+				}
+			} catch {
+				if (!signal.aborted) setAddressRequest({ failed: true })
+			}
+		}
+
+		void loadProfileAddress()
+		return () => controller.abort()
+	}, [])
 
 	async function submitOrder(event) {
 		event.preventDefault()
-		if (isSubmittingRef.current) return
-		const form = event.currentTarget
-		const formData = new FormData(form)
-		const deliveryAddress = {
-			street: formData.get('street').trim(),
-			postalCode: formData.get('postalCode').trim(),
-			city: formData.get('city').trim(),
-		}
-		const errors = validateDeliveryAddress(deliveryAddress)
-		setFieldErrors(errors)
+		if (isSubmittingRef.current || isAddressLoading) return
 		setFailure(null)
-		const firstInvalidField = Object.keys(errors)[0]
-		if (firstInvalidField) {
-			form.elements.namedItem(firstInvalidField)?.focus()
-			return
+		let addressSelection = { useDefaultAddress: true }
+		if (!useDefaultAddress) {
+			const form = event.currentTarget
+			const formData = new FormData(form)
+			const deliveryAddress = {
+				street: formData.get('street').trim(),
+				postalCode: formData.get('postalCode').trim(),
+				city: formData.get('city').trim(),
+			}
+			const errors = validateDeliveryAddress(deliveryAddress)
+			setFieldErrors(errors)
+			const firstInvalidField = Object.keys(errors)[0]
+			if (firstInvalidField) {
+				form.elements.namedItem(firstInvalidField)?.focus()
+				return
+			}
+			addressSelection = { deliveryAddress }
+			if (formData.has('saveAsDefault')) {
+				addressSelection.saveAsDefault = true
+			}
 		}
 
 		isSubmittingRef.current = true
@@ -100,7 +137,7 @@ export function useCheckout() {
 		try {
 			const order = await placeOrderFromBasket(
 				basket,
-				deliveryAddress,
+				addressSelection,
 				paymentToken,
 			)
 			navigate(getOrderConfirmationPath(order.id), {
@@ -115,10 +152,15 @@ export function useCheckout() {
 	}
 
 	return {
+		defaultAddress,
+		useDefaultAddress,
+		setUseNewAddress,
+		isAddressLoading,
+		addressLoadFailed: addressRequest?.failed,
 		deliveryAddressFields: withFieldState(
 			DELIVERY_ADDRESS_FIELDS,
 			fieldErrors,
-			isSubmitting,
+			defaultAddress ? null : profileAddress,
 		),
 		paymentToken,
 		setPaymentToken,

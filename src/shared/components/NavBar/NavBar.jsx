@@ -44,6 +44,11 @@ function NavBar() {
 	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
 	const orderingEnabled = isEnabled('orderingEnabled')
+	const showBasket =
+		orderingEnabled &&
+		!isLoading &&
+		(!isAuthenticated || isCustomer) &&
+		itemCount > 0
 
 	return (
 		<header className={styles.header}>
@@ -61,7 +66,7 @@ function NavBar() {
 					</li>
 				</ul>
 				<div className={styles.actions}>
-					{orderingEnabled && itemCount > 0 && (
+					{showBasket && (
 						<Link
 							className={styles.link}
 							to={CHECKOUT_PATH}

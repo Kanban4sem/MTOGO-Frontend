@@ -10,8 +10,8 @@ export function registerAccount(registration) {
 	return registerUser(registration)
 }
 
-export function getSignedInUser() {
-	return getCurrentUser()
+export function getSignedInUser(signal) {
+	return getCurrentUser(signal)
 }
 
 export async function signIn(credentials) {

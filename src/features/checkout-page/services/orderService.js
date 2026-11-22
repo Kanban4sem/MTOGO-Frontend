@@ -7,13 +7,16 @@ export const PAYMENT_TOKENS = {
 }
 
 // Prices and the country are never sent: the backend sets them when the order is placed.
-export function placeOrderFromBasket(basket, deliveryAddress, paymentToken) {
+export function placeOrderFromBasket(basket, addressSelection, paymentToken) {
 	return placeOrder({
 		lines: basket.lines.map(({ menuItemId, quantity }) => ({
 			menuItemId,
 			quantity,
 		})),
-		deliveryAddress,
+		// Jackson requires both primitive boolean fields on the request record.
+		useDefaultAddress: false,
+		saveAsDefault: false,
+		...addressSelection,
 		paymentToken,
 	})
 }

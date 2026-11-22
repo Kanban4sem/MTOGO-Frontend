@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BasketContext } from '@/shared/context/BasketContext.jsx'
+import { AUTH_SESSION_CLEARED } from '@/shared/utils/authSession.js'
 import {
 	EMPTY_BASKET,
 	addMenuItem,
@@ -42,6 +43,30 @@ export function BasketProvider({ children }) {
 	useEffect(() => {
 		storeBasket(basket)
 	}, [basket])
+
+	useEffect(() => {
+		function clearBasketOnLogout(event) {
+			if (event.detail.expired) return
+			storeBasket(EMPTY_BASKET)
+			setBasket(EMPTY_BASKET)
+		}
+
+		function clearBasketAcrossTabs(event) {
+			if (event.key === BASKET_KEY && event.newValue === null) {
+				setBasket(EMPTY_BASKET)
+			}
+		}
+
+		window.addEventListener(AUTH_SESSION_CLEARED, clearBasketOnLogout)
+		window.addEventListener('storage', clearBasketAcrossTabs)
+		return () => {
+			window.removeEventListener(
+				AUTH_SESSION_CLEARED,
+				clearBasketOnLogout,
+			)
+			window.removeEventListener('storage', clearBasketAcrossTabs)
+		}
+	}, [])
 
 	return (
 		<BasketContext.Provider
