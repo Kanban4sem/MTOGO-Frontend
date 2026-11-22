@@ -3,7 +3,6 @@ import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
-import styles from './RestaurantProfilePage.module.css'
 
 export default function RestaurantProfilePage() {
 	const { user } = useAuth()
@@ -24,7 +23,7 @@ export default function RestaurantProfilePage() {
 				}
 			>
 				<section
-					className={styles.page}
+					className="restaurantProfilePage"
 					aria-labelledby="restaurant-profile-title"
 				>
 					<h1 id="restaurant-profile-title">Virksomhedsprofil</h1>

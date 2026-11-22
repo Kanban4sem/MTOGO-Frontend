@@ -1,18 +1,17 @@
 import { Link, Outlet } from 'react-router-dom'
 import NavBar from '@/shared/components/NavBar/NavBar.jsx'
-import styles from './HomeLayout.module.css'
 
 export default function HomeLayout({ children }) {
 	return (
 		<>
-			<a className={styles.skipLink} href="#main">
+			<a className="homeSkipLink" href="#main">
 				Gå til indhold
 			</a>
 			<NavBar />
-			<div className={styles.layout}>
+			<div className="homeLayout">
 				<main id="main">{children ?? <Outlet />}</main>
-				<footer className={styles.footer}>
-					<Link className={styles.footerBrand} to="/">
+				<footer className="homeFooter">
+					<Link className="homeFooterBrand" to="/">
 						MTOGO<span>.</span>
 					</Link>
 					<p>God mad. Gode øjeblikke.</p>

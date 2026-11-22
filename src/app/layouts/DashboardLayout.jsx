@@ -4,7 +4,6 @@ import BrandLink from '@/shared/components/BrandLink/BrandLink.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
 import { SubNavLinks } from '@/shared/components/SubNavBar/SubNavBar.jsx'
 import { useAuth } from '@/shared/hooks/useAuth.js'
-import styles from './DashboardLayout.module.css'
 
 export default function DashboardLayout({ label, links, children }) {
 	const { user, logout } = useAuth()
@@ -26,26 +25,26 @@ export default function DashboardLayout({ label, links, children }) {
 	}
 
 	return (
-		<div className={styles.layout}>
-			<aside className={styles.sidebar}>
-				<div className={styles.brand}>
+		<div className="dashboardLayout">
+			<aside className="dashboardSidebar">
+				<div className="dashboardBrand">
 					<BrandLink />
 				</div>
-				<div className={styles.identity}>
-					<p className={styles.title}>{label}</p>
-					{name && <p className={styles.name}>{name}</p>}
+				<div className="dashboardIdentity">
+					<p className="dashboardTitle">{label}</p>
+					{name && <p className="dashboardName">{name}</p>}
 				</div>
-				<hr className={styles.divider} />
+				<hr className="dashboardDivider" />
 				<SubNavLinks label={label} links={links} />
 				<Button
-					className={styles.logout}
+					className="dashboardLogout"
 					label={isLoggingOut ? 'Logger ud…' : 'Log ud'}
 					variant="secondary"
 					onClick={leaveDashboard}
 					disabled={isLoggingOut}
 				/>
 			</aside>
-			<main className={styles.content}>{children}</main>
+			<main className="dashboardContent">{children}</main>
 		</div>
 	)
 }

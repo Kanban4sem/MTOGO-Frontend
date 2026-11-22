@@ -191,6 +191,163 @@ a {
 	margin-bottom: 1rem;
 }
 
+.homeLayout {
+	max-width: calc(var(--page-width) + var(--page-gutter) * 2);
+	margin: 0 auto;
+	padding: 0 var(--page-gutter);
+}
+
+.homeSkipLink {
+	position: fixed;
+	top: -100px;
+	z-index: 10;
+	padding: 14px 20px;
+	background: var(--color-surface);
+	border-radius: var(--mtogo-border-radius);
+}
+
+.homeSkipLink:focus {
+	top: 12px;
+}
+
+.homeFooter {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+	padding: 35px 0;
+	margin-top: 80px;
+	border-top: 1px solid var(--color-border);
+}
+
+.homeFooterBrand {
+	display: inline-flex;
+	align-items: center;
+	color: var(--color-text);
+	text-decoration: none;
+	font-size: 25px;
+	font-weight: 900;
+	letter-spacing: -1px;
+}
+
+.homeFooterBrand span {
+	color: var(--color-accent);
+}
+
+.homeFooter p {
+	margin: 0;
+	font-size: 14px;
+	color: var(--color-muted);
+}
+
+.homeFooter > span {
+	margin-left: auto;
+	color: var(--color-muted);
+	font-size: 12px;
+}
+
+@media (max-width: 600px) {
+	.homeFooter {
+		flex-wrap: wrap;
+		gap: 14px 24px;
+	}
+
+	.homeFooter > span {
+		flex-basis: 100%;
+		margin-left: 0;
+	}
+}
+
+.dashboardLayout {
+	display: grid;
+	grid-template-columns: 15rem minmax(0, 1fr);
+	min-height: 100dvh;
+}
+
+.dashboardSidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1.25rem;
+	border-inline-end: 1px solid var(--mtogo-border);
+	background: var(--mtogo-surface);
+}
+
+.dashboardBrand {
+	align-self: flex-start;
+}
+
+.dashboardIdentity {
+	overflow-wrap: anywhere;
+}
+
+.dashboardTitle {
+	margin: 0;
+	font-size: 1.125rem;
+	font-weight: 700;
+}
+
+.dashboardName {
+	margin: 0.25rem 0 0;
+	color: var(--mtogo-text-secondary);
+}
+
+.dashboardDivider {
+	width: 100%;
+	margin: 0;
+	border: 0;
+	border-top: 1px solid var(--mtogo-border);
+}
+
+.dashboardLogout {
+	margin-top: auto;
+}
+
+.dashboardContent {
+	width: 100%;
+	max-width: var(--mtogo-dashboard-content-width);
+	padding: clamp(1rem, 4vw, 3rem);
+}
+
+@media (max-width: 42rem) {
+	.dashboardLayout {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: auto 1fr;
+	}
+
+	.dashboardSidebar {
+		border-inline-end: 0;
+		border-bottom: 1px solid var(--mtogo-border);
+	}
+
+	.dashboardLogout {
+		align-self: start;
+	}
+}
+
+.restaurantProfilePage {
+	max-width: 48rem;
+	margin-inline: auto;
+	padding-block: clamp(1.5rem, 5vw, 3.5rem);
+}
+
+.restaurantProfilePage dl {
+	display: grid;
+	gap: 0.25rem;
+	padding: 1rem;
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-surface);
+}
+
+.restaurantProfilePage dt {
+	font-weight: 600;
+}
+
+.restaurantProfilePage dd {
+	margin: 0 0 0.5rem;
+	overflow-wrap: anywhere;
+}
+
 :root {
 	font-family: "Inter", "Segoe UI", sans-serif;
 	color: #25251f;

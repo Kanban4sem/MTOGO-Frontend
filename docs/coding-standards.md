@@ -1,6 +1,6 @@
 # Coding Standards
 
-**Version:** 4.1 · **Date:** 2026-11-20
+**Version:** 5.0 · **Date:** 2026-11-22
 
 ## Overview
 
@@ -72,6 +72,7 @@ src/
 
 - **Components render, services fetch.** Components never call `fetch`. They use a service, `<feature>Service.js`, which uses `client.js`. A service used by one page lives in that page's `services/`, and one used by more than one page lives in `shared/services/`.
 - **Features do not import from each other.** Anything used by more than one feature moves to `shared/`.
+- **Layout and route-level page styles** for `src/app/layouts/` and `src/app/pages/` belong in `src/shared/styles/globals.css`. Use class names that identify the layout or page. Keep component-specific styles in co-located CSS modules under `src/features/` and `src/shared/components/`.
 - Use absolute imports with the `@/` prefix.
 - The OpenAPI specification is the contract between the repositories (see [API documentation](#api-documentation)).
 
@@ -145,3 +146,4 @@ return isEnabled("authEnabled") && <LoginButton />;
 | 3.0     | 2026-11-12 | The tool configuration replaces `.editorconfig`                           | #23      |
 | 4.0     | 2026-11-16 | Tests for changes to behaviour, feature flag steps, each rule stated once | #26      |
 | 4.1     | 2026-11-20 | Where page folders and services go                                        | #36      |
+| 5.0     | 2026-11-22 | Layout and route-level page styles belong in globals.css                  | #42      |
