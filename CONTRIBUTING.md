@@ -1,6 +1,6 @@
 # Contributing
 
-**Version:** 5.1 · **Date:** 2026-11-19
+**Version:** 6.0 · **Date:** 2026-11-24
 
 MTOGO is developed with Kanban and trunk-based development using [TakT](https://github.com/devx-cafe/gh-tt). Every change starts as an issue and ends as one commit on `main`.
 
@@ -91,12 +91,15 @@ At least two people agree on every feature before it is built. The check is on t
 
 The checks are defined in `.insitu.yml` and run the same way locally and in CI.
 
-| Gate                         | Runs                                        | Checks                                          |
-| ---------------------------- | ------------------------------------------- | ----------------------------------------------- |
-| `trunk-worthy`               | Pre-commit hook, issue branches, ready flow | Spelling, Markdown, formatting, build and tests |
-| SonarQube Cloud quality gate | Ready flow                                  | Code quality and test coverage on new code      |
+| Gate                         | Runs                        | Checks                                          |
+| ---------------------------- | --------------------------- | ----------------------------------------------- |
+| `trunk-worthy`               | Pre-commit hook, ready flow | Spelling, Markdown, formatting, build and tests |
+| `wrapup`                     | Issue branches              | Spelling, Markdown, formatting                  |
+| SonarQube Cloud quality gate | Ready flow                  | Code quality and test coverage on new code      |
 
 The quality gate thresholds are configured in SonarQube Cloud, not in this document.
+
+The build and tests run once per wrapup, in the pre-commit hook, as TakT prescribes. The wrapup workflow on issue branches repeats only the fast checks.
 
 - Fix formatting automatically with `gh insitu run fix-all`.
 - Add correct words that the spell checker does not know to `.dict/repo.dictionary`.
@@ -160,3 +163,4 @@ These rules apply to the documents below. A change to a document shared with [MT
 | 4.2     | 2026-11-16 | Flag steps move to the coding standards, repeated rules link to one place | Kanban4sem/MTOGO-Backend#39 |
 | 5.0     | 2026-11-16 | TakT's work labels: a bug fix is `ad hoc` with Type Bug                   | Kanban4sem/MTOGO-Backend#47 |
 | 5.1     | 2026-11-19 | The frontend copy names this repository as the frontend                   | #33                         |
+| 6.0     | 2026-11-24 | Issue branches run the fast checks, the build and tests run in the hook   | #57                         |

@@ -129,6 +129,17 @@ waves:
       - repo-gitconfig
       - install-npm-tools
 
+  # Run by the wrapup workflow on issue branches. The pre-commit hook has already
+  # run trunk-worthy, frontend lint and build included, so the workflow repeats
+  # only the fast checks and gh tt wrapup builds the frontend once.
+  - id: wrapup
+    name: Fast checks on issue branches
+    parallel: true
+    checks:
+      - cspell
+      - markdownlint
+      - prettier
+
   - id: trunk-worthy
     name: Minimum quality checks before commit
     parallel: true
