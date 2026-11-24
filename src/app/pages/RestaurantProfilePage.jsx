@@ -1,15 +1,12 @@
 import { Helmet } from 'react-helmet-async'
 import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
+import AccountDetails from '@/shared/components/AccountDetails/AccountDetails.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 
 export default function RestaurantProfilePage() {
 	const { user } = useAuth()
-	const profile = user?.profile
-	const name = [profile?.firstName, profile?.lastName]
-		.filter(Boolean)
-		.join(' ')
 
 	return (
 		<>
@@ -23,26 +20,11 @@ export default function RestaurantProfilePage() {
 				}
 			>
 				<section
-					className="restaurantProfilePage"
+					className="profilePage"
 					aria-labelledby="restaurant-profile-title"
 				>
 					<h1 id="restaurant-profile-title">Virksomhedsprofil</h1>
-					<dl>
-						{name && (
-							<>
-								<dt>Navn</dt>
-								<dd>{name}</dd>
-							</>
-						)}
-						<dt>E-mail</dt>
-						<dd>{user?.email}</dd>
-						{profile?.phoneNumber && (
-							<>
-								<dt>Telefon</dt>
-								<dd>{profile.phoneNumber}</dd>
-							</>
-						)}
-					</dl>
+					<AccountDetails user={user} />
 				</section>
 			</ProtectedRoutes>
 		</>
