@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import styles from './Dropdown.module.css'
+import styles from '@/shared/components/Dropdown/Dropdown.module.css'
 
 export default function Dropdown({ label, links, buttonClassName }) {
 	const listId = useId()

@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
-import { REGISTER_STEPS } from './registerFields.js'
-import { useRegister } from './Register.hooks.js'
-import styles from './Register.module.css'
+import { REGISTER_STEPS } from '@/features/register-page/Register/registerFields.js'
+import { useRegister } from '@/features/register-page/Register/Register.hooks.js'
+import styles from '@/features/register-page/Register/Register.module.css'
 
 function Register() {
 	const {

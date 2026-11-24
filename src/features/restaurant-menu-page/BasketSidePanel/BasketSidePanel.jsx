@@ -3,7 +3,7 @@ import BasketSummary from '@/shared/components/BasketSummary/BasketSummary.jsx'
 import { CHECKOUT_PATH } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { BASKET_LIMITS_MESSAGE } from '@/shared/utils/basketMessages.js'
-import styles from './BasketSidePanel.module.css'
+import styles from '@/features/restaurant-menu-page/BasketSidePanel/BasketSidePanel.module.css'
 
 export default function BasketSidePanel() {
 	const { isEmpty } = useBasket()

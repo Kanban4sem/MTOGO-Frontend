@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { registerAccount } from '@/shared/services/userService.js'
 import { getAuthErrorMessage } from '@/shared/utils/authErrors.js'
-import { REGISTER_STEPS } from './registerFields.js'
+import { REGISTER_STEPS } from '@/features/register-page/Register/registerFields.js'
 
 export function useRegister() {
 	const navigate = useNavigate()

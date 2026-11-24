@@ -1,7 +1,3 @@
-// Pathing
-// _______
-// src/app/pages/LoginPage.jsx
-
 import AuthLayout from '@/app/layouts/AuthLayout.jsx'
 import { LoginCard } from '@/features/login-page/index.jsx'
 

@@ -2,7 +2,7 @@ import { useBasket } from '@/shared/hooks/useBasket.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { MAX_QUANTITY } from '@/shared/utils/basket.js'
 import { BASKET_LIMITS_MESSAGE } from '@/shared/utils/basketMessages.js'
-import styles from './BasketSummary.module.css'
+import styles from '@/shared/components/BasketSummary/BasketSummary.module.css'
 
 export default function BasketSummary({
 	totalLabel,

@@ -1,9 +1,5 @@
-// Pathing
-// _______
-// src/shared/components/Input/Input.jsx
-
 import { useId } from 'react'
-import styles from './Input.module.css'
+import styles from '@/shared/components/Input/Input.module.css'
 
 function Input({ label, size = 'm', id, className, error, ...options }) {
 	const generatedId = useId()

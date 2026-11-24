@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import Button from '@/shared/components/Button/Button.jsx'
 import { useBasket } from '@/shared/hooks/useBasket.js'
-import styles from './AddToBasketButton.module.css'
+import styles from '@/features/restaurant-menu-page/AddToBasketButton/AddToBasketButton.module.css'
 
 export default function AddToBasketButton({ restaurantId, menuItem, onAdd }) {
 	const { getQuantity, getAddBlockedReason, isFromOtherRestaurant } =

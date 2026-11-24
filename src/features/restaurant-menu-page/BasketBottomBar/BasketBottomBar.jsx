@@ -6,7 +6,7 @@ import {
 	formatItemCount,
 } from '@/shared/utils/basketMessages.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import styles from './BasketBottomBar.module.css'
+import styles from '@/features/restaurant-menu-page/BasketBottomBar/BasketBottomBar.module.css'
 
 export default function BasketBottomBar() {
 	const { isEmpty, itemCount, total, limitMessage } = useBasket()

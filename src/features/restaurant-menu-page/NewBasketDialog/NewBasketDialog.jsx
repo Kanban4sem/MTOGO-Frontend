@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import Button from '@/shared/components/Button/Button.jsx'
 import { useBasket } from '@/shared/hooks/useBasket.js'
-import styles from './NewBasketDialog.module.css'
+import styles from '@/features/restaurant-menu-page/NewBasketDialog/NewBasketDialog.module.css'
 
 export default function NewBasketDialog({ menuItem, onConfirm, onCancel }) {
 	const { basket } = useBasket()

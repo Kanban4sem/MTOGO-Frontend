@@ -1,10 +1,6 @@
-// Pathing
-// _______
-// src/shared/components/FormFields/FormFields.jsx
-
 import Input from '@/shared/components/Input/Input.jsx'
 import Select from '@/shared/components/Select/Select.jsx'
-import styles from './FormFields.module.css'
+import styles from '@/shared/components/FormFields/FormFields.module.css'
 
 function FormFields({ fields, size = 'm' }) {
 	return fields.map(({ name, fields: children, legend, ...options }) => {

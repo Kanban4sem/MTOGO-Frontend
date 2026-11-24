@@ -11,7 +11,7 @@ import {
 	useMenuBasket,
 	useRestaurantMenu,
 } from '@/features/restaurant-menu-page/RestaurantMenu/RestaurantMenu.hooks.js'
-import styles from './RestaurantMenu.module.css'
+import styles from '@/features/restaurant-menu-page/RestaurantMenu/RestaurantMenu.module.css'
 
 export default function RestaurantMenu({ restaurantId }) {
 	const { restaurant, menus, isLoading, error } =

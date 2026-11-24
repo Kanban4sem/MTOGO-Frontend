@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
-import { LOGIN_FIELDS } from './loginFields.js'
-import { useLogin } from './Login.hooks.js'
-import styles from './Login.module.css'
+import { LOGIN_FIELDS } from '@/features/login-page/Login/loginFields.js'
+import { useLogin } from '@/features/login-page/Login/Login.hooks.js'
+import styles from '@/features/login-page/Login/Login.module.css'
 
 function Login() {
 	const {

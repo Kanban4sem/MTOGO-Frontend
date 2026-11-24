@@ -1,5 +1,5 @@
 import { Link, matchPath, useLocation } from 'react-router-dom'
-import styles from './SubNavBar.module.css'
+import styles from '@/shared/components/SubNavBar/SubNavBar.module.css'
 
 export function SubNavLinks({ label, links }) {
 	const { pathname } = useLocation()

@@ -1,4 +1,4 @@
-import styles from './LanguageIndicator.module.css'
+import styles from '@/shared/components/LanguageIndicator/LanguageIndicator.module.css'
 
 function LanguageIndicator() {
 	return (

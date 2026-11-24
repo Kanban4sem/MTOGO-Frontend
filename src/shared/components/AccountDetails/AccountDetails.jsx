@@ -1,4 +1,4 @@
-import styles from './AccountDetails.module.css'
+import styles from '@/shared/components/AccountDetails/AccountDetails.module.css'
 
 export default function AccountDetails({ user }) {
 	const profile = user?.profile

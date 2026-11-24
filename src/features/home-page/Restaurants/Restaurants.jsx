@@ -3,8 +3,8 @@ import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { getRestaurantMenuPath } from '@/shared/data/paths.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import { useRestaurants } from './Restaurants.hooks.js'
-import styles from './Restaurants.module.css'
+import { useRestaurants } from '@/features/home-page/Restaurants/Restaurants.hooks.js'
+import styles from '@/features/home-page/Restaurants/Restaurants.module.css'
 
 export default function Restaurants() {
 	const { restaurants, isLoading, error } = useRestaurants()

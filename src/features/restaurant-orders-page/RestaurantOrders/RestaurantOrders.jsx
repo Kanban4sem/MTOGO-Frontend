@@ -4,8 +4,8 @@ import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
 import { getOrderStatusName } from '@/shared/data/orderStatus.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import { useRestaurantOrders } from './RestaurantOrders.hooks.js'
-import styles from './RestaurantOrders.module.css'
+import { useRestaurantOrders } from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.hooks.js'
+import styles from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.module.css'
 
 const FILTERS = [
 	{ value: 'all', label: 'Nyeste' },

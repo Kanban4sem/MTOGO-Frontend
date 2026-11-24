@@ -1,5 +1,1 @@
-// Pathing
-// _______
-// src/features/login-page/index.jsx
-
-export { default as LoginCard } from './Login/Login.jsx'
+export { default as LoginCard } from '@/features/login-page/Login/Login.jsx'

@@ -18,4 +18,20 @@ export default defineConfig([
 			parserOptions: { ecmaFeatures: { jsx: true } },
 		},
 	},
+	{
+		files: ['src/**/*.{js,jsx}'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^\\.',
+							message: 'Use absolute imports with the @/ prefix.',
+						},
+					],
+				},
+			],
+		},
+	},
 ])

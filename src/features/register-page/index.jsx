@@ -1,5 +1,1 @@
-// Pathing
-// _______
-// src/features/register-page/index.jsx
-
-export { default as RegisterCard } from './Register/Register.jsx'
+export { default as RegisterCard } from '@/features/register-page/Register/Register.jsx'

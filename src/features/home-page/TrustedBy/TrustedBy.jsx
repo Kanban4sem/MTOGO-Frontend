@@ -1,4 +1,4 @@
-import styles from './TrustedBy.module.css'
+import styles from '@/features/home-page/TrustedBy/TrustedBy.module.css'
 
 const companies = [
 	'nord.',

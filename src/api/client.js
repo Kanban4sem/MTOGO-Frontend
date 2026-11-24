@@ -1,9 +1,5 @@
 import { clearAuthSession } from '@/shared/utils/authSession.js'
 
-// Pathing
-// _______
-// src/api/client.js
-
 // Relative, so the same build works locally (Vite proxy) and on the server (reverse proxy)
 const BASE_URL = '/v1'
 
@@ -16,12 +12,9 @@ function getErrorMessage(status, data) {
 
 export async function client(endpoint, options = {}) {
 	const { authenticated = true, ...requestOptions } = options
-	// ---- SETUP ----------------------------------------------------------------------------------------------------------
 
 	const url = `${BASE_URL}${endpoint}`
 	const token = authenticated ? localStorage.getItem('access_token') : null
-
-	// ---- CONFIG --------------------------------------------------------------------------------------------------------
 
 	const config = {
 		...requestOptions,
@@ -33,8 +26,6 @@ export async function client(endpoint, options = {}) {
 			...(requestOptions.headers || {}),
 		},
 	}
-
-	// ---- REQUEST -------------------------------------------------------------------------------------------------------
 
 	let response
 	try {
@@ -48,8 +39,6 @@ export async function client(endpoint, options = {}) {
 	}
 
 	const data = await response.json().catch(() => null)
-
-	// ---- ERROR HANDLE --------------------------------------------------------------------------------------------------
 
 	if (!response.ok) {
 		// The one place that detects a 401: the session has expired, and ProtectedRoutes sends the user to login.

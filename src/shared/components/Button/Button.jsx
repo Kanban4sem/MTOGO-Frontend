@@ -1,8 +1,4 @@
-// Pathing
-// _______
-// src/shared/components/Button/Button.jsx
-
-import styles from './Button.module.css'
+import styles from '@/shared/components/Button/Button.module.css'
 
 function Button({
 	label,

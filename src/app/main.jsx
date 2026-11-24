@@ -4,7 +4,7 @@ import '@/shared/styles/globals.css'
 import { FeatureFlagsProvider } from '@/shared/context/FeatureFlagsProvider.jsx'
 import { AuthProvider } from '@/shared/context/AuthProvider.jsx'
 import { BasketProvider } from '@/shared/context/BasketProvider.jsx'
-import App from './App.jsx'
+import App from '@/app/App.jsx'
 
 createRoot(document.getElementById('root')).render(
 	<StrictMode>

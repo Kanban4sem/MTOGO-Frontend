@@ -3,7 +3,7 @@ import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { getCountryName } from '@/shared/data/countries.js'
 import { getOrderStatusName } from '@/shared/data/orderStatus.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import styles from './OrderConfirmation.module.css'
+import styles from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.module.css'
 
 export default function OrderConfirmation({ orderId }) {
 	const { state } = useLocation()

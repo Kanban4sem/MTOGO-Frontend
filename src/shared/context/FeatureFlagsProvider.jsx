@@ -1,7 +1,3 @@
-// Pathing
-// _______
-// src/shared/context/FeatureFlagsProvider.jsx
-
 import { useEffect, useState } from 'react'
 import { getFeatureFlags } from '@/api/endpoints/featureFlags.js'
 import { FeatureFlagsContext } from '@/shared/context/FeatureFlagsContext.jsx'

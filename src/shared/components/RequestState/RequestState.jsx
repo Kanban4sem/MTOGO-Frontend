@@ -1,4 +1,4 @@
-import styles from './RequestState.module.css'
+import styles from '@/shared/components/RequestState/RequestState.module.css'
 
 export default function RequestState({ title, children, isLoading = false }) {
 	return (

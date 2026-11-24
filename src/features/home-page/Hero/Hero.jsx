@@ -1,5 +1,5 @@
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
-import styles from './Hero.module.css'
+import styles from '@/features/home-page/Hero/Hero.module.css'
 
 export default function Hero() {
 	return (

@@ -3,8 +3,8 @@ import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
 import { getOrderStatusName } from '@/shared/data/orderStatus.js'
-import { useDeliveryOrders } from './DeliveryOrders.hooks.js'
-import styles from './DeliveryOrders.module.css'
+import { useDeliveryOrders } from '@/features/delivery-orders-page/DeliveryOrders/DeliveryOrders.hooks.js'
+import styles from '@/features/delivery-orders-page/DeliveryOrders/DeliveryOrders.module.css'
 
 const FILTERS = [
 	{ value: 'active', label: 'Aktive' },

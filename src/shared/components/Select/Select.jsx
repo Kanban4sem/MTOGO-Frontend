@@ -1,9 +1,5 @@
-// Pathing
-// _______
-// src/shared/components/Select/Select.jsx
-
 import { useId } from 'react'
-import styles from './Select.module.css'
+import styles from '@/shared/components/Select/Select.module.css'
 
 function Select({ label, size = 'm', options = [], id, className, ...props }) {
 	const generatedId = useId()

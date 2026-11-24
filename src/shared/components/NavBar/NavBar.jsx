@@ -13,8 +13,8 @@ import {
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatItemCount } from '@/shared/utils/basketMessages.js'
-import { useNavBar } from './NavBar.hooks.js'
-import styles from './NavBar.module.css'
+import { useNavBar } from '@/shared/components/NavBar/NavBar.hooks.js'
+import styles from '@/shared/components/NavBar/NavBar.module.css'
 
 const PROFILE_LINKS = [
 	{ label: 'Profiloversigt', to: '/profile' },

@@ -1,5 +1,5 @@
 import { Helmet, HelmetProvider } from 'react-helmet-async'
-import AppRoutes from './routes/AppRoutes.jsx'
+import AppRoutes from '@/app/routes/AppRoutes.jsx'
 
 function App() {
 	return (

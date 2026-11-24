@@ -14,7 +14,7 @@ import {
 	CARD_FIELDS,
 	PAYMENT_OPTIONS,
 } from '@/features/checkout-page/Checkout/checkoutFields.js'
-import styles from './Checkout.module.css'
+import styles from '@/features/checkout-page/Checkout/Checkout.module.css'
 
 export default function Checkout() {
 	const { user } = useAuth()

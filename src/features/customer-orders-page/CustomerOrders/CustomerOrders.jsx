@@ -6,8 +6,8 @@ import {
 	getCustomerOrderPath,
 } from '@/shared/data/paths.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
-import { useCustomerOrders } from './CustomerOrders.hooks.js'
-import styles from './CustomerOrders.module.css'
+import { useCustomerOrders } from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.hooks.js'
+import styles from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.module.css'
 
 const orderDate = new Intl.DateTimeFormat('da-DK', {
 	dateStyle: 'long',
