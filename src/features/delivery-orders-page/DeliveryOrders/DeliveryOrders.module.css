@@ -79,6 +79,34 @@
 .details {
 	padding: 1rem;
 	border-top: 1px solid var(--mtogo-border);
+	overflow-wrap: anywhere;
+}
+
+.lines {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.lines li,
+.total {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-block: 0.5rem;
+}
+
+.lines li {
+	border-bottom: 1px solid var(--mtogo-border);
+}
+
+.lines li > span:last-child,
+.total strong {
+	white-space: nowrap;
+}
+
+.total {
+	margin: 0 0 0.5rem;
 }
 
 .error,

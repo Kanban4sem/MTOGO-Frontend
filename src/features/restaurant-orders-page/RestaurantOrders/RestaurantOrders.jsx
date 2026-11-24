@@ -2,27 +2,25 @@ import { useState } from 'react'
 import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
-import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { useRestaurantOrders } from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.hooks.js'
 import styles from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.module.css'
 
-const FILTERS = [
-	{ value: 'all', label: 'Nyeste' },
-	{ value: 'PLACED', label: 'Bestilt' },
-	{ value: 'ACCEPTED', label: 'Accepteret' },
-	{ value: 'READY', label: 'Klar' },
-	{ value: 'REJECTED', label: 'Afvist' },
-	{ value: 'PICKED_UP', label: 'Afhentet' },
-	{ value: 'DELIVERED', label: 'Leveret' },
-]
+const ALL_ORDERS = { value: 'all', label: 'Nyeste' }
 
 const ACTIONS = {
-	PLACED: [
-		{ status: 'ACCEPTED', label: 'Acceptér' },
-		{ status: 'REJECTED', label: 'Afvis', variant: 'secondary' },
+	[ORDER_STATUS.PLACED]: [
+		{ status: ORDER_STATUS.ACCEPTED, label: 'Acceptér' },
+		{
+			status: ORDER_STATUS.REJECTED,
+			label: 'Afvis',
+			variant: 'secondary',
+		},
 	],
-	ACCEPTED: [{ status: 'READY', label: 'Markér som klar' }],
+	[ORDER_STATUS.ACCEPTED]: [
+		{ status: ORDER_STATUS.READY, label: 'Markér som klar' },
+	],
 }
 
 const ORDER_DATE = new Intl.DateTimeFormat('da-DK', {
@@ -53,7 +51,7 @@ function OrderCard({ order, isOpen, onOpen, pendingOrderId, onStatusChange }) {
 						</time>
 					</span>
 					<span className={styles.status}>
-						{getOrderStatusName(order.status, order.statusName)}
+						{order.statusName.danish}
 					</span>
 					<span className={styles.chevron} aria-hidden="true" />
 				</button>
@@ -100,7 +98,7 @@ function OrderCard({ order, isOpen, onOpen, pendingOrderId, onStatusChange }) {
 }
 
 export default function RestaurantOrders() {
-	const [filter, setFilter] = useState('all')
+	const [filter, setFilter] = useState(ALL_ORDERS.value)
 	const [selectedOrderId, setSelectedOrderId] = useState(null)
 	const {
 		orders = [],
@@ -112,10 +110,20 @@ export default function RestaurantOrders() {
 		changeStatus,
 		refreshOrders,
 	} = useRestaurantOrders()
+	const statusNames = new Map(
+		orders.map(({ status, statusName }) => [status, statusName.danish]),
+	)
+	const filters = [
+		ALL_ORDERS,
+		...Object.values(ORDER_STATUS)
+			.filter((status) => statusNames.has(status))
+			.map((value) => ({ value, label: statusNames.get(value) })),
+	]
+	const activeFilter = statusNames.has(filter) ? filter : ALL_ORDERS.value
 	const visibleOrders =
-		filter === 'all'
+		activeFilter === ALL_ORDERS.value
 			? orders
-			: orders.filter((order) => order.status === filter)
+			: orders.filter((order) => order.status === activeFilter)
 	const openOrderId =
 		visibleOrders.find((order) => order.id === selectedOrderId)?.id ??
 		visibleOrders[0]?.id
@@ -142,8 +150,8 @@ export default function RestaurantOrders() {
 			</div>
 			<SubNavBar
 				label="Filtrér efter status"
-				options={FILTERS}
-				selected={filter}
+				options={filters}
+				selected={activeFilter}
 				onSelect={selectFilter}
 			/>
 			{updateError && (
@@ -155,10 +163,7 @@ export default function RestaurantOrders() {
 				{updatedOrder && (
 					<p className={styles.notice}>
 						Ordre nr. {updatedOrder.id} ·{' '}
-						{getOrderStatusName(
-							updatedOrder.status,
-							updatedOrder.statusName,
-						)}
+						{updatedOrder.statusName.danish}
 					</p>
 				)}
 			</div>
@@ -169,13 +174,7 @@ export default function RestaurantOrders() {
 					{error.message}
 				</RequestState>
 			) : visibleOrders.length === 0 ? (
-				<RequestState
-					title={
-						filter === 'all'
-							? 'Restauranten har ingen ordrer endnu'
-							: 'Ingen ordrer med denne status'
-					}
-				/>
+				<RequestState title="Restauranten har ingen ordrer endnu" />
 			) : (
 				<ul className={styles.orders} aria-label="Restaurantens ordrer">
 					{visibleOrders.map((order) => (

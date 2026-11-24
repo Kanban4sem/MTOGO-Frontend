@@ -71,6 +71,12 @@
 	color: var(--mtogo-text-secondary);
 }
 
+.deliveryAddress {
+	grid-column: 1 / -1;
+	color: var(--mtogo-text-secondary);
+	overflow-wrap: anywhere;
+}
+
 .receipt h2 {
 	margin-bottom: 0.5rem;
 	font-size: 1.1rem;

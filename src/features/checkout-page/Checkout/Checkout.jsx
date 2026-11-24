@@ -7,6 +7,7 @@ import { getRestaurantMenuPath } from '@/shared/data/paths.js'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { PAYMENT_TOKENS } from '@/features/checkout-page/services/orderService.js'
 import { useCheckout } from '@/features/checkout-page/Checkout/Checkout.hooks.js'
@@ -104,9 +105,7 @@ function CheckoutForm() {
 								<span>
 									Brug min standardadresse:
 									<span className={styles.savedAddress}>
-										{defaultAddress.street},{' '}
-										{defaultAddress.postalCode}{' '}
-										{defaultAddress.city}
+										{formatDeliveryAddress(defaultAddress)}
 									</span>
 								</span>
 							</label>

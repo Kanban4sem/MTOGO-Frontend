@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { getCountryName } from '@/shared/data/countries.js'
-import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import styles from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.module.css'
 
@@ -18,7 +18,7 @@ export default function OrderConfirmation({ orderId }) {
 		)
 	}
 
-	const { deliveryAddress } = order
+	const { deliveryAddress, statusName } = order
 
 	return (
 		<section
@@ -26,9 +26,11 @@ export default function OrderConfirmation({ orderId }) {
 			aria-labelledby="confirmation-title"
 		>
 			<header className={styles.intro}>
-				<p className={styles.status}>
-					Status: <strong>{getOrderStatusName(order.status)}</strong>
-				</p>
+				{statusName?.danish && (
+					<p className={styles.status}>
+						Status: <strong>{statusName.danish}</strong>
+					</p>
+				)}
 				<h1 id="confirmation-title">Tak for din bestilling!</h1>
 				<p>
 					Din ordre har nummer <strong>{order.id}</strong>.
@@ -76,9 +78,7 @@ export default function OrderConfirmation({ orderId }) {
 				>
 					<h2 id="order-address">Leveringsadresse</h2>
 					<address className={styles.address}>
-						{deliveryAddress.street}
-						<br />
-						{deliveryAddress.postalCode} {deliveryAddress.city}
+						{formatDeliveryAddress(deliveryAddress, '\n')}
 						<br />
 						{getCountryName(deliveryAddress.country)}
 					</address>

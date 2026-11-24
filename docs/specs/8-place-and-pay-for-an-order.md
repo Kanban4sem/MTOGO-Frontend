@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 2.0 · **Date:** 2026-11-22 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default
+**Version:** 3.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default (#8); no new flag for #50
 
 ## Acceptance criteria
 
@@ -44,6 +44,9 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 27. When the server fails or cannot be reached, the basket is kept and a Danish message asks the customer to try again. A server failure shows its error reference when the server gives one. A page that shows an error message gives a Danish message for a network failure instead of the browser's.
 28. When checkout cannot fetch the profile address, it tells the customer and offers manual address entry. An expired session follows the login flow in behaviour 25.
 29. The confirmation and the delivery agent's orders use the delivery address recorded on the order. Changing the profile's default leaves previous orders' addresses intact. The dashboard shows the street, postal code and city for available orders and for orders assigned to the signed-in agent.
+30. Customers see the recorded delivery address in their order list and order detail.
+31. Delivery agents can expand their order cards to see the order lines, including item names, quantities and subtotals, and the order total.
+32. The order confirmation, customer order list and detail, restaurant orders and delivery-agent orders display the Danish status name from the API. The restaurant can filter by the statuses represented in its order list.
 
 ## Implementation decisions
 
@@ -55,7 +58,8 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 - **Routes:** `/checkout` and `/orders/:orderId` under the home layout. The confirmation receives the `201` response in router state.
 - **Login return:** login reads a return address from router state and goes there after logging in, falling back to the homepage. Only paths inside the app are accepted, so a crafted link can't send the user to another site. A shared route guard sends a logged-out user to login with the current address and whether the session expired; checkout is behind it.
 - **Errors:** the client handles `401` and `403` in one place, as the coding standards require: a `401` clears the session and marks it expired, the route guard sends the user to login, and a `403` gets one Danish message. At checkout a `403` can only mean the account is not a customer, so checkout replaces that message with one saying only customers can order (behaviour 26). Checkout maps the other status codes to the Danish messages in behaviours 22–27; `400` shows the backend's `detail`, and a `5xx` adds the `errorId` as the error reference. The client catches a failed `fetch` and throws a Danish connection message, so every page that shows the error message benefits.
-- **Order status:** a shared constants module maps all six order status codes to Danish: PLACED Afgivet, ACCEPTED Accepteret, REJECTED Afvist, READY Klar, PICKED_UP Afhentet, DELIVERED Leveret. Later issues reuse it so the names don't drift.
+- **Order status:** views read `statusName.danish` from the order response. The backend names are Bestilt (PLACED), Accepteret (ACCEPTED), Afvist (REJECTED), Klar til afhentning (READY), Afhentet (PICKED_UP) and Leveret (DELIVERED). A shared module defines the status codes for filtering and actions. Restaurant filter labels come from the listed orders.
+- **Order addresses and lines:** the customer order list and detail use the recorded `deliveryAddress`. One formatter assembles the street and postal area for checkout, confirmation, customer orders and delivery-agent orders. Delivery-agent order cards use `deliveryAddress.city` as part of the postal area and show the API's order lines and total. Assignment uses the API's `assignedToMe`. [Backend #66](https://github.com/Kanban4sem/MTOGO-Backend/issues/66) provides these fields.
 - **Design:** the existing design tokens, `--mtogo-border-radius`, buttons, inputs, request states and CSS modules, matching the current menu page. Layouts work on mobile and desktop, every control works by keyboard, and reduced-motion preferences are respected.
 - **ADRs:** [ADR-001](https://github.com/Kanban4sem/MTOGO-Backend/blob/main/docs/adr/001-feature-flags.md) applies. No new ADR.
 
@@ -66,12 +70,15 @@ There is no frontend test framework yet, so `npm run lint` passes and these manu
 - **Flag:** with `orderingEnabled` on, off and unset, the basket, navigation link, checkout and confirmation appear only when on (behaviour 1). With `authEnabled` off, checkout shows no login link (2).
 - **Basket rules:** add, raise, lower and remove; adding the same menu item again; a menu item from a second restaurant asks first, and declining keeps the basket; 20 menu items and quantity 20 disable the buttons with the message; the basket total; a refresh keeps the basket (3–9, 11).
 - **Access:** checkout logged out goes to login and back with the basket; a customer sees the form; a restaurant user sees the customers-only message; an empty basket shows the empty state; plain login still goes to the homepage (12–14).
-- **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and status Afgivet; a refresh keeps the confirmation, and the confirmation address opened in a new tab shows only the order number (15, 18–21).
+- **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and the Danish status name Bestilt; a refresh keeps the confirmation, and the confirmation address opened in a new tab shows only the order number (15, 18–21).
 - **Declined payment:** the simulated decline gives the declined message and keeps the basket (22).
 - **Address validation:** with manual entry, try blank street and city, 101 characters, and postal codes `123`, `12345` and `12a4`. Check that each invalid field shows its message. Try 100 characters and `1234` and confirm that the form submits. A `400` from the API shows its message (16–17, 24).
 - **Address selection:** open checkout as a seeded customer with only a postal code and city. Check that checkout fills those fields and requires a street. With a complete default, check that it is selected and checkout sends `useDefaultAddress: true` and `saveAsDefault: false` without an entered address. Select another address and check that an unchecked save box sends the new delivery address with both booleans set to false and leaves the default intact (16–17).
 - **Saving an address:** select a new address and check the save box. Simulate a declined payment and verify that the basket, the form and the existing profile address are retained. Then pay successfully, check that the request sent `saveAsDefault: true`, and reopen checkout in the same session to verify that the new default is selected (16–17, 20, 22).
 - **Address display:** verify that an available order card shows its street, postal code and city without opening the card. Check that the assigned agent still sees them after taking it and that a second agent no longer sees the taken order. Change the customer's default and check that the prior order still uses its original address (29).
+- **Customer orders:** open the list and detail for the placed order. Compare the delivery address and the Danish status name with the API and the confirmation. Change the customer's default and check that the previous order still shows its original address (30, 32).
+- **Restaurant orders:** compare Bestilt with the customer views for the same order. Accept it and mark it ready. Check that the status badge, available filter labels and update notice use the API's Danish names, including Klar til afhentning (32).
+- **Delivery-agent orders:** expand the available order and check its item names, quantities, subtotals and total against the API. Take it and check the same details in active orders. Pick it up and deliver it, then check the status names on the update notices and the active and completed order cards (31–32). Record the order-view checks on #50.
 - **Profile lookup failure:** fail `GET /v1/users/me` during checkout while leaving order placement available. Check that checkout shows a message and the entered address can still be used (28).
 - **Errors:** an item made unavailable during checkout gives the `409` message with a link to the menu (23); a removed token gives the login detour with the expired-session message, and logging out and in again shows no such message (25); the API stopped gives the Danish connection message at checkout (27).
 - **Sign out:** put items in the basket, sign out and refresh. Check that the basket is empty, including in another open tab. Sign in as a delivery agent or restaurant user and check that the navigation bar has no basket link (9, 11). Also check that a session expiration still preserves the basket through sign-in (25).
@@ -108,9 +115,17 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 - **Tests:** The checks above cover the three address requests, legacy profiles, payment decline, existing orders, the agent's view and clearing the basket on sign-out. The developer will run lint and the manual checks against the API.
 - **Follow-up:** None.
 
+### Spec 3.0 - 2026-11-25 - #50
+
+- **Built:** Order views use the API's Danish status names. Customers see the order's delivery address in their list and detail, and delivery agents see order lines and the total in their order cards. Checkout and the order views share address formatting. The glossary uses the backend definition of **Status name**.
+- **Deviations:** None.
+- **Tests:** The manual order-view checks above are for the developer to run against the API and record on #50.
+- **Follow-up:** None.
+
 ## Changelog
 
-| Version | Date       | Change                                      | Issue |
-| ------- | ---------- | ------------------------------------------- | ----- |
-| 1.0     | 2026-11-19 | First version                               | #8    |
-| 2.0     | 2026-11-22 | Choose, save and display delivery addresses | #44   |
+| Version | Date       | Change                                        | Issue |
+| ------- | ---------- | --------------------------------------------- | ----- |
+| 1.0     | 2026-11-19 | First version                                 | #8    |
+| 2.0     | 2026-11-22 | Choose, save and display delivery addresses   | #44   |
+| 3.0     | 2026-11-25 | Use API status names and complete order views | #50   |

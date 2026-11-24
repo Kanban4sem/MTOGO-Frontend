@@ -2,7 +2,9 @@ import { useState } from 'react'
 import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
-import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
+import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
+import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { useDeliveryOrders } from '@/features/delivery-orders-page/DeliveryOrders/DeliveryOrders.hooks.js'
 import styles from '@/features/delivery-orders-page/DeliveryOrders/DeliveryOrders.module.css'
 
@@ -13,16 +15,18 @@ const FILTERS = [
 
 const TAKE = { action: 'TAKE', label: 'Tag ordre' }
 const ASSIGNED_ACTIONS = {
-	READY: { action: 'PICK_UP', label: 'Markér som afhentet' },
-	PICKED_UP: { action: 'DELIVER', label: 'Markér som leveret' },
+	[ORDER_STATUS.READY]: { action: 'PICK_UP', label: 'Markér som afhentet' },
+	[ORDER_STATUS.PICKED_UP]: {
+		action: 'DELIVER',
+		label: 'Markér som leveret',
+	},
 }
 
 function OrderCard({ order, pendingOrderId, onChange }) {
 	const next = order.assignedToMe ? ASSIGNED_ACTIONS[order.status] : TAKE
-	const address = order.deliveryAddress
-	const deliveryAddress = address
-		? `${address.street}, ${address.postalCode} ${address.city}`
-		: null
+	const deliveryAddress =
+		formatDeliveryAddress(order.deliveryAddress) ??
+		'Adresse ikke tilgængelig'
 
 	return (
 		<details className={styles.card}>
@@ -31,15 +35,10 @@ function OrderCard({ order, pendingOrderId, onChange }) {
 					<strong>Ordre nr. {order.id}</strong>
 					<span>{order.restaurantName}</span>
 					{!order.assignedToMe && (
-						<span>
-							Levering til:{' '}
-							{deliveryAddress ?? 'Adresse ikke tilgængelig'}
-						</span>
+						<span>Levering til: {deliveryAddress}</span>
 					)}
 				</span>
-				<span className={styles.status}>
-					{getOrderStatusName(order.status, order.statusName)}
-				</span>
+				<span className={styles.status}>{order.statusName.danish}</span>
 				<span className={styles.chevron} aria-hidden="true" />
 			</summary>
 			<div
@@ -48,11 +47,23 @@ function OrderCard({ order, pendingOrderId, onChange }) {
 			>
 				{order.assignedToMe && (
 					<p>
-						<strong>Levering til:</strong>{' '}
-						{deliveryAddress ??
-							(order.deliveryCity || 'Adresse ikke tilgængelig')}
+						<strong>Levering til:</strong> {deliveryAddress}
 					</p>
 				)}
+				<ul className={styles.lines} aria-label="Ordrelinjer">
+					{order.lines.map((line) => (
+						<li key={line.menuItemId}>
+							<span>
+								{line.quantity} × {line.name}
+							</span>
+							<span>{formatPrice(line.subtotal)}</span>
+						</li>
+					))}
+				</ul>
+				<p className={styles.total}>
+					<span>I alt</span>
+					<strong>{formatPrice(order.total)}</strong>
+				</p>
 				{next && (
 					<Button
 						label={next.label}
@@ -111,12 +122,14 @@ export default function DeliveryOrders({ available }) {
 	} = useDeliveryOrders()
 	const completed = filter === 'completed'
 	const visibleOrders = orders.filter((order) => {
-		if (available) return !order.assignedToMe && order.status === 'READY'
+		if (available)
+			return !order.assignedToMe && order.status === ORDER_STATUS.READY
 		return (
 			order.assignedToMe &&
 			(completed
-				? order.status === 'DELIVERED'
-				: order.status === 'READY' || order.status === 'PICKED_UP')
+				? order.status === ORDER_STATUS.DELIVERED
+				: order.status === ORDER_STATUS.READY ||
+					order.status === ORDER_STATUS.PICKED_UP)
 		)
 	})
 	const emptyTitle = available
@@ -162,12 +175,8 @@ export default function DeliveryOrders({ available }) {
 					{updatedOrder && (
 						<p className={styles.notice}>
 							Ordre nr. {updatedOrder.id} ·{' '}
-							{orderTaken
-								? 'Overtaget. Se den under Ordrer.'
-								: getOrderStatusName(
-										updatedOrder.status,
-										updatedOrder.statusName,
-									)}
+							{updatedOrder.statusName.danish}
+							{orderTaken && ' · Overtaget. Se den under Ordrer.'}
 						</p>
 					)}
 				</div>

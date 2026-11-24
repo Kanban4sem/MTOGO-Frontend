@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
-import { getOrderStatusName } from '@/shared/data/orderStatus.js'
 import {
 	CUSTOMER_ORDERS_PATH,
 	getCustomerOrderPath,
 } from '@/shared/data/paths.js'
+import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { useCustomerOrders } from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.hooks.js'
 import styles from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.module.css'
@@ -15,11 +15,7 @@ const orderDate = new Intl.DateTimeFormat('da-DK', {
 })
 
 function OrderStatus({ order }) {
-	return (
-		<span className={styles.orderStatus}>
-			{getOrderStatusName(order.status, order.statusName)}
-		</span>
-	)
+	return <span className={styles.orderStatus}>{order.statusName.danish}</span>
 }
 
 function OrderList({ orders }) {
@@ -38,6 +34,10 @@ function OrderList({ orders }) {
 						<strong>Ordre nr. {order.id}</strong>
 						<OrderStatus order={order} />
 						<span>{formatPrice(order.total)}</span>
+						<span className={styles.deliveryAddress}>
+							{formatDeliveryAddress(order.deliveryAddress) ??
+								'Adresse ikke tilgængelig'}
+						</span>
 					</Link>
 				</li>
 			))}
@@ -53,6 +53,11 @@ function OrderDetails({ order }) {
 				<time dateTime={order.placedAt}>
 					{orderDate.format(new Date(order.placedAt))}
 				</time>
+			</p>
+			<p className={styles.deliveryAddress}>
+				<strong>Leveringsadresse:</strong>{' '}
+				{formatDeliveryAddress(order.deliveryAddress) ??
+					'Adresse ikke tilgængelig'}
 			</p>
 			<section className={styles.receipt} aria-labelledby="order-lines">
 				<h2 id="order-lines">Ordrelinjer</h2>
