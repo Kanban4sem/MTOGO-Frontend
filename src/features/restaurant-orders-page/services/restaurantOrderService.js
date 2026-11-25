@@ -1,4 +1,4 @@
 export {
-	getRestaurantOrders as readRestaurantOrders,
+	getRestaurantOrders,
 	patchRestaurantOrder as updateRestaurantOrderStatus,
 } from '@/api/endpoints/orders.js'

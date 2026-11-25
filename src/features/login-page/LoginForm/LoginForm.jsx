@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
-import { LOGIN_FIELDS } from '@/features/login-page/Login/loginFields.js'
-import { useLogin } from '@/features/login-page/Login/Login.hooks.js'
-import styles from '@/features/login-page/Login/Login.module.css'
+import { LOGIN_FIELDS } from '@/features/login-page/LoginForm/loginFields.js'
+import { useLogin } from '@/features/login-page/LoginForm/LoginForm.hooks.js'
+import styles from '@/features/login-page/LoginForm/LoginForm.module.css'
 
-function Login() {
+function LoginForm() {
 	const {
 		error,
 		isSubmitting,
-		handleSubmit,
+		submitLogin,
 		returnTo,
 		registered,
 		sessionExpired,
@@ -28,7 +28,7 @@ function Login() {
 			)}
 			<form
 				className={styles.form}
-				onSubmit={handleSubmit}
+				onSubmit={submitLogin}
 				aria-busy={isSubmitting}
 			>
 				<FormFields
@@ -56,4 +56,4 @@ function Login() {
 	)
 }
 
-export default Login
+export default LoginForm

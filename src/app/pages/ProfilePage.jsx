@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
-import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
+import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
 import ProfileOverview from '@/shared/components/ProfileOverview/ProfileOverview.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import {
@@ -20,7 +20,7 @@ export default function ProfilePage() {
 	return (
 		<>
 			<Helmet title="Min profil" />
-			<ProtectedRoutes
+			<ProtectedRoute
 				loginUnavailable={
 					<RequestState title="Din profil kræver login">
 						Login er ikke tilgængeligt lige nu.
@@ -45,7 +45,7 @@ export default function ProfilePage() {
 						)
 					}
 				/>
-			</ProtectedRoutes>
+			</ProtectedRoute>
 		</>
 	)
 }

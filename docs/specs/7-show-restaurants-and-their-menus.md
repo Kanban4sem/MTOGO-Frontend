@@ -1,6 +1,6 @@
 # Show restaurants and their menus
 
-**Version:** 2.0 · **Date:** 2026-11-25 · **Issue:** #7 · **Feature flag:** None, as agreed for the restaurant feature
+**Version:** 3.0 · **Date:** 2026-11-25 · **Issue:** #7 · **Feature flag:** None, as agreed for the restaurant feature
 
 ## Acceptance criteria
 
@@ -16,14 +16,15 @@
 4. The restaurant page displays its name, active menu titles and descriptions, available menu items with images on the left, descriptions and DKK prices.
 5. Loading, empty results, unavailable restaurants and failed requests have Danish messages. Failed images fall back to the existing placeholder.
 6. Layouts adapt to narrow screens. Links support keyboard focus, a skip link is provided, and reduced-motion preferences are respected.
+7. Each main navigation item leads to a destination.
 
 ## Implementation decisions
 
 - Endpoint functions live under api/endpoints and use the existing client, which remains the only HTTP implementation. ProblemDetail detail is included in client error messages.
-- The shared restaurant service supplies both homepage previews and restaurant details. React hooks own loading state and cancel requests when their components unmount.
+- The shared restaurant service supplies both homepage previews and restaurant details. A shared request hook manages loading, errors and cancellation when a component unmounts or its request changes.
 - GET /v1/restaurants supplies the directory; GET /v1/restaurants/{restaurantId}/menus supplies active menus and available items. Image paths resolve against the frontend origin.
 - The homepage and directory share a restaurant listing component. The homepage uses the first two eligible restaurants in API order. The menu page uses the shared restaurant service and image rendering.
-- The original navbar, account components, providers and React Router dependency are restored from the existing customer-account branch, preserving the original navigation and login actions. Restaurant pages are integrated with those routes. Refreshing a menu URL relies on the existing index.html fallback.
+- The navbar links to the restaurant directory and keeps the account and login actions. Refreshing a menu URL relies on the existing index.html fallback.
 - Original MTOGO design tokens are restored in :root alongside the page tokens. Every rounded component uses the same --mtogo-border-radius token (0.25rem), including cards, images, buttons, navigation and request states. Component styles use CSS modules.
 - Trusted By shows Subway, Domino’s, KFC, Burger King, Pizza Hut and McDonald’s as example brand names.
 - The original navbar retains the new logo. Restaurant cards use a subtle hover shadow without movement or image scaling. Status pills, arrow circles, the banner icon and the decorative menu stamp are removed. Menu items use a hover shadow defined in :root.
@@ -34,6 +35,7 @@
 - Open `/restaurants` directly and through each homepage entry point. Verify the directory lists the restaurants that accept orders and the homepage shows up to two.
 - Open a restaurant from a card and use browser back to return. Check card alignment on mobile and desktop.
 - Verify the loading, empty and retry states on the directory.
+- Check that the main navigation contains a working restaurant directory link.
 
 ## Out of scope
 
@@ -49,9 +51,15 @@ Ordering, basket, payment, authentication and backend changes.
 - **Built** the public directory, its navigation links and a shared card layout for the directory and homepage.
 - **Tests** include frontend lint, build and the browser checks listed above.
 
+### Spec 3.0 - 2026-11-25 - #54
+
+- **Built:** Removed the two placeholder links. The restaurant directory, homepage and menu now use the shared request hook.
+- **Tests:** Verify the directory link, menu loading and directory retry as listed above.
+
 ## Changelog
 
 | Version | Date       | Change                                      | Issue              |
 | ------- | ---------- | ------------------------------------------- | ------------------ |
+| 3.0     | 2026-11-25 | Require destinations for main navigation    | #54                |
 | 2.0     | 2026-11-25 | Add the public directory and featured cards | Homepage follow-up |
 | 1.0     | 2026-11-15 | Initial restaurant browsing spec            | #7                 |

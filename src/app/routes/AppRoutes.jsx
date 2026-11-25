@@ -28,6 +28,8 @@ import {
 	DASHBOARD_ORDERS_PATH,
 	DASHBOARD_PATH,
 	ORDER_CONFIRMATION_ROUTE,
+	LOGIN_PATH,
+	PROFILE_PATH,
 	RESTAURANTS_PATH,
 	RESTAURANT_MENU_ROUTE,
 	RESTAURANT_ORDERS_PATH,
@@ -47,7 +49,7 @@ const router = createBrowserRouter(
 			<Route element={<HomeLayout />}>
 				<Route path="/" element={<HomePage />} />
 				<Route path={RESTAURANTS_PATH} element={<RestaurantsPage />} />
-				<Route path="/profile" element={<ProfilePage />} />
+				<Route path={PROFILE_PATH} element={<ProfilePage />} />
 				<Route
 					path={CUSTOMER_SETTINGS_PATH}
 					element={<CustomerSettingsPage />}
@@ -79,7 +81,7 @@ const router = createBrowserRouter(
 				/>
 				<Route path="*" element={<NotFoundPage />} />
 			</Route>
-			<Route path="/login" element={<LoginPage />} />
+			<Route path={LOGIN_PATH} element={<LoginPage />} />
 			<Route path="/register" element={<RegisterPage />} />
 		</>,
 	),

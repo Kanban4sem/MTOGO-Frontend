@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 import FeatureFlagRoute from '@/app/routes/FeatureFlagRoute.jsx'
-import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
+import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
 import CustomerOrders from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { useAuth } from '@/shared/hooks/useAuth.js'
@@ -19,7 +19,7 @@ export default function CustomerOrdersPage() {
 						: `Ordre nr. ${orderId}`
 				}
 			/>
-			<ProtectedRoutes
+			<ProtectedRoute
 				loginUnavailable={
 					<RequestState title="Ordrevisning kræver login">
 						Login er ikke tilgængeligt lige nu.
@@ -30,7 +30,7 @@ export default function CustomerOrdersPage() {
 					key={`${user?.id}:${orderId ?? ''}`}
 					orderId={orderId}
 				/>
-			</ProtectedRoutes>
+			</ProtectedRoute>
 		</FeatureFlagRoute>
 	)
 }

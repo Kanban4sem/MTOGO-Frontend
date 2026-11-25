@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import NotFoundPage from '@/app/pages/NotFoundPage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
@@ -19,4 +20,3 @@ export default function FeatureFlagRoute({
 		</DeniedLayout>
 	)
 }
-import { Fragment } from 'react'

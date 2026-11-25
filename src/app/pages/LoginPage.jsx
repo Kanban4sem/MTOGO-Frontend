@@ -1,10 +1,10 @@
 import AuthLayout from '@/app/layouts/AuthLayout.jsx'
-import { LoginCard } from '@/features/login-page/index.jsx'
+import { LoginForm } from '@/features/login-page/index.jsx'
 
 function LoginPage() {
 	return (
 		<AuthLayout title="Log ind">
-			<LoginCard />
+			<LoginForm />
 		</AuthLayout>
 	)
 }

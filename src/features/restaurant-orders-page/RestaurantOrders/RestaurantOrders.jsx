@@ -3,6 +3,7 @@ import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
 import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
+import { ORDER_DATE } from '@/shared/utils/orderDate.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { useRestaurantOrders } from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.hooks.js'
 import styles from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.module.css'
@@ -22,11 +23,6 @@ const ACTIONS = {
 		{ status: ORDER_STATUS.READY, label: 'Markér som klar' },
 	],
 }
-
-const ORDER_DATE = new Intl.DateTimeFormat('da-DK', {
-	dateStyle: 'long',
-	timeStyle: 'short',
-})
 
 function OrderCard({ order, isOpen, onOpen, pendingOrderId, onStatusChange }) {
 	const actions = ACTIONS[order.status] ?? []

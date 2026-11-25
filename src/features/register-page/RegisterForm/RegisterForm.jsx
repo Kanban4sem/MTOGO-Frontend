@@ -1,16 +1,17 @@
 import { Link } from 'react-router-dom'
+import { LOGIN_PATH } from '@/shared/data/paths.js'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
-import { REGISTER_STEPS } from '@/features/register-page/Register/registerFields.js'
-import { useRegister } from '@/features/register-page/Register/Register.hooks.js'
-import styles from '@/features/register-page/Register/Register.module.css'
+import { REGISTER_STEPS } from '@/features/register-page/RegisterForm/registerFields.js'
+import { useRegister } from '@/features/register-page/RegisterForm/RegisterForm.hooks.js'
+import styles from '@/features/register-page/RegisterForm/RegisterForm.module.css'
 
-function Register() {
+function RegisterForm() {
 	const {
 		stepIndex,
 		headingRef,
 		isLastStep,
-		handleSubmit,
+		submitRegistration,
 		goBack,
 		error,
 		isSubmitting,
@@ -29,7 +30,7 @@ function Register() {
 			{error && <p role="alert">{error}</p>}
 			<form
 				className={styles.form}
-				onSubmit={handleSubmit}
+				onSubmit={submitRegistration}
 				aria-busy={isSubmitting}
 			>
 				{REGISTER_STEPS.map(({ name, fields }, index) => (
@@ -68,7 +69,7 @@ function Register() {
 			</form>
 			<p>
 				Har du allerede en konto?{' '}
-				<Link to="/login" state={{ returnTo }}>
+				<Link to={LOGIN_PATH} state={{ returnTo }}>
 					Log ind
 				</Link>
 			</p>
@@ -76,4 +77,4 @@ function Register() {
 	)
 }
 
-export default Register
+export default RegisterForm

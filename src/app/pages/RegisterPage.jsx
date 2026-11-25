@@ -1,10 +1,10 @@
 import AuthLayout from '@/app/layouts/AuthLayout.jsx'
-import { RegisterCard } from '@/features/register-page/index.jsx'
+import { RegisterForm } from '@/features/register-page/index.jsx'
 
 function RegisterPage() {
 	return (
 		<AuthLayout title="Opret konto">
-			<RegisterCard />
+			<RegisterForm />
 		</AuthLayout>
 	)
 }

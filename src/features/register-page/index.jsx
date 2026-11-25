@@ -1,1 +1,1 @@
-export { default as RegisterCard } from '@/features/register-page/Register/Register.jsx'
+export { default as RegisterForm } from '@/features/register-page/RegisterForm/RegisterForm.jsx'

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
@@ -110,31 +109,20 @@ function DeliveryOrderList({
 }
 
 export default function DeliveryOrders({ available }) {
-	const [filter, setFilter] = useState('active')
 	const {
-		orders = [],
+		visibleOrders,
+		filter,
+		setFilter,
 		isLoading,
 		error,
 		pendingOrderId,
 		orderUpdate,
 		changeOrder,
 		refreshOrders,
-	} = useDeliveryOrders()
-	const completed = filter === 'completed'
-	const visibleOrders = orders.filter((order) => {
-		if (available)
-			return !order.assignedToMe && order.status === ORDER_STATUS.READY
-		return (
-			order.assignedToMe &&
-			(completed
-				? order.status === ORDER_STATUS.DELIVERED
-				: order.status === ORDER_STATUS.READY ||
-					order.status === ORDER_STATUS.PICKED_UP)
-		)
-	})
+	} = useDeliveryOrders(available)
 	const emptyTitle = available
 		? 'Ingen ledige ordrer til afhentning'
-		: completed
+		: filter === 'completed'
 			? 'Du har ingen afsluttede leveringer'
 			: 'Du har ingen aktive leveringer'
 

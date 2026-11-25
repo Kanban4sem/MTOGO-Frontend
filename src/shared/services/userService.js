@@ -5,7 +5,10 @@ import {
 	registerUser,
 	updateCurrentUser,
 } from '@/api/endpoints/users.js'
-import { clearAuthSession } from '@/shared/utils/authSession.js'
+import {
+	ACCESS_TOKEN_KEY,
+	clearAuthSession,
+} from '@/shared/utils/authSession.js'
 
 export function registerAccount(registration) {
 	return registerUser(registration)
@@ -21,7 +24,7 @@ export function updateCustomerProfile(profile, signal) {
 
 export async function signIn(credentials) {
 	const session = await loginUser(credentials)
-	localStorage.setItem('access_token', session.accessToken)
+	localStorage.setItem(ACCESS_TOKEN_KEY, session.accessToken)
 	return session.user
 }
 

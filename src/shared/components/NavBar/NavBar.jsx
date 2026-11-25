@@ -9,6 +9,8 @@ import {
 	CUSTOMER_ORDERS_PATH,
 	CUSTOMER_SETTINGS_PATH,
 	DASHBOARD_PATH,
+	LOGIN_PATH,
+	PROFILE_PATH,
 	RESTAURANTS_PATH,
 	RESTAURANT_ORDERS_PATH,
 	RESTAURANT_PROFILE_PATH,
@@ -19,7 +21,7 @@ import { formatItemCount } from '@/shared/utils/basketMessages.js'
 import { useNavBar } from '@/shared/components/NavBar/NavBar.hooks.js'
 import styles from '@/shared/components/NavBar/NavBar.module.css'
 
-const CUSTOMER_PROFILE_LINK = { label: 'Profiloversigt', to: '/profile' }
+const CUSTOMER_PROFILE_LINK = { label: 'Profiloversigt', to: PROFILE_PATH }
 const CUSTOMER_SETTINGS_LINK = {
 	label: 'Indstillinger',
 	to: CUSTOMER_SETTINGS_PATH,
@@ -46,7 +48,7 @@ function NavBar() {
 		isLoading,
 		isLoggingOut,
 		error,
-		handleLogout,
+		signOut,
 	} = useNavBar()
 	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
@@ -65,12 +67,6 @@ function NavBar() {
 				<ul className={styles.entries}>
 					<li>
 						<NavLink to={RESTAURANTS_PATH}>Restauranter</NavLink>
-					</li>
-					<li>
-						<span>For virksomheder</span>
-					</li>
-					<li>
-						<span>Bliv leveringsbud</span>
 					</li>
 				</ul>
 				<div className={styles.actions}>
@@ -101,7 +97,7 @@ function NavBar() {
 							<Button
 								className={styles.logout}
 								label={isLoggingOut ? 'Logger ud…' : 'Log ud'}
-								onClick={handleLogout}
+								onClick={signOut}
 								disabled={isLoggingOut}
 							/>
 							{isRestaurant ? (
@@ -131,14 +127,17 @@ function NavBar() {
 									buttonClassName={styles.account}
 								/>
 							) : (
-								<Link className={styles.account} to="/profile">
+								<Link
+									className={styles.account}
+									to={PROFILE_PATH}
+								>
 									Din profil
 								</Link>
 							)}
 						</>
 					) : isEnabled('authEnabled') ? (
 						<>
-							<Link className={styles.link} to="/login">
+							<Link className={styles.link} to={LOGIN_PATH}>
 								Log ind
 							</Link>
 							<Link className={styles.account} to="/register">

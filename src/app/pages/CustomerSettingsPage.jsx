@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async'
-import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
+import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
 import CustomerSettings from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
@@ -11,7 +11,7 @@ export default function CustomerSettingsPage() {
 	return (
 		<>
 			<Helmet title="Indstillinger" />
-			<ProtectedRoutes
+			<ProtectedRoute
 				requiredRole={USER_ROLES.CUSTOMER}
 				loginUnavailable={
 					<RequestState title="Indstillinger kræver login">
@@ -20,7 +20,7 @@ export default function CustomerSettingsPage() {
 				}
 			>
 				<CustomerSettings key={user?.id} />
-			</ProtectedRoutes>
+			</ProtectedRoute>
 		</>
 	)
 }

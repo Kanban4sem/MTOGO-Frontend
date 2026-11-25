@@ -1,17 +1,14 @@
 import { Helmet } from 'react-helmet-async'
-import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
-import ProfileOverview from '@/shared/components/ProfileOverview/ProfileOverview.jsx'
+import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
+import RestaurantProfile from '@/features/restaurant-profile-page/RestaurantProfile/RestaurantProfile.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
-import { useAuth } from '@/shared/hooks/useAuth.js'
 
 export default function RestaurantProfilePage() {
-	const { user } = useAuth()
-
 	return (
 		<>
 			<Helmet title="Virksomhedsprofil" />
-			<ProtectedRoutes
+			<ProtectedRoute
 				requiredRole={USER_ROLES.RESTAURANT}
 				loginUnavailable={
 					<RequestState title="Virksomhedsprofil kræver login">
@@ -19,8 +16,8 @@ export default function RestaurantProfilePage() {
 					</RequestState>
 				}
 			>
-				<ProfileOverview title="Virksomhedsprofil" user={user} />
-			</ProtectedRoutes>
+				<RestaurantProfile />
+			</ProtectedRoute>
 		</>
 	)
 }

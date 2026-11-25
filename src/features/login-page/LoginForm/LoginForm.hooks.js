@@ -14,12 +14,12 @@ function getReturnAddress(returnTo) {
 
 export function useLogin() {
 	const { login } = useAuth()
-	const { state } = useLocation()
+	const { state: navigation } = useLocation()
 	const navigate = useNavigate()
 	const [error, setError] = useState('')
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	async function handleSubmit(event) {
+	async function submitLogin(event) {
 		event.preventDefault()
 		if (isSubmitting) return
 		const fields = new FormData(event.currentTarget)
@@ -30,7 +30,7 @@ export function useLogin() {
 				email: fields.get('email').trim(),
 				password: fields.get('password'),
 			})
-			navigate(getReturnAddress(state?.returnTo), { replace: true })
+			navigate(getReturnAddress(navigation?.returnTo), { replace: true })
 		} catch (error) {
 			setError(getAuthErrorMessage(error))
 		} finally {
@@ -41,11 +41,11 @@ export function useLogin() {
 	return {
 		error,
 		isSubmitting,
-		handleSubmit,
+		submitLogin,
 		// Passed on to register and back, so the user still returns to where they came from.
-		returnTo: state?.returnTo,
-		registered: state?.registered === true,
-		sessionExpired: state?.sessionExpired === true,
-		initialEmail: state?.email ?? '',
+		returnTo: navigation?.returnTo,
+		registered: navigation?.registered === true,
+		sessionExpired: navigation?.sessionExpired === true,
+		initialEmail: navigation?.email ?? '',
 	}
 }

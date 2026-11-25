@@ -1,44 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { getRestaurantDetails } from '@/shared/services/restaurantService.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import { useRequest } from '@/shared/hooks/useRequest.js'
 
 export function useRestaurantMenu(restaurantId) {
-	const [state, setState] = useState({
-		restaurant: null,
-		menus: [],
-		isLoading: true,
-		error: null,
-	})
-
-	useEffect(() => {
-		const controller = new AbortController()
-
-		getRestaurantDetails(restaurantId, controller.signal)
-			.then(({ restaurant, menus }) => {
-				if (!controller.signal.aborted) {
-					setState({
-						restaurant,
-						menus,
-						isLoading: false,
-						error: null,
-					})
-				}
-			})
-			.catch((error) => {
-				if (!controller.signal.aborted) {
-					setState({
-						restaurant: null,
-						menus: [],
-						isLoading: false,
-						error,
-					})
-				}
-			})
-
-		return () => controller.abort()
-	}, [restaurantId])
-
-	return state
+	const loadMenu = useCallback(
+		(signal) => getRestaurantDetails(restaurantId, signal),
+		[restaurantId],
+	)
+	const { data, isLoading, error } = useRequest(loadMenu)
+	return {
+		restaurant: data?.restaurant ?? null,
+		menus: data?.menus ?? [],
+		isLoading,
+		error,
+	}
 }
 
 export function useMenuBasket(restaurant) {

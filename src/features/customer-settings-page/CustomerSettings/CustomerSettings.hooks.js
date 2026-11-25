@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/shared/hooks/useAuth.js'
+import { useRequest } from '@/shared/hooks/useRequest.js'
 import {
+	listSavedDeliveryAddresses,
 	removeDeliveryAddress,
 	storeDeliveryAddress,
 } from '@/shared/services/deliveryAddressService.js'
+import { getSignedInUser } from '@/shared/services/userService.js'
 import { validateDeliveryAddress } from '@/shared/utils/validateDeliveryAddress.js'
 
 const ADDRESS_NAMES = ['street', 'postalCode', 'city']
@@ -30,6 +33,18 @@ function hasAddressChanges(row) {
 
 function savedRow(address) {
 	return { key: String(address.id), saved: address, draft: {} }
+}
+
+async function loadSettings(signal) {
+	const [user, addresses] = await Promise.all([
+		getSignedInUser(signal),
+		listSavedDeliveryAddresses(signal),
+	])
+	return { user, addresses }
+}
+
+export function useCustomerSettingsRequest() {
+	return useRequest(loadSettings)
 }
 
 export function useCustomerSettings(initialUser, initialAddresses) {

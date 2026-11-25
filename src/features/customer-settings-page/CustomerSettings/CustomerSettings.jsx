@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useBeforeUnload, useBlocker } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
-import { listSavedDeliveryAddresses } from '@/shared/services/deliveryAddressService.js'
-import { getSignedInUser } from '@/shared/services/userService.js'
-import { useCustomerSettings } from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.hooks.js'
+import {
+	useCustomerSettings,
+	useCustomerSettingsRequest,
+} from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.hooks.js'
 import styles from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.module.css'
 
 const CONTACT_FIELDS = [
@@ -252,37 +253,21 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 }
 
 export default function CustomerSettings() {
-	const [request, setRequest] = useState(null)
-	const [attempt, setAttempt] = useState(0)
+	const {
+		data: settings,
+		isLoading,
+		error,
+		reload,
+	} = useCustomerSettingsRequest()
 
-	useEffect(() => {
-		const controller = new AbortController()
-		const { signal } = controller
-
-		async function loadSettings() {
-			try {
-				const [user, addresses] = await Promise.all([
-					getSignedInUser(signal),
-					listSavedDeliveryAddresses(signal),
-				])
-				if (!signal.aborted) setRequest({ user, addresses })
-			} catch {
-				if (!signal.aborted) setRequest({ failed: true })
-			}
-		}
-
-		void loadSettings()
-		return () => controller.abort()
-	}, [attempt])
-
-	if (!request) {
+	if (isLoading) {
 		return (
 			<div className={styles.request}>
 				<RequestState title="Henter indstillinger…" isLoading />
 			</div>
 		)
 	}
-	if (request.failed) {
+	if (error) {
 		return (
 			<div className={styles.request}>
 				<RequestState
@@ -290,13 +275,7 @@ export default function CustomerSettings() {
 					headingLevel="h1"
 					symbol=":("
 				>
-					<Button
-						label="Prøv igen"
-						onClick={() => {
-							setRequest(null)
-							setAttempt((previous) => previous + 1)
-						}}
-					/>
+					<Button label="Prøv igen" onClick={reload} />
 				</RequestState>
 			</div>
 		)
@@ -304,8 +283,8 @@ export default function CustomerSettings() {
 
 	return (
 		<CustomerSettingsForm
-			user={request.user}
-			initialAddresses={request.addresses}
+			user={settings.user}
+			initialAddresses={settings.addresses}
 		/>
 	)
 }

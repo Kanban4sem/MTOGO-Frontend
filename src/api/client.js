@@ -1,4 +1,7 @@
-import { clearAuthSession } from '@/shared/utils/authSession.js'
+import {
+	ACCESS_TOKEN_KEY,
+	clearAuthSession,
+} from '@/shared/utils/authSession.js'
 
 // Relative, so the same build works locally (Vite proxy) and on the server (reverse proxy)
 const BASE_URL = '/v1'
@@ -14,7 +17,7 @@ export async function client(endpoint, options = {}) {
 	const { authenticated = true, ...requestOptions } = options
 
 	const url = `${BASE_URL}${endpoint}`
-	const token = authenticated ? localStorage.getItem('access_token') : null
+	const token = authenticated ? localStorage.getItem(ACCESS_TOKEN_KEY) : null
 
 	const config = {
 		...requestOptions,
@@ -41,12 +44,12 @@ export async function client(endpoint, options = {}) {
 	const data = await response.json().catch(() => null)
 
 	if (!response.ok) {
-		// The one place that detects a 401: the session has expired, and ProtectedRoutes sends the user to login.
+		// The one place that detects a 401: the session has expired, and ProtectedRoute sends the user to login.
 		// A missing token also counts, as when it was removed by hand, but not one replaced since the request.
 		if (
 			authenticated &&
 			response.status === 401 &&
-			token === localStorage.getItem('access_token')
+			token === localStorage.getItem(ACCESS_TOKEN_KEY)
 		) {
 			clearAuthSession({ expired: true })
 		}

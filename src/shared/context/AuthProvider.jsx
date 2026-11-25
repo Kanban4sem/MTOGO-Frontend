@@ -5,14 +5,17 @@ import {
 	signOut,
 	updateCustomerProfile,
 } from '@/shared/services/userService.js'
-import { AUTH_SESSION_CLEARED } from '@/shared/utils/authSession.js'
+import {
+	ACCESS_TOKEN_KEY,
+	AUTH_SESSION_CLEARED,
+} from '@/shared/utils/authSession.js'
 import { AuthContext } from '@/shared/context/AuthContext.jsx'
 
 export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null)
 	const [isSessionExpired, setIsSessionExpired] = useState(false)
 	const [isLoading, setIsLoading] = useState(() =>
-		Boolean(localStorage.getItem('access_token')),
+		Boolean(localStorage.getItem(ACCESS_TOKEN_KEY)),
 	)
 	const sessionVersion = useRef(0)
 	// A 401 only means an expired session when someone was logged in, not for a stale token at startup.
@@ -53,8 +56,8 @@ export function AuthProvider({ children }) {
 		}
 
 		function syncSession(event) {
-			if (event.key !== 'access_token' && event.key !== null) return
-			if (localStorage.getItem('access_token')) {
+			if (event.key !== ACCESS_TOKEN_KEY && event.key !== null) return
+			if (localStorage.getItem(ACCESS_TOKEN_KEY)) {
 				setIsLoading(true)
 				void restoreUser()
 			} else {
@@ -64,7 +67,7 @@ export function AuthProvider({ children }) {
 
 		window.addEventListener(AUTH_SESSION_CLEARED, clearUser)
 		window.addEventListener('storage', syncSession)
-		if (localStorage.getItem('access_token')) void restoreUser()
+		if (localStorage.getItem(ACCESS_TOKEN_KEY)) void restoreUser()
 
 		return () => {
 			active = false

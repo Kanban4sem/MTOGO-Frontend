@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getOrderConfirmationPath } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import { useRequest } from '@/shared/hooks/useRequest.js'
 import { listSavedDeliveryAddresses } from '@/shared/services/deliveryAddressService.js'
 import { getSignedInUser } from '@/shared/services/userService.js'
 import { validateDeliveryAddress } from '@/shared/utils/validateDeliveryAddress.js'
@@ -14,7 +15,7 @@ import { DELIVERY_ADDRESS_FIELDS } from '@/features/checkout-page/Checkout/check
 const BASKET_KEPT = 'Din kurv er gemt.'
 
 // Every failure keeps the basket, since it is only emptied after the order is placed.
-// The client handles 401: it clears the session, and ProtectedRoutes sends the user to login.
+// The client handles 401: it clears the session, and ProtectedRoute sends the user to login.
 // A 403 here can only mean the account is not a customer, so checkout says so instead of the client's general message.
 function getCheckoutFailure(error) {
 	switch (error.status) {
@@ -67,11 +68,27 @@ function withFieldState(fields, fieldErrors, addressDefaults) {
 	)
 }
 
+async function loadAddresses(signal) {
+	const [user, addresses] = await Promise.allSettled([
+		getSignedInUser(signal),
+		listSavedDeliveryAddresses(signal),
+	])
+	return {
+		profile: user.value?.profile,
+		savedAddresses: addresses.value ?? [],
+		failed: addresses.status === 'rejected',
+	}
+}
+
 export function useCheckout() {
 	const navigate = useNavigate()
 	const { basket, emptyBasket } = useBasket()
 	const [fieldErrors, setFieldErrors] = useState({})
-	const [addressRequest, setAddressRequest] = useState(null)
+	const {
+		data: addressRequest,
+		isLoading: isAddressLoading,
+		updateData: updateAddresses,
+	} = useRequest(loadAddresses)
 	const [addressChoice, setAddressChoice] = useState(null)
 	const [paymentToken, setPaymentToken] = useState(PAYMENT_TOKENS.CARD)
 	const [failure, setFailure] = useState(null)
@@ -91,28 +108,6 @@ export function useCheckout() {
 		addressRequest?.failed || !profileAddress?.street
 			? profileAddress
 			: null
-	const isAddressLoading = addressRequest === null
-
-	useEffect(() => {
-		const controller = new AbortController()
-		const { signal } = controller
-
-		async function loadAddresses() {
-			const [user, addresses] = await Promise.allSettled([
-				getSignedInUser(signal),
-				listSavedDeliveryAddresses(signal),
-			])
-			if (signal.aborted) return
-			setAddressRequest({
-				profile: user.value?.profile,
-				savedAddresses: addresses.value ?? [],
-				failed: addresses.status === 'rejected',
-			})
-		}
-
-		void loadAddresses()
-		return () => controller.abort()
-	}, [])
 
 	async function submitOrder(event) {
 		event.preventDefault()
@@ -157,7 +152,7 @@ export function useCheckout() {
 			isSubmittingRef.current = false
 			setIsSubmitting(false)
 			if (error.status === 404 && selectedAddress) {
-				setAddressRequest((previous) => ({
+				updateAddresses((previous) => ({
 					...previous,
 					savedAddresses: previous.savedAddresses.filter(
 						(address) => address.id !== selectedAddress.id,

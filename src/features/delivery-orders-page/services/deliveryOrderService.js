@@ -1,4 +1,4 @@
 export {
-	getDeliveryAgentOrders as readDeliveryOrders,
+	getDeliveryAgentOrders,
 	patchDeliveryAgentOrder as updateDeliveryOrder,
 } from '@/api/endpoints/orders.js'

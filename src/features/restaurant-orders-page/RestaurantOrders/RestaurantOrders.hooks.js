@@ -1,38 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useRequest } from '@/shared/hooks/useRequest.js'
 import {
-	readRestaurantOrders,
+	getRestaurantOrders,
 	updateRestaurantOrderStatus,
 } from '@/features/restaurant-orders-page/services/restaurantOrderService.js'
 
 export function useRestaurantOrders() {
-	const [request, setRequest] = useState({ isLoading: true })
-	const [refreshCount, setRefreshCount] = useState(0)
+	const {
+		data: orders,
+		isLoading,
+		error,
+		reload,
+		updateData,
+	} = useRequest(getRestaurantOrders)
 	const [pendingOrderId, setPendingOrderId] = useState(null)
 	const [updateError, setUpdateError] = useState('')
 	const [updatedOrder, setUpdatedOrder] = useState(null)
 
-	useEffect(() => {
-		const controller = new AbortController()
-		const { signal } = controller
-
-		async function loadOrders() {
-			try {
-				const orders = await readRestaurantOrders(signal)
-				if (!signal.aborted) setRequest({ orders })
-			} catch (error) {
-				if (!signal.aborted) setRequest({ error })
-			}
-		}
-
-		void loadOrders()
-		return () => controller.abort()
-	}, [refreshCount])
-
 	function refreshOrders() {
 		setUpdateError('')
 		setUpdatedOrder(null)
-		setRequest({ isLoading: true })
-		setRefreshCount((count) => count + 1)
+		reload()
 	}
 
 	async function changeStatus(orderId, status) {
@@ -41,11 +29,11 @@ export function useRestaurantOrders() {
 		setUpdatedOrder(null)
 		try {
 			const order = await updateRestaurantOrderStatus(orderId, status)
-			setRequest(({ orders }) => ({
-				orders: orders.map((current) =>
+			updateData((currentOrders) =>
+				currentOrders.map((current) =>
 					current.id === order.id ? order : current,
 				),
-			}))
+			)
 			setUpdatedOrder(order)
 		} catch (error) {
 			if (error.status === 409) {
@@ -60,7 +48,9 @@ export function useRestaurantOrders() {
 	}
 
 	return {
-		...request,
+		orders,
+		isLoading,
+		error,
 		pendingOrderId,
 		updateError,
 		updatedOrder,

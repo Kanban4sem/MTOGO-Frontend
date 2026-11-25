@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getFeatureFlags } from '@/api/endpoints/featureFlags.js'
+import { getFeatureFlags } from '@/shared/services/featureFlagService.js'
 import { FeatureFlagsContext } from '@/shared/context/FeatureFlagsContext.jsx'
 
 let startupRequest

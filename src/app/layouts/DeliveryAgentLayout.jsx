@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import DashboardLayout from '@/app/layouts/DashboardLayout.jsx'
 import FeatureFlagRoute from '@/app/routes/FeatureFlagRoute.jsx'
-import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
+import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
 import HomeLayout from '@/app/layouts/HomeLayout.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { DASHBOARD_ORDERS_PATH, DASHBOARD_PATH } from '@/shared/data/paths.js'
@@ -15,7 +15,7 @@ const LINKS = [
 export default function DeliveryAgentLayout() {
 	return (
 		<FeatureFlagRoute flag="orderingEnabled" deniedLayout={HomeLayout}>
-			<ProtectedRoutes
+			<ProtectedRoute
 				requiredRole={USER_ROLES.DELIVERY_AGENT}
 				deniedLayout={HomeLayout}
 				loginUnavailable={
@@ -27,7 +27,7 @@ export default function DeliveryAgentLayout() {
 				<DashboardLayout label="Leveringsbud" links={LINKS}>
 					<Outlet />
 				</DashboardLayout>
-			</ProtectedRoutes>
+			</ProtectedRoute>
 		</FeatureFlagRoute>
 	)
 }

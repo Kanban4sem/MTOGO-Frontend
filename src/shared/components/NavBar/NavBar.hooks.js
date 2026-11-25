@@ -8,7 +8,7 @@ export function useNavBar() {
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
 	const [error, setError] = useState('')
 
-	async function handleLogout() {
+	async function signOut() {
 		if (isLoggingOut) return
 		setError('')
 		setIsLoggingOut(true)
@@ -32,6 +32,6 @@ export function useNavBar() {
 		isLoading,
 		isLoggingOut,
 		error,
-		handleLogout,
+		signOut,
 	}
 }

@@ -1,1 +1,1 @@
-export { default as LoginCard } from '@/features/login-page/Login/Login.jsx'
+export { default as LoginForm } from '@/features/login-page/LoginForm/LoginForm.jsx'

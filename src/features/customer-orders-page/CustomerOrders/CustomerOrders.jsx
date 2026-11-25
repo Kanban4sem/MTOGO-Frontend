@@ -5,14 +5,10 @@ import {
 	getCustomerOrderPath,
 } from '@/shared/data/paths.js'
 import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
+import { ORDER_DATE } from '@/shared/utils/orderDate.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { useCustomerOrders } from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.hooks.js'
 import styles from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.module.css'
-
-const orderDate = new Intl.DateTimeFormat('da-DK', {
-	dateStyle: 'long',
-	timeStyle: 'short',
-})
 
 function OrderStatus({ order }) {
 	return <span className={styles.orderStatus}>{order.statusName.danish}</span>
@@ -51,7 +47,7 @@ function OrderDetails({ order }) {
 			<p className={styles.orderMeta}>
 				<OrderStatus order={order} />
 				<time dateTime={order.placedAt}>
-					{orderDate.format(new Date(order.placedAt))}
+					{ORDER_DATE.format(new Date(order.placedAt))}
 				</time>
 			</p>
 			<p className={styles.deliveryAddress}>
@@ -85,7 +81,7 @@ function OrderDetails({ order }) {
 }
 
 function OrderContent({ orderId }) {
-	const { isLoading, orders, error } = useCustomerOrders(orderId)
+	const { isLoading, data, error } = useCustomerOrders(orderId)
 
 	if (isLoading) {
 		return <RequestState title="Henter ordrer…" isLoading />
@@ -100,8 +96,8 @@ function OrderContent({ orderId }) {
 			</RequestState>
 		)
 	}
-	if (orderId === undefined) return <OrderList orders={orders} />
-	return <OrderDetails order={orders} />
+	if (orderId === undefined) return <OrderList orders={data} />
+	return <OrderDetails order={data} />
 }
 
 export default function CustomerOrders({ orderId }) {
