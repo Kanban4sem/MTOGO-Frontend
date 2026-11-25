@@ -1,27 +1,11 @@
-import { useState } from 'react'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
+import { useLogout } from '@/shared/hooks/useLogout.js'
 
 export function useNavBar() {
-	const { user, isAuthenticated, isLoading, logout } = useAuth()
+	const { user, isAuthenticated, isLoading } = useAuth()
 	const isCustomer = user?.role === USER_ROLES.CUSTOMER
-	const [isLoggingOut, setIsLoggingOut] = useState(false)
-	const [error, setError] = useState('')
-
-	async function signOut() {
-		if (isLoggingOut) return
-		setError('')
-		setIsLoggingOut(true)
-		try {
-			await logout()
-		} catch {
-			setError(
-				'Du er logget ud her, men vi kunne ikke afslutte sessionen på andre enheder.',
-			)
-		} finally {
-			setIsLoggingOut(false)
-		}
-	}
+	const { isLoggingOut, error, logout } = useLogout()
 
 	return {
 		isAuthenticated,
@@ -32,6 +16,6 @@ export function useNavBar() {
 		isLoading,
 		isLoggingOut,
 		error,
-		signOut,
+		logout,
 	}
 }

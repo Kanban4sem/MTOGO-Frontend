@@ -1,28 +1,16 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import BrandLink from '@/shared/components/BrandLink/BrandLink.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
 import { SubNavLinks } from '@/shared/components/SubNavBar/SubNavBar.jsx'
 import { useAuth } from '@/shared/hooks/useAuth.js'
+import { useLogout } from '@/shared/hooks/useLogout.js'
 
 export default function DashboardLayout({ label, links, children }) {
-	const { user, logout } = useAuth()
-	const navigate = useNavigate()
-	const [isLoggingOut, setIsLoggingOut] = useState(false)
+	const { user } = useAuth()
+	// The error is not shown: signing out leaves the dashboard for the homepage at once.
+	const { isLoggingOut, logout } = useLogout()
 	const name = [user?.profile?.firstName, user?.profile?.lastName]
 		.filter(Boolean)
 		.join(' ')
-
-	async function leaveDashboard() {
-		if (isLoggingOut) return
-		setIsLoggingOut(true)
-		try {
-			await logout()
-		} catch {
-			// AuthProvider clears the local session even if the server cannot revoke it.
-		}
-		navigate('/', { replace: true })
-	}
 
 	return (
 		<div className="dashboardLayout">
@@ -40,7 +28,7 @@ export default function DashboardLayout({ label, links, children }) {
 					className="dashboardLogout"
 					label={isLoggingOut ? 'Logger ud…' : 'Log ud'}
 					variant="secondary"
-					onClick={leaveDashboard}
+					onClick={logout}
 					disabled={isLoggingOut}
 				/>
 			</aside>

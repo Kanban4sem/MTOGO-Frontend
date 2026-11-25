@@ -48,7 +48,7 @@ function NavBar() {
 		isLoading,
 		isLoggingOut,
 		error,
-		signOut,
+		logout,
 	} = useNavBar()
 	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
@@ -97,7 +97,7 @@ function NavBar() {
 							<Button
 								className={styles.logout}
 								label={isLoggingOut ? 'Logger ud…' : 'Log ud'}
-								onClick={signOut}
+								onClick={logout}
 								disabled={isLoggingOut}
 							/>
 							{isRestaurant ? (

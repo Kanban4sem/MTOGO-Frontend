@@ -22,13 +22,13 @@ export function updateCustomerProfile(profile, signal) {
 	return updateCurrentUser(profile, signal)
 }
 
-export async function signIn(credentials) {
+export async function login(credentials) {
 	const session = await loginUser(credentials)
 	localStorage.setItem(ACCESS_TOKEN_KEY, session.accessToken)
 	return session.user
 }
 
-export async function signOut() {
+export async function logout() {
 	try {
 		await logoutUser()
 	} catch (error) {

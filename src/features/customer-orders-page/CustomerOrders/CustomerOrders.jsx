@@ -7,6 +7,7 @@ import {
 import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
 import { ORDER_DATE } from '@/shared/utils/orderDate.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
+import { isOrderNotFound } from '@/shared/utils/orderErrors.js'
 import { useCustomerOrders } from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.hooks.js'
 import styles from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.module.css'
 
@@ -87,7 +88,7 @@ function OrderContent({ orderId }) {
 		return <RequestState title="Henter ordrer…" isLoading />
 	}
 	if (error) {
-		if (orderId !== undefined && error.status === 404) {
+		if (orderId !== undefined && isOrderNotFound(error)) {
 			return <RequestState title="Ordren blev ikke fundet" />
 		}
 		return (

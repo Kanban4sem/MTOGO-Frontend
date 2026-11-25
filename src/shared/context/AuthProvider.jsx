@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import {
 	getSignedInUser,
-	signIn,
-	signOut,
+	login as startSession,
+	logout as endSession,
 	updateCustomerProfile,
 } from '@/shared/services/userService.js'
 import {
@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
 	async function login(credentials) {
 		sessionVersion.current += 1
 		try {
-			const currentUser = await signIn(credentials)
+			const currentUser = await startSession(credentials)
 			setIsSessionExpired(false)
 			setUser(currentUser)
 			return currentUser
@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
 	async function logout() {
 		sessionVersion.current += 1
 		try {
-			await signOut()
+			await endSession()
 		} finally {
 			setIsSessionExpired(false)
 			setUser(null)

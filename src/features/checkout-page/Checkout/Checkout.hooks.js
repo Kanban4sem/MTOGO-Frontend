@@ -144,9 +144,7 @@ export function useCheckout() {
 				addressSelection,
 				paymentToken,
 			)
-			navigate(getOrderConfirmationPath(order.id), {
-				state: { order },
-			})
+			navigate(getOrderConfirmationPath(order.id))
 			emptyBasket()
 		} catch (error) {
 			isSubmittingRef.current = false

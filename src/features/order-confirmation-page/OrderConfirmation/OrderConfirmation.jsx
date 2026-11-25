@@ -1,19 +1,32 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { getCountryName } from '@/shared/data/countries.js'
 import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
+import { isOrderNotFound } from '@/shared/utils/orderErrors.js'
+import { useOrderConfirmation } from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.hooks.js'
 import styles from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.module.css'
 
 export default function OrderConfirmation({ orderId }) {
-	const { state } = useLocation()
-	const order = state?.order
+	const {
+		isLoading,
+		data: order,
+		error,
+		reload,
+	} = useOrderConfirmation(orderId)
 
-	// The order arrives in router state from checkout, which survives a refresh but not a new tab. It can't be read back from the API yet.
-	if (!order || String(order.id) !== orderId) {
+	if (isLoading) {
+		return <RequestState title="Henter din ordre…" isLoading />
+	}
+	if (error) {
+		if (isOrderNotFound(error)) {
+			return <RequestState title="Ordren blev ikke fundet" />
+		}
+		// Checkout has already emptied the basket, so keep the order number in view and let the customer retry.
 		return (
-			<RequestState title={`Ordre nr. ${orderId} er afgivet`}>
-				Tak for din bestilling. <Link to="/">Gå til forsiden</Link>
+			<RequestState title={`Vi kunne ikke hente ordre nr. ${orderId}`}>
+				{error.message} <Button label="Prøv igen" onClick={reload} />
 			</RequestState>
 		)
 	}

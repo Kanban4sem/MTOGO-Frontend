@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 4.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default (#8); no new flag for #14 or #50
+**Version:** 5.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default (#8); no new flag for #14, #50 or #48
 
 ## Acceptance criteria
 
@@ -35,18 +35,19 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 19. "Betal og bestil", followed by the basket total, places the order. While the request runs, the button reads "Afgiver ordren…" and is disabled, so the order is not placed twice.
 
 20. When the payment is confirmed, the basket is emptied and the customer sees the order confirmation with the order number, the order lines with name, unit price, quantity and subtotal, the order total calculated by the backend, the delivery address and the order status Placed in Danish.
-21. The order confirmation keeps the full order after a refresh, since the browser keeps it in the page's history. Opened without it, as in a new tab or from a pasted address, it shows only that the order with its number is placed, since the order cannot be read back yet.
+21. The order confirmation loads the order from the API, so it shows the same order after a refresh, in a new tab or from a pasted address. An unknown order, another customer's order or an order number that isn't a number shows "Ordren blev ikke fundet".
 22. When the payment is declined, no order is placed, the basket is kept, and the customer is told the payment was declined and can try again.
 23. When a menu item is no longer available, or its menu or restaurant no longer accepts orders, the basket is kept and the customer is told so, with a link back to the restaurant's menu.
 24. When the backend refuses the input, the basket is kept and its message is shown.
-25. When the session has expired, the user is sent to login with a message that the session has expired, and back to checkout, with the basket kept. Logging out shows no such message.
+25. When the session has expired, the user is sent to login with a message that the session has expired, and back to checkout, with the basket kept. Logging out shows no such message, and from any page it lands on the homepage.
 26. When the user is not a customer, or ordering is switched off on the server, the basket is kept and a Danish message explains it.
 27. When the server fails or cannot be reached, the basket is kept and a Danish message asks the customer to try again. A server failure shows its error reference when the server gives one. A page that shows an error message gives a Danish message for a network failure instead of the browser's.
 28. When checkout cannot fetch saved delivery addresses, it tells the customer and offers manual entry. If a selected address disappears before ordering, checkout keeps the basket and lets the customer pick another address or enter it manually. An expired session follows the login flow in behaviour 25.
 29. The confirmation and the delivery agent's orders use the delivery address recorded on the order. Changing the profile's default leaves previous orders' addresses intact. The dashboard shows the street, postal code and city for available orders and for orders assigned to the signed-in agent.
-30. Customers see the recorded delivery address in their order list and order detail.
+30. Customers see the recorded delivery address in their order list and order detail. An unknown order, another customer's order or an order number that isn't a number shows "Ordren blev ikke fundet" in the order detail.
 31. Delivery agents can expand their order cards to see the order lines, including item names, quantities and subtotals, and the order total.
 32. The order confirmation, customer order list and detail, restaurant orders and delivery-agent orders display the Danish status name from the API. The restaurant can filter by the statuses represented in its order list.
+33. The order confirmation and the customer's order list and detail are for customers. A logged-out user is sent to login and back. A restaurant user or delivery agent sees "Du har ikke adgang til denne side".
 
 ## Implementation decisions
 
@@ -55,7 +56,8 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 - **Payment token:** card payment sends `mock-card`; the simulated decline sends `decline`.
 - **Basket:** a shared basket provider and hook, since the navigation bar, the menu page and checkout all use it. It holds the restaurant, and for each menu item its ID, name, price and quantity, and enforces the rules in behaviours 4–7. It is stored in `localStorage` under one key, read defensively, and emptied after a `201` or when the user explicitly signs out. The basket total uses the menu prices from `GET /v1/restaurants/{id}/menus`.
 - **Order feature:** checkout and the order confirmation live in a new order feature; the add controls and the basket panel join the restaurant menu feature. Features share code only through the shared folder.
-- **Routes:** `/checkout` and `/orders/:orderId` under the home layout. The confirmation receives the `201` response in router state.
+- **Routes:** `/checkout` and `/orders/:orderId` under the home layout. Checkout goes to the confirmation with the order number from the `201` response, and the confirmation reads the order from `GET /v1/customer/orders/{id}`, as the customer's order detail does. The route guard requires the customer role on the confirmation and on `/profile/orders` and `/profile/orders/:orderId`. The backend answers `404` for an unknown or foreign order and `400` for an id that isn't a number; both views show both as not found.
+- **Logout:** the navigation bar and the dashboard go to the homepage before they clear the session, because the route guard would otherwise send the user from a protected page to login with that page as the return address.
 - **Login return:** login reads a return address from router state and goes there after logging in, falling back to the homepage. Only paths inside the app are accepted, so a crafted link can't send the user to another site. A shared route guard sends a logged-out user to login with the current address and whether the session expired; checkout is behind it.
 - **Errors:** the client handles `401` and `403` in one place, as the coding standards require: a `401` clears the session and marks it expired, the route guard sends the user to login, and a `403` gets one Danish message. At checkout a `403` can only mean the account is not a customer, so checkout replaces that message with one saying only customers can order (behaviour 26). Checkout maps the other status codes to the Danish messages in behaviours 22–27; `400` shows the backend's `detail`, and a `5xx` adds the `errorId` as the error reference. The client catches a failed `fetch` and throws a Danish connection message, so every page that shows the error message benefits.
 - **Order status:** views read `statusName.danish` from the order response. The backend names are Bestilt (PLACED), Accepteret (ACCEPTED), Afvist (REJECTED), Klar til afhentning (READY), Afhentet (PICKED_UP) and Leveret (DELIVERED). A shared module defines the status codes for filtering and actions. Restaurant filter labels come from the listed orders.
@@ -70,7 +72,9 @@ There is no frontend test framework yet, so `npm run lint` passes and these manu
 - **Flag:** with `orderingEnabled` on, off and unset, the basket, navigation link, checkout and confirmation appear only when on (behaviour 1). With `authEnabled` off, checkout shows no login link (2).
 - **Basket rules:** add, raise, lower and remove; adding the same menu item again; a menu item from a second restaurant asks first, and declining keeps the basket; 20 menu items and quantity 20 disable the buttons with the message; the basket total; a refresh keeps the basket (3–9, 11).
 - **Access:** checkout logged out goes to login and back with the basket; a customer sees the form; a restaurant user sees the customers-only message; an empty basket shows the empty state; plain login still goes to the homepage (12–14).
-- **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and the Danish status name Bestilt; a refresh keeps the confirmation, and the confirmation address opened in a new tab shows only the order number (15, 18–21).
+- **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and the Danish status name Bestilt; a refresh and the confirmation address opened in a new tab both show the full order as the API returns it (15, 18–21).
+- **Order access:** as a customer, open `/orders/999999`, `/orders/abc`, `/profile/orders/999999`, `/profile/orders/abc` and another customer's order number, and check that each shows "Ordren blev ikke fundet". As a restaurant user and as a delivery agent, open `/orders/<id>`, `/profile/orders` and `/profile/orders/<id>`, and check that each shows "Du har ikke adgang til denne side". Logged out, the same addresses go to login and back (21, 30, 33).
+- **Logout:** log out from the confirmation, the order detail, the customer's settings, the restaurant's orders and the dashboard. Check that each lands on the homepage with no login page in between (25). Record the checks for #48 on #48.
 - **Declined payment:** the simulated decline gives the declined message and keeps the basket (22).
 - **Address validation:** with manual entry, try blank street and city, 101 characters, and postal codes `123`, `12345` and `12a4`. Check that each invalid field shows its message. Try 100 characters and `1234` and confirm that the form submits. A `400` from the API shows its message (16–17, 24).
 - **Address selection:** open checkout as a seeded customer with only a postal code and city. Check that checkout fills those fields and requires a street. Save multiple addresses and check that a complete default is preselected, a second saved address is selectable, and each saved selection sends its `deliveryAddressId` without an entered address or `useDefaultAddress`. Check that manual entry with the save box unchecked leaves the default intact (16–17).
@@ -86,7 +90,7 @@ There is no frontend test framework yet, so `npm run lint` passes and these manu
 
 ## Out of scope
 
-- Reading orders, order tracking and the `Location` header: #11, Kanban4sem/MTOGO-Backend#18 and #46. #11 has a comment to load the confirmation from the API.
+- Order tracking and the `Location` header: #11 and Kanban4sem/MTOGO-Backend#46. The confirmation takes the order number from the route, so it does not need the header.
 - Real payment and card input.
 - Delivery fees, service fees and commission.
 - A frontend test framework.
@@ -129,11 +133,19 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 - **Tests:** The developer will run the manual checkout checks above and verify that settings changes persist after a refresh and that deleting a saved address leaves past orders intact.
 - **Follow-up:** None.
 
+### Spec 5.0 - 2026-11-25 - #48
+
+- **Built:** The confirmation loads the order from `GET /v1/customer/orders/{id}` through its own hook, and checkout no longer passes the order in router state. The customer order service moved to the shared folder, since the confirmation and the customer's order pages both use it. The confirmation and the customer's order pages require the customer role. A shared `isOrderNotFound` in `orderErrors.js` treats `400` and `404` as not found in both views. When the confirmation can't load the order for another reason, it shows the order number from the address, the error and a "Prøv igen" button, since checkout has already emptied the basket. A shared `useLogout` hook goes to the homepage before logging out, and the navigation bar and the dashboard both use it.
+- **Deviations:** Built as if `orderingEnabled` were already removed (#34), as the developer decided. The existing flag guards on these pages are left for #34 to remove. Built in the light workflow, without `/mtogo-grill` or `/mtogo-spec`.
+- **Tests:** `npm run lint` and `npm run build` pass. The order access and logout checks above are for the developer to run against the API and record on #48.
+- **Follow-up:** None.
+
 ## Changelog
 
-| Version | Date       | Change                                        | Issue |
-| ------- | ---------- | --------------------------------------------- | ----- |
-| 1.0     | 2026-11-19 | First version                                 | #8    |
-| 2.0     | 2026-11-22 | Choose, save and display delivery addresses   | #44   |
-| 3.0     | 2026-11-25 | Use API status names and complete order views | #50   |
-| 4.0     | 2026-11-25 | Choose between saved addresses at checkout    | #14   |
+| Version | Date       | Change                                                                           | Issue |
+| ------- | ---------- | -------------------------------------------------------------------------------- | ----- |
+| 1.0     | 2026-11-19 | First version                                                                    | #8    |
+| 2.0     | 2026-11-22 | Choose, save and display delivery addresses                                      | #44   |
+| 3.0     | 2026-11-25 | Use API status names and complete order views                                    | #50   |
+| 4.0     | 2026-11-25 | Choose between saved addresses at checkout                                       | #14   |
+| 5.0     | 2026-11-25 | Load the confirmation from the API, customers only, logout lands on the homepage | #48   |
