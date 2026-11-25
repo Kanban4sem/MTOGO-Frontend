@@ -1,6 +1,6 @@
 # Coding Standards
 
-**Version:** 5.0 · **Date:** 2026-11-22
+**Version:** 6.0 · **Date:** 2026-11-25
 
 ## Overview
 
@@ -43,6 +43,7 @@ Names describe what something is or does in [domain language](../CONTRIBUTING.md
 ### REST API and JSON
 
 - **Paths:** lowercase plural nouns, kebab-case for more than one word (`/orders`, `/menu-items/{id}`). The HTTP method carries the action.
+- **Path exceptions:** a role scope is singular, because it names whose view this is, not a collection (`/v1/customer/orders`, `/v1/delivery-agent/orders`). Login and logout are actions on the session, not resources (`/v1/users/login`, `/v1/users/logout`).
 - **JSON fields:** camelCase (`deliveryAddress`).
 - **Enum values:** UPPER_SNAKE_CASE (`IN_DELIVERY`).
 - **Dates:** `YYYY-MM-DD`. **Timestamps:** ISO-8601.
@@ -147,3 +148,4 @@ return isEnabled("authEnabled") && <LoginButton />;
 | 4.0     | 2026-11-16 | Tests for changes to behaviour, feature flag steps, each rule stated once | #26      |
 | 4.1     | 2026-11-20 | Where page folders and services go                                        | #36      |
 | 5.0     | 2026-11-22 | Layout and route-level page styles belong in globals.css                  | #42      |
+| 6.0     | 2026-11-25 | REST paths: singular role scopes, login and logout as session actions     | #55      |
