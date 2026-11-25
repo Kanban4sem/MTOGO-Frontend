@@ -1,9 +1,13 @@
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
-import AccountDetails from '@/shared/components/AccountDetails/AccountDetails.jsx'
+import ProfileOverview from '@/shared/components/ProfileOverview/ProfileOverview.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
-import { CUSTOMER_ORDERS_PATH } from '@/shared/data/paths.js'
+import {
+	CUSTOMER_ORDERS_PATH,
+	CUSTOMER_SETTINGS_PATH,
+} from '@/shared/data/paths.js'
+import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 import { useCanSeeCustomerOrders } from '@/shared/hooks/useCanSeeCustomerOrders.js'
 
@@ -11,6 +15,7 @@ import { useCanSeeCustomerOrders } from '@/shared/hooks/useCanSeeCustomerOrders.
 export default function ProfilePage() {
 	const { user } = useAuth()
 	const canSeeCustomerOrders = useCanSeeCustomerOrders()
+	const isCustomer = user?.role === USER_ROLES.CUSTOMER
 
 	return (
 		<>
@@ -22,18 +27,24 @@ export default function ProfilePage() {
 					</RequestState>
 				}
 			>
-				<section
-					className="profilePage"
-					aria-labelledby="profile-title"
-				>
-					<h1 id="profile-title">Min profil</h1>
-					<AccountDetails user={user} />
-					{canSeeCustomerOrders && (
-						<p>
-							<Link to={CUSTOMER_ORDERS_PATH}>Mine ordrer</Link>
-						</p>
-					)}
-				</section>
+				<ProfileOverview
+					title="Min profil"
+					user={user}
+					actions={
+						isCustomer && (
+							<>
+								{canSeeCustomerOrders && (
+									<Link to={CUSTOMER_ORDERS_PATH}>
+										Mine ordrer
+									</Link>
+								)}
+								<Link to={CUSTOMER_SETTINGS_PATH}>
+									Indstillinger
+								</Link>
+							</>
+						)
+					}
+				/>
 			</ProtectedRoutes>
 		</>
 	)

@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
 import { getRestaurantDirectory } from '@/shared/services/restaurantService.js'
 
-export function useRestaurants() {
-	const [state, setState] = useState({
-		restaurants: [],
-		isLoading: true,
-		error: null,
-	})
+const LOADING = { restaurants: [], isLoading: true, error: null }
+
+export function useRestaurants(limit) {
+	const [state, setState] = useState(LOADING)
+	const [attempt, setAttempt] = useState(0)
 
 	useEffect(() => {
 		const controller = new AbortController()
 
-		getRestaurantDirectory(controller.signal)
+		getRestaurantDirectory(controller.signal, limit)
 			.then((restaurants) => {
 				if (!controller.signal.aborted)
 					setState({ restaurants, isLoading: false, error: null })
@@ -22,7 +21,12 @@ export function useRestaurants() {
 			})
 
 		return () => controller.abort()
-	}, [])
+	}, [attempt, limit])
 
-	return state
+	function retry() {
+		setState(LOADING)
+		setAttempt((previous) => previous + 1)
+	}
+
+	return { ...state, retry }
 }

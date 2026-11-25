@@ -1,12 +1,12 @@
 import styles from '@/features/home-page/TrustedBy/TrustedBy.module.css'
 
 const companies = [
-	'nord.',
-	'FORMA',
-	'studio lune',
-	'FÆLLES',
-	'goodpeople',
-	'ATELIER 06',
+	'Subway',
+	'Domino’s',
+	'KFC',
+	'Burger King',
+	'Pizza Hut',
+	'McDonald’s',
 ]
 
 export default function TrustedBy() {

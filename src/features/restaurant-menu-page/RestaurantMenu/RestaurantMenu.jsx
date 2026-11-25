@@ -1,6 +1,8 @@
 import { Helmet } from 'react-helmet-async'
+import { Link } from 'react-router-dom'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
+import { RESTAURANTS_PATH } from '@/shared/data/paths.js'
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import AddToBasketButton from '@/features/restaurant-menu-page/AddToBasketButton/AddToBasketButton.jsx'
@@ -23,9 +25,14 @@ export default function RestaurantMenu({ restaurantId }) {
 	return (
 		<div className={styles.page}>
 			<Helmet title={restaurant?.name || 'Restaurantmenu'} />
-			<a className={styles.back} href="/#restaurants">
-				<span aria-hidden="true">←</span> Alle restauranter
-			</a>
+			<Link className={styles.back} to={RESTAURANTS_PATH}>
+				<span
+					className="chevron"
+					data-direction="left"
+					aria-hidden="true"
+				/>
+				Alle restauranter
+			</Link>
 			{isLoading ? (
 				<RequestState title="Vi finder menuen frem…" isLoading />
 			) : error ? (
@@ -39,7 +46,7 @@ export default function RestaurantMenu({ restaurantId }) {
 					{error.status === 404
 						? 'Restauranten findes ikke eller tager ikke imod bestillinger lige nu.'
 						: 'Prøv at genindlæse siden om lidt.'}{' '}
-					<a href="/#restaurants">Find en restaurant</a>
+					<Link to={RESTAURANTS_PATH}>Find en restaurant</Link>
 				</RequestState>
 			) : (
 				<>

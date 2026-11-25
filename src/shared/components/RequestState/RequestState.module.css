@@ -18,7 +18,7 @@
 	font-size: 25px;
 }
 
-.state h2 {
+.state :is(h1, h2) {
 	margin-bottom: 12px;
 	font-size: 22px;
 }

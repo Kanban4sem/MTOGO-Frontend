@@ -13,9 +13,6 @@ export function placeOrderFromBasket(basket, addressSelection, paymentToken) {
 			menuItemId,
 			quantity,
 		})),
-		// Jackson requires both primitive boolean fields on the request record.
-		useDefaultAddress: false,
-		saveAsDefault: false,
 		...addressSelection,
 		paymentToken,
 	})

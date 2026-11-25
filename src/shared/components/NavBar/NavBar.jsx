@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import BrandLink from '@/shared/components/BrandLink/BrandLink.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
 import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
@@ -6,7 +6,9 @@ import LanguageIndicator from '@/shared/components/LanguageIndicator/LanguageInd
 import {
 	CHECKOUT_PATH,
 	CUSTOMER_ORDERS_PATH,
+	CUSTOMER_SETTINGS_PATH,
 	DASHBOARD_PATH,
+	RESTAURANTS_PATH,
 	RESTAURANT_ORDERS_PATH,
 	RESTAURANT_PROFILE_PATH,
 } from '@/shared/data/paths.js'
@@ -16,10 +18,13 @@ import { formatItemCount } from '@/shared/utils/basketMessages.js'
 import { useNavBar } from '@/shared/components/NavBar/NavBar.hooks.js'
 import styles from '@/shared/components/NavBar/NavBar.module.css'
 
-const PROFILE_LINKS = [
-	{ label: 'Profiloversigt', to: '/profile' },
-	{ label: 'Mine ordrer', to: CUSTOMER_ORDERS_PATH },
-]
+const CUSTOMER_PROFILE_LINK = { label: 'Profiloversigt', to: '/profile' }
+const CUSTOMER_SETTINGS_LINK = {
+	label: 'Indstillinger',
+	to: CUSTOMER_SETTINGS_PATH,
+}
+const CUSTOMER_PROFILE_LINKS = [CUSTOMER_PROFILE_LINK, CUSTOMER_SETTINGS_LINK]
+const CUSTOMER_ORDER_LINK = { label: 'Mine ordrer', to: CUSTOMER_ORDERS_PATH }
 const RESTAURANT_PROFILE_LINK = {
 	label: 'Virksomhedsprofil',
 	to: RESTAURANT_PROFILE_PATH,
@@ -56,7 +61,7 @@ function NavBar() {
 				<BrandLink />
 				<ul className={styles.entries}>
 					<li>
-						<a href="/#restaurants">Restauranter</a>
+						<NavLink to={RESTAURANTS_PATH}>Restauranter</NavLink>
 					</li>
 					<li>
 						<span>For virksomheder</span>
@@ -100,14 +105,19 @@ function NavBar() {
 									}
 									buttonClassName={styles.account}
 								/>
-							) : orderingEnabled &&
-							  (isCustomer || isDeliveryAgent) ? (
+							) : isCustomer ||
+							  (orderingEnabled && isDeliveryAgent) ? (
 								<Dropdown
 									label="Din profil"
 									links={
 										isDeliveryAgent
 											? DELIVERY_AGENT_LINKS
-											: PROFILE_LINKS
+											: orderingEnabled
+												? [
+														...CUSTOMER_PROFILE_LINKS,
+														CUSTOMER_ORDER_LINK,
+													]
+												: CUSTOMER_PROFILE_LINKS
 									}
 									buttonClassName={styles.account}
 								/>

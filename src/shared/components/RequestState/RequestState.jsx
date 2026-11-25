@@ -1,6 +1,12 @@
 import styles from '@/shared/components/RequestState/RequestState.module.css'
 
-export default function RequestState({ title, children, isLoading = false }) {
+export default function RequestState({
+	title,
+	children,
+	isLoading = false,
+	headingLevel: Heading = 'h2',
+	symbol = '↗',
+}) {
 	return (
 		<div
 			className={styles.state}
@@ -9,9 +15,9 @@ export default function RequestState({ title, children, isLoading = false }) {
 			aria-busy={isLoading}
 		>
 			<span className={styles.symbol} aria-hidden="true">
-				{isLoading ? '…' : '↗'}
+				{isLoading ? '…' : symbol}
 			</span>
-			<h2>{title}</h2>
+			<Heading>{title}</Heading>
 			{children && <p>{children}</p>}
 		</div>
 	)

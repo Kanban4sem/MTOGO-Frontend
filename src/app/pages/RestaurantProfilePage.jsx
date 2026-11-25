@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import ProtectedRoutes from '@/app/routes/ProtectedRoutes.jsx'
-import AccountDetails from '@/shared/components/AccountDetails/AccountDetails.jsx'
+import ProfileOverview from '@/shared/components/ProfileOverview/ProfileOverview.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
@@ -19,13 +19,7 @@ export default function RestaurantProfilePage() {
 					</RequestState>
 				}
 			>
-				<section
-					className="profilePage"
-					aria-labelledby="restaurant-profile-title"
-				>
-					<h1 id="restaurant-profile-title">Virksomhedsprofil</h1>
-					<AccountDetails user={user} />
-				</section>
+				<ProfileOverview title="Virksomhedsprofil" user={user} />
 			</ProtectedRoutes>
 		</>
 	)

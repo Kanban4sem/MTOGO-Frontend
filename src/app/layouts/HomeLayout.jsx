@@ -1,9 +1,10 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, ScrollRestoration } from 'react-router-dom'
 import NavBar from '@/shared/components/NavBar/NavBar.jsx'
 
 export default function HomeLayout({ children }) {
 	return (
 		<>
+			<ScrollRestoration />
 			<a className="homeSkipLink" href="#main">
 				Gå til indhold
 			</a>

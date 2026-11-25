@@ -4,11 +4,18 @@ import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 
 export default function NotFoundPage() {
 	return (
-		<>
-			<Helmet title="Siden blev ikke fundet" />
-			<RequestState title="Denne side er ikke på menuen">
-				<Link to="/">Gå tilbage til forsiden</Link>
+		<div className="notFoundPage">
+			<Helmet title="404 – Siden blev ikke fundet" />
+			<RequestState
+				title="Denne side er desværre ikke på menuen!"
+				headingLevel="h1"
+				symbol=":("
+			>
+				<span>Fejl 404.</span>
+				<Link className="notFoundPageHomeLink" to="/">
+					Tilbage til forsiden
+				</Link>
 			</RequestState>
-		</>
+		</div>
 	)
 }

@@ -1,10 +1,7 @@
 .details {
 	display: grid;
 	gap: 0.25rem;
-	padding: 1rem;
-	border: 1px solid var(--mtogo-border);
-	border-radius: var(--mtogo-border-radius);
-	background: var(--mtogo-surface);
+	margin: 0;
 }
 
 .details dt {

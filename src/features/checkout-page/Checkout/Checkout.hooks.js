@@ -2,15 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getOrderConfirmationPath } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import { listSavedDeliveryAddresses } from '@/shared/services/deliveryAddressService.js'
 import { getSignedInUser } from '@/shared/services/userService.js'
+import { validateDeliveryAddress } from '@/shared/utils/validateDeliveryAddress.js'
 import {
 	PAYMENT_TOKENS,
 	placeOrderFromBasket,
 } from '@/features/checkout-page/services/orderService.js'
-import {
-	DELIVERY_ADDRESS_FIELDS,
-	validateDeliveryAddress,
-} from '@/features/checkout-page/Checkout/checkoutFields.js'
+import { DELIVERY_ADDRESS_FIELDS } from '@/features/checkout-page/Checkout/checkoutFields.js'
 
 const BASKET_KEPT = 'Din kurv er gemt.'
 
@@ -73,36 +72,45 @@ export function useCheckout() {
 	const { basket, emptyBasket } = useBasket()
 	const [fieldErrors, setFieldErrors] = useState({})
 	const [addressRequest, setAddressRequest] = useState(null)
-	const [useNewAddress, setUseNewAddress] = useState(false)
+	const [addressChoice, setAddressChoice] = useState(null)
 	const [paymentToken, setPaymentToken] = useState(PAYMENT_TOKENS.CARD)
 	const [failure, setFailure] = useState(null)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	// State only updates on the next render, so a second submit in the same tick needs the ref to be stopped.
 	const isSubmittingRef = useRef(false)
-	const profileAddress = addressRequest?.address
-	const defaultAddress =
-		profileAddress?.isDefault && profileAddress.street?.trim()
+	const savedAddresses = addressRequest?.savedAddresses ?? []
+	const defaultAddress = savedAddresses.find((address) => address.isDefault)
+	const selectedAddress =
+		addressChoice === null
+			? defaultAddress
+			: savedAddresses.find(
+					(address) => String(address.id) === addressChoice,
+				)
+	const profileAddress = addressRequest?.profile?.address
+	const addressDefaults =
+		addressRequest?.failed || !profileAddress?.street
 			? profileAddress
 			: null
-	const useDefaultAddress = Boolean(defaultAddress && !useNewAddress)
 	const isAddressLoading = addressRequest === null
 
 	useEffect(() => {
 		const controller = new AbortController()
 		const { signal } = controller
 
-		async function loadProfileAddress() {
-			try {
-				const user = await getSignedInUser(signal)
-				if (!signal.aborted) {
-					setAddressRequest({ address: user.profile?.address })
-				}
-			} catch {
-				if (!signal.aborted) setAddressRequest({ failed: true })
-			}
+		async function loadAddresses() {
+			const [user, addresses] = await Promise.allSettled([
+				getSignedInUser(signal),
+				listSavedDeliveryAddresses(signal),
+			])
+			if (signal.aborted) return
+			setAddressRequest({
+				profile: user.value?.profile,
+				savedAddresses: addresses.value ?? [],
+				failed: addresses.status === 'rejected',
+			})
 		}
 
-		void loadProfileAddress()
+		void loadAddresses()
 		return () => controller.abort()
 	}, [])
 
@@ -110,8 +118,8 @@ export function useCheckout() {
 		event.preventDefault()
 		if (isSubmittingRef.current || isAddressLoading) return
 		setFailure(null)
-		let addressSelection = { useDefaultAddress: true }
-		if (!useDefaultAddress) {
+		let addressSelection = { deliveryAddressId: selectedAddress?.id }
+		if (!selectedAddress) {
 			const form = event.currentTarget
 			const formData = new FormData(form)
 			const deliveryAddress = {
@@ -126,9 +134,10 @@ export function useCheckout() {
 				form.elements.namedItem(firstInvalidField)?.focus()
 				return
 			}
-			addressSelection = { deliveryAddress }
-			if (formData.has('saveAsDefault')) {
-				addressSelection.saveAsDefault = true
+			addressSelection = {
+				deliveryAddress,
+				useDefaultAddress: false,
+				saveAsDefault: formData.has('saveAsDefault'),
 			}
 		}
 
@@ -147,20 +156,34 @@ export function useCheckout() {
 		} catch (error) {
 			isSubmittingRef.current = false
 			setIsSubmitting(false)
-			setFailure(getCheckoutFailure(error))
+			if (error.status === 404 && selectedAddress) {
+				setAddressRequest((previous) => ({
+					...previous,
+					savedAddresses: previous.savedAddresses.filter(
+						(address) => address.id !== selectedAddress.id,
+					),
+				}))
+				setAddressChoice('')
+				setFailure({
+					message: `${error.message} ${BASKET_KEPT} Vælg en anden adresse, eller indtast den manuelt.`,
+				})
+			} else {
+				setFailure(getCheckoutFailure(error))
+			}
 		}
 	}
 
 	return {
-		defaultAddress,
-		useDefaultAddress,
-		setUseNewAddress,
+		savedAddresses,
+		selectedAddress,
+		setAddressChoice,
+		profile: addressRequest?.profile,
 		isAddressLoading,
 		addressLoadFailed: addressRequest?.failed,
 		deliveryAddressFields: withFieldState(
 			DELIVERY_ADDRESS_FIELDS,
 			fieldErrors,
-			defaultAddress ? null : profileAddress,
+			addressDefaults,
 		),
 		paymentToken,
 		setPaymentToken,

@@ -1,0 +1,131 @@
+.form,
+.request {
+	max-width: 48rem;
+	margin-inline: auto;
+	padding-block: clamp(1.5rem, 5vw, 3.5rem);
+}
+
+.form {
+	display: grid;
+	gap: 1.25rem;
+}
+
+.heading {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.heading h1,
+.description,
+.error,
+.status {
+	margin: 0;
+}
+
+.description,
+.dialog p {
+	color: var(--mtogo-text-secondary);
+}
+
+.error {
+	color: var(--mtogo-error-text);
+}
+
+.status {
+	color: var(--color-success);
+}
+
+.section {
+	min-width: 0;
+	margin: 0;
+	padding: clamp(0.875rem, 3vw, 1.5rem);
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-surface);
+}
+
+.section legend {
+	padding-inline: 0.375rem;
+	font-weight: 600;
+}
+
+.addressList {
+	display: grid;
+	justify-items: start;
+	gap: 1rem;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.addressList > legend {
+	margin-bottom: 0.75rem;
+	padding: 0;
+	font-size: 1.125rem;
+	font-weight: 700;
+}
+
+.addressList > .section {
+	width: 100%;
+}
+
+.clearPhone {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+.addressActions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 0.75rem;
+}
+
+.fields {
+	display: grid;
+	gap: 1rem;
+}
+
+.fields input::placeholder {
+	color: var(--mtogo-text-brand);
+	opacity: 1;
+}
+
+@media (min-width: 36rem) {
+	.fields {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.address > :first-child {
+		grid-column: 1 / -1;
+	}
+}
+
+.dialog {
+	width: min(28rem, calc(100vw - 2rem));
+	padding: 1.5rem;
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-surface);
+	color: var(--mtogo-text-primary);
+}
+
+.dialog::backdrop {
+	background: rgb(17 24 39 / 45%);
+}
+
+.dialog h2 {
+	margin-top: 0;
+}
+
+.dialogActions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.625rem;
+}

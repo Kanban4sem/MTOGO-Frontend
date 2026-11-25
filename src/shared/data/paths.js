@@ -1,6 +1,7 @@
 // Addresses that more than one place links to, so a route change is made in one place.
 export const CHECKOUT_PATH = '/checkout'
 
+export const RESTAURANTS_PATH = '/restaurants'
 export const RESTAURANT_MENU_ROUTE = '/restaurant/:restaurantId/menu'
 
 export function getRestaurantMenuPath(restaurantId) {
@@ -14,6 +15,7 @@ export function getOrderConfirmationPath(orderId) {
 }
 
 export const CUSTOMER_ORDERS_PATH = '/profile/orders'
+export const CUSTOMER_SETTINGS_PATH = '/profile/settings'
 export const RESTAURANT_ORDERS_PATH = '/restaurant/orders'
 export const RESTAURANT_PROFILE_PATH = '/restaurant/profile'
 export const DASHBOARD_PATH = '/dashboard'

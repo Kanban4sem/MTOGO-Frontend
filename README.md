@@ -84,7 +84,9 @@ The app calls the API on the relative path `/v1` (set in `src/api/client.js`). I
 
 With `orderingEnabled` on, signed-in customers can open **Din profil → Mine ordrer** at `/profile/orders`. The list and detail pages read the customer's orders from `/v1/customer/orders` and `/v1/customer/orders/{id}`.
 
-At `/checkout`, customers can use their saved delivery address or enter an address for the current order. They can save the entered address as their default when payment succeeds. Checkout reads the profile from `GET /v1/users/me` and places orders through `POST /v1/orders`. Signing out clears the basket on that browser.
+At `/profile/settings`, signed-in customers can update their name and phone number through `PUT /v1/users/me`. They can add, edit and remove saved delivery addresses through `/v1/users/me/delivery-addresses`. The settings page displays the account email as read-only.
+
+At `/checkout`, customers can choose a saved address or enter one for the current order. They can save the entered address as their default after successful payment. Checkout reads the profile and saved addresses from the API and sends `deliveryAddressId` to `POST /v1/orders` when a saved address is selected. Orders retain the address recorded at checkout. Signing out clears the basket on that browser.
 
 Restaurant users can open **Restaurant → Virksomhedsprofil** to see the signed-in account's details. With `orderingEnabled` on, **Restaurant → Ordrer** lists their restaurant's orders newest first and lets them filter by status. The page uses `GET /v1/restaurant/orders` to list orders and `PATCH /v1/restaurant/orders/{id}` to accept or reject a placed order or mark an accepted order as ready.
 

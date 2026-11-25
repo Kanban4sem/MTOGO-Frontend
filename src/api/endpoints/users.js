@@ -20,6 +20,14 @@ export function getCurrentUser(signal) {
 	return client('/users/me', { signal })
 }
 
+export function updateCurrentUser(profile, signal) {
+	return client('/users/me', {
+		method: 'PUT',
+		body: JSON.stringify(profile),
+		signal,
+	})
+}
+
 export function logoutUser() {
 	return client('/users/logout', { method: 'POST' })
 }

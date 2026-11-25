@@ -3,6 +3,7 @@ import {
 	loginUser,
 	logoutUser,
 	registerUser,
+	updateCurrentUser,
 } from '@/api/endpoints/users.js'
 import { clearAuthSession } from '@/shared/utils/authSession.js'
 
@@ -12,6 +13,10 @@ export function registerAccount(registration) {
 
 export function getSignedInUser(signal) {
 	return getCurrentUser(signal)
+}
+
+export function updateCustomerProfile(profile, signal) {
+	return updateCurrentUser(profile, signal)
 }
 
 export async function signIn(credentials) {

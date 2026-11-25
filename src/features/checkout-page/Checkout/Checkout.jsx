@@ -3,7 +3,8 @@ import BasketSummary from '@/shared/components/BasketSummary/BasketSummary.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
-import { getRestaurantMenuPath } from '@/shared/data/paths.js'
+import Select from '@/shared/components/Select/Select.jsx'
+import { getRestaurantMenuPath, RESTAURANTS_PATH } from '@/shared/data/paths.js'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
@@ -33,19 +34,20 @@ export default function Checkout() {
 		return (
 			<RequestState title="Din kurv er tom">
 				Læg nogle retter i kurven, før du bestiller.{' '}
-				<a href="/#restaurants">Find en restaurant</a>
+				<Link to={RESTAURANTS_PATH}>Find en restaurant</Link>
 			</RequestState>
 		)
 	}
-	return <CheckoutForm />
+	return <CheckoutForm accountProfile={user.profile} />
 }
 
-function CheckoutForm() {
+function CheckoutForm({ accountProfile }) {
 	const { basket, total } = useBasket()
 	const {
-		defaultAddress,
-		useDefaultAddress,
-		setUseNewAddress,
+		savedAddresses,
+		selectedAddress,
+		setAddressChoice,
+		profile,
 		isAddressLoading,
 		addressLoadFailed,
 		deliveryAddressFields,
@@ -56,6 +58,10 @@ function CheckoutForm() {
 		submitOrder,
 	} = useCheckout()
 	const menuPath = getRestaurantMenuPath(basket.restaurant.id)
+	const recipientProfile = profile ?? accountProfile
+	const recipient = [recipientProfile?.firstName, recipientProfile?.lastName]
+		.filter(Boolean)
+		.join(' ')
 
 	return (
 		<div className={styles.checkout}>
@@ -82,49 +88,48 @@ function CheckoutForm() {
 			>
 				<fieldset className={styles.group} disabled={isSubmitting}>
 					<legend>Leveringsadresse</legend>
+					{recipient && (
+						<p className={styles.note}>Leveres til {recipient}</p>
+					)}
 					{isAddressLoading && (
 						<p role="status" className={styles.note}>
-							Henter din standardadresse…
+							Henter dine gemte adresser…
 						</p>
 					)}
 					{addressLoadFailed && (
 						<p role="status" className={styles.note}>
-							Vi kunne ikke hente din standardadresse. Du kan
+							Vi kunne ikke hente dine gemte adresser. Du kan
 							indtaste leveringsadressen her.
 						</p>
 					)}
-					{defaultAddress && (
-						<>
-							<label className={styles.option}>
-								<input
-									type="radio"
-									name="deliveryAddressChoice"
-									checked={useDefaultAddress}
-									onChange={() => setUseNewAddress(false)}
-								/>
-								<span>
-									Brug min standardadresse:
-									<span className={styles.savedAddress}>
-										{formatDeliveryAddress(defaultAddress)}
-									</span>
-								</span>
-							</label>
-							<label className={styles.option}>
-								<input
-									type="radio"
-									name="deliveryAddressChoice"
-									checked={!useDefaultAddress}
-									onChange={() => setUseNewAddress(true)}
-								/>
-								Indtast en anden adresse
-							</label>
-						</>
+					{savedAddresses.length > 0 && (
+						<Select
+							label="Vælg leveringsadresse"
+							value={
+								selectedAddress
+									? String(selectedAddress.id)
+									: ''
+							}
+							onChange={(event) =>
+								setAddressChoice(event.target.value)
+							}
+							options={[
+								...savedAddresses.map((address) => ({
+									value: String(address.id),
+									label: `${formatDeliveryAddress(address)}${address.isDefault ? ' (standard)' : ''}`,
+								})),
+								{
+									value: '',
+									label: 'Indtast en anden adresse',
+								},
+							]}
+						/>
 					)}
 					{!isAddressLoading && (
 						<fieldset
 							className={styles.addressFields}
-							hidden={useDefaultAddress}
-							disabled={useDefaultAddress}
+							hidden={Boolean(selectedAddress)}
+							disabled={Boolean(selectedAddress)}
 						>
 							<FormFields fields={deliveryAddressFields} />
 							<label className={styles.option}>

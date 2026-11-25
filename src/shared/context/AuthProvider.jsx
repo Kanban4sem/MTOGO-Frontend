@@ -3,6 +3,7 @@ import {
 	getSignedInUser,
 	signIn,
 	signOut,
+	updateCustomerProfile,
 } from '@/shared/services/userService.js'
 import { AUTH_SESSION_CLEARED } from '@/shared/utils/authSession.js'
 import { AuthContext } from '@/shared/context/AuthContext.jsx'
@@ -95,6 +96,15 @@ export function AuthProvider({ children }) {
 		}
 	}
 
+	async function updateProfile(profile, signal) {
+		const version = sessionVersion.current
+		const updatedUser = await updateCustomerProfile(profile, signal)
+		if (version === sessionVersion.current && !signal?.aborted) {
+			setUser(updatedUser)
+		}
+		return updatedUser
+	}
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -104,6 +114,7 @@ export function AuthProvider({ children }) {
 				isSessionExpired,
 				login,
 				logout,
+				updateProfile,
 			}}
 		>
 			{children}

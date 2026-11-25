@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
+import { RESTAURANTS_PATH } from '@/shared/data/paths.js'
 import styles from '@/features/home-page/Hero/Hero.module.css'
 
 export default function Hero() {
@@ -14,9 +16,10 @@ export default function Hero() {
 					Fra den første sprøde bid til din nye yndlingsret. Find
 					noget, du har lyst til, hos vores restauranter.
 				</p>
-				<a className={styles.cta} href="#restaurants">
-					Udforsk restauranter <span aria-hidden="true">↗</span>
-				</a>
+				<Link className={styles.cta} to={RESTAURANTS_PATH}>
+					Udforsk restauranter
+					<span className="chevron" aria-hidden="true" />
+				</Link>
 			</div>
 			<div className={styles.visual}>
 				<FoodImage

@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 3.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default (#8); no new flag for #50
+**Version:** 4.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default (#8); no new flag for #14 or #50
 
 ## Acceptance criteria
 
@@ -29,7 +29,7 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 13. A logged-in user who is not a customer sees that only customers can order, and no checkout form.
 14. A customer with an empty basket sees that the basket is empty, with a link to the restaurants.
 15. A customer sees the basket's menu items, can change quantities and remove items, and sees the basket total before paying, labelled as a preview.
-16. Checkout selects the customer's complete default delivery address when the profile has one. The customer sees the address and can place the order without entering it again or choose to enter another address. When the profile has only a postal code and city, checkout fills those fields and requires a street. With no profile address, all three fields start empty. The country is fixed to Denmark.
+16. Checkout shows the customer's name and lists all saved delivery addresses. A complete default is selected automatically when present. The customer can choose any saved address or enter another one. A profile with only a postal code and city fills those fields for manual entry. The country is fixed to Denmark.
 17. An entered delivery address is refused before sending when the street or city is blank or longer than 100 characters, or the postal code is not exactly four digits. Each field shows its own message. An entered address applies to the current order. The customer can also choose to save it as the default, which takes effect after successful payment.
 18. A customer chooses between paying by card (simulated), the default, and simulating a declined payment. Under card payment, card number, expiry date and CVC fields are shown but disabled, with the note that the payment is simulated and no money is taken.
 19. "Betal og bestil", followed by the basket total, places the order. While the request runs, the button reads "Afgiver ordren…" and is disabled, so the order is not placed twice.
@@ -42,7 +42,7 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 25. When the session has expired, the user is sent to login with a message that the session has expired, and back to checkout, with the basket kept. Logging out shows no such message.
 26. When the user is not a customer, or ordering is switched off on the server, the basket is kept and a Danish message explains it.
 27. When the server fails or cannot be reached, the basket is kept and a Danish message asks the customer to try again. A server failure shows its error reference when the server gives one. A page that shows an error message gives a Danish message for a network failure instead of the browser's.
-28. When checkout cannot fetch the profile address, it tells the customer and offers manual address entry. An expired session follows the login flow in behaviour 25.
+28. When checkout cannot fetch saved delivery addresses, it tells the customer and offers manual entry. If a selected address disappears before ordering, checkout keeps the basket and lets the customer pick another address or enter it manually. An expired session follows the login flow in behaviour 25.
 29. The confirmation and the delivery agent's orders use the delivery address recorded on the order. Changing the profile's default leaves previous orders' addresses intact. The dashboard shows the street, postal code and city for available orders and for orders assigned to the signed-in agent.
 30. Customers see the recorded delivery address in their order list and order detail.
 31. Delivery agents can expand their order cards to see the order lines, including item names, quantities and subtotals, and the order total.
@@ -51,7 +51,7 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 ## Implementation decisions
 
 - **Flag:** every ordering view and route checks `orderingEnabled` through the existing feature-flag hook. A missing flag counts as off, so the frontend check must be removed before or together with the backend flag: #34 and Kanban4sem/MTOGO-Backend#44.
-- **API:** checkout reads `profile.address` from `GET /v1/users/me` each time the form opens. A profile address marked `isDefault` with a nonblank street is available for reuse. `POST /v1/orders` always sends `lines` (`menuItemId`, `quantity`), `paymentToken` and both address booleans, since the backend requires explicit booleans when reading the request. Reusing the default sets `useDefaultAddress: true` and omits `deliveryAddress`. Manual entry sends `deliveryAddress` (`street`, `postalCode`, `city`) and sets `useDefaultAddress: false`. The save checkbox sets `saveAsDefault`, which is false when unchecked or when using the default address. Requests use the customer's Bearer token. The order response and status codes follow the [backend ordering spec](https://github.com/Kanban4sem/MTOGO-Backend/blob/main/docs/specs/15-place-and-pay-for-an-order.md), updated by Kanban4sem/MTOGO-Backend#61. The delivery agent's order response includes `deliveryAddress` for ready, unassigned orders and orders assigned to the signed-in agent.
+- **API:** checkout reads `GET /v1/users/me` for the customer's name and any legacy postal-area data, and `GET /v1/users/me/delivery-addresses` for the selectable addresses. `POST /v1/orders` sends `lines` (`menuItemId`, `quantity`) and `paymentToken`. Choosing a saved address sends `deliveryAddressId` as the address selection. Manual entry sends `deliveryAddress` (`street`, `postalCode`, `city`) and the `saveAsDefault` checkbox value. Requests use the customer's Bearer token. The delivery agent's order response includes `deliveryAddress` for ready, unassigned orders and orders assigned to the signed-in agent.
 - **Payment token:** card payment sends `mock-card`; the simulated decline sends `decline`.
 - **Basket:** a shared basket provider and hook, since the navigation bar, the menu page and checkout all use it. It holds the restaurant, and for each menu item its ID, name, price and quantity, and enforces the rules in behaviours 4–7. It is stored in `localStorage` under one key, read defensively, and emptied after a `201` or when the user explicitly signs out. The basket total uses the menu prices from `GET /v1/restaurants/{id}/menus`.
 - **Order feature:** checkout and the order confirmation live in a new order feature; the add controls and the basket panel join the restaurant menu feature. Features share code only through the shared folder.
@@ -73,13 +73,13 @@ There is no frontend test framework yet, so `npm run lint` passes and these manu
 - **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and the Danish status name Bestilt; a refresh keeps the confirmation, and the confirmation address opened in a new tab shows only the order number (15, 18–21).
 - **Declined payment:** the simulated decline gives the declined message and keeps the basket (22).
 - **Address validation:** with manual entry, try blank street and city, 101 characters, and postal codes `123`, `12345` and `12a4`. Check that each invalid field shows its message. Try 100 characters and `1234` and confirm that the form submits. A `400` from the API shows its message (16–17, 24).
-- **Address selection:** open checkout as a seeded customer with only a postal code and city. Check that checkout fills those fields and requires a street. With a complete default, check that it is selected and checkout sends `useDefaultAddress: true` and `saveAsDefault: false` without an entered address. Select another address and check that an unchecked save box sends the new delivery address with both booleans set to false and leaves the default intact (16–17).
+- **Address selection:** open checkout as a seeded customer with only a postal code and city. Check that checkout fills those fields and requires a street. Save multiple addresses and check that a complete default is preselected, a second saved address is selectable, and each saved selection sends its `deliveryAddressId` without an entered address or `useDefaultAddress`. Check that manual entry with the save box unchecked leaves the default intact (16–17).
 - **Saving an address:** select a new address and check the save box. Simulate a declined payment and verify that the basket, the form and the existing profile address are retained. Then pay successfully, check that the request sent `saveAsDefault: true`, and reopen checkout in the same session to verify that the new default is selected (16–17, 20, 22).
 - **Address display:** verify that an available order card shows its street, postal code and city without opening the card. Check that the assigned agent still sees them after taking it and that a second agent no longer sees the taken order. Change the customer's default and check that the prior order still uses its original address (29).
 - **Customer orders:** open the list and detail for the placed order. Compare the delivery address and the Danish status name with the API and the confirmation. Change the customer's default and check that the previous order still shows its original address (30, 32).
 - **Restaurant orders:** compare Bestilt with the customer views for the same order. Accept it and mark it ready. Check that the status badge, available filter labels and update notice use the API's Danish names, including Klar til afhentning (32).
 - **Delivery-agent orders:** expand the available order and check its item names, quantities, subtotals and total against the API. Take it and check the same details in active orders. Pick it up and deliver it, then check the status names on the update notices and the active and completed order cards (31–32). Record the order-view checks on #50.
-- **Profile lookup failure:** fail `GET /v1/users/me` during checkout while leaving order placement available. Check that checkout shows a message and the entered address can still be used (28).
+- **Address lookup failure and stale selection:** fail `GET /v1/users/me/delivery-addresses` and verify that manual address entry remains available. Select an address, delete it in a second tab and place the order. Check that checkout keeps the basket and lets the customer choose another address (28).
 - **Errors:** an item made unavailable during checkout gives the `409` message with a link to the menu (23); a removed token gives the login detour with the expired-session message, and logging out and in again shows no such message (25); the API stopped gives the Danish connection message at checkout (27).
 - **Sign out:** put items in the basket, sign out and refresh. Check that the basket is empty, including in another open tab. Sign in as a delivery agent or restaurant user and check that the navigation bar has no basket link (9, 11). Also check that a session expiration still preserves the basket through sign-in (25).
 - **Layout:** mobile and desktop widths, keyboard-only use, and the disabled card fields (10, 18).
@@ -122,6 +122,13 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 - **Tests:** The manual order-view checks above are for the developer to run against the API and record on #50.
 - **Follow-up:** None.
 
+### Spec 4.0 - 2026-11-25 - #14
+
+- **Built:** Checkout lists saved delivery addresses, sends a selected address ID and displays the recipient name. Customer settings can update name and phone number and add, edit or delete delivery addresses.
+- **Deviations:** None.
+- **Tests:** The developer will run the manual checkout checks above and verify that settings changes persist after a refresh and that deleting a saved address leaves past orders intact.
+- **Follow-up:** None.
+
 ## Changelog
 
 | Version | Date       | Change                                        | Issue |
@@ -129,3 +136,4 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 | 1.0     | 2026-11-19 | First version                                 | #8    |
 | 2.0     | 2026-11-22 | Choose, save and display delivery addresses   | #44   |
 | 3.0     | 2026-11-25 | Use API status names and complete order views | #50   |
+| 4.0     | 2026-11-25 | Choose between saved addresses at checkout    | #14   |

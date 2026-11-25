@@ -63,3 +63,9 @@
 		gap: 28px 12px;
 	}
 }
+
+@media (max-width: 22rem) {
+	.companies {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
