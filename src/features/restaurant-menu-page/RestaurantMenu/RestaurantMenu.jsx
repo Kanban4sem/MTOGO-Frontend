@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { RESTAURANTS_PATH } from '@/shared/data/paths.js'
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import AddToBasketButton from '@/features/restaurant-menu-page/AddToBasketButton/AddToBasketButton.jsx'
 import BasketBottomBar from '@/features/restaurant-menu-page/BasketBottomBar/BasketBottomBar.jsx'
@@ -18,9 +17,6 @@ import styles from '@/features/restaurant-menu-page/RestaurantMenu/RestaurantMen
 export default function RestaurantMenu({ restaurantId }) {
 	const { restaurant, menus, isLoading, error } =
 		useRestaurantMenu(restaurantId)
-	const { isEnabled } = useFeatureFlags()
-	const isOrderingEnabled =
-		isEnabled('orderingEnabled') && restaurant !== null
 
 	return (
 		<div className={styles.page}>
@@ -61,18 +57,14 @@ export default function RestaurantMenu({ restaurantId }) {
 					</header>
 					<MenuBar menus={menus} />
 					<hr className={styles.menuDivider} />
-					{isOrderingEnabled ? (
-						<OrderableMenus restaurant={restaurant} menus={menus} />
-					) : (
-						<Menus menus={menus} />
-					)}
+					<Menus restaurant={restaurant} menus={menus} />
 				</>
 			)}
 		</div>
 	)
 }
 
-function OrderableMenus({ restaurant, menus }) {
+function Menus({ restaurant, menus }) {
 	const basketRestaurant = { id: restaurant.id, name: restaurant.name }
 	const {
 		requestAdd,
@@ -83,17 +75,50 @@ function OrderableMenus({ restaurant, menus }) {
 
 	return (
 		<>
-			<div className={styles.ordering}>
-				<Menus
-					menus={menus}
-					renderAddControl={(item) => (
-						<AddToBasketButton
-							restaurantId={restaurant.id}
-							menuItem={item}
-							onAdd={requestAdd}
-						/>
+			<div className={styles.menuWithBasket}>
+				<div className={styles.menus}>
+					{menus.length === 0 ? (
+						<RequestState title="Menuen er på vej">
+							Restauranten har ingen aktiv menu lige nu. Kig forbi
+							igen senere.
+						</RequestState>
+					) : (
+						menus.map((menu) => (
+							<section
+								key={menu.id}
+								className={styles.menu}
+								aria-labelledby={`menu-${menu.id}`}
+							>
+								<div className={styles.menuHeading}>
+									<h2 id={`menu-${menu.id}`}>{menu.name}</h2>
+									{menu.description && (
+										<p>{menu.description}</p>
+									)}
+								</div>
+								{menu.items.length === 0 ? (
+									<RequestState title="Køkkenet gør klar">
+										Denne menu har ingen tilgængelige retter
+										lige nu.
+									</RequestState>
+								) : (
+									<ul className={styles.items}>
+										{menu.items.map((item) => (
+											<MenuItem
+												key={item.id}
+												restaurantId={restaurant.id}
+												item={item}
+												onAdd={requestAdd}
+											/>
+										))}
+									</ul>
+								)}
+							</section>
+						))
 					)}
-				/>
+					<p className={styles.priceNote}>
+						Alle priser er i danske kroner.
+					</p>
+				</div>
 				<div className={styles.basketRail}>
 					<BasketSidePanel />
 				</div>
@@ -124,63 +149,28 @@ function MenuBar({ menus }) {
 	)
 }
 
-function Menus({ menus, renderAddControl }) {
+function MenuItem({ restaurantId, item, onAdd }) {
 	return (
-		<div className={styles.menus}>
-			{menus.length === 0 ? (
-				<RequestState title="Menuen er på vej">
-					Restauranten har ingen aktiv menu lige nu. Kig forbi igen
-					senere.
-				</RequestState>
-			) : (
-				menus.map((menu) => (
-					<section
-						key={menu.id}
-						className={styles.menu}
-						aria-labelledby={`menu-${menu.id}`}
-					>
-						<div className={styles.menuHeading}>
-							<h2 id={`menu-${menu.id}`}>{menu.name}</h2>
-							{menu.description && <p>{menu.description}</p>}
-						</div>
-						{menu.items.length === 0 ? (
-							<RequestState title="Køkkenet gør klar">
-								Denne menu har ingen tilgængelige retter lige
-								nu.
-							</RequestState>
-						) : (
-							<ul className={styles.items}>
-								{menu.items.map((item) => (
-									<li key={item.id} className={styles.item}>
-										<FoodImage
-											className={styles.itemImage}
-											src={item.imageUrl}
-											alt={item.name}
-											loading="lazy"
-										/>
-										<div className={styles.itemDescription}>
-											<h3>{item.name}</h3>
-											{item.description && (
-												<p>{item.description}</p>
-											)}
-										</div>
-										{renderAddControl ? (
-											<div className={styles.order}>
-												<Price price={item.price} />
-												{renderAddControl(item)}
-											</div>
-										) : (
-											<Price price={item.price} />
-										)}
-									</li>
-								))}
-							</ul>
-						)}
-					</section>
-				))
-			)}
-			<p className={styles.priceNote}>Alle priser er i danske kroner.</p>
-		</div>
+		<li className={styles.item}>
+			<FoodImage
+				className={styles.itemImage}
+				src={item.imageUrl}
+				alt={item.name}
+				loading="lazy"
+			/>
+			<div className={styles.itemDescription}>
+				<h3>{item.name}</h3>
+				{item.description && <p>{item.description}</p>}
+			</div>
+			<div className={styles.order}>
+				<Price price={item.price} />
+				<AddToBasketButton
+					restaurantId={restaurantId}
+					menuItem={item}
+					onAdd={onAdd}
+				/>
+			</div>
+		</li>
 	)
 }
 

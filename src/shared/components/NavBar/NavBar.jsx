@@ -26,8 +26,12 @@ const CUSTOMER_SETTINGS_LINK = {
 	label: 'Indstillinger',
 	to: CUSTOMER_SETTINGS_PATH,
 }
-const CUSTOMER_PROFILE_LINKS = [CUSTOMER_PROFILE_LINK, CUSTOMER_SETTINGS_LINK]
 const CUSTOMER_ORDER_LINK = { label: 'Mine ordrer', to: CUSTOMER_ORDERS_PATH }
+const CUSTOMER_LINKS = [
+	CUSTOMER_PROFILE_LINK,
+	CUSTOMER_SETTINGS_LINK,
+	CUSTOMER_ORDER_LINK,
+]
 const RESTAURANT_PROFILE_LINK = {
 	label: 'Virksomhedsprofil',
 	to: RESTAURANT_PROFILE_PATH,
@@ -52,13 +56,8 @@ function NavBar() {
 	} = useNavBar()
 	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
-	const orderingEnabled = isEnabled('orderingEnabled')
-	const notificationCustomerId = orderingEnabled ? customerId : null
 	const showBasket =
-		orderingEnabled &&
-		!isLoading &&
-		(!isAuthenticated || isCustomer) &&
-		itemCount > 0
+		!isLoading && (!isAuthenticated || isCustomer) && itemCount > 0
 
 	return (
 		<header className={styles.header}>
@@ -84,8 +83,8 @@ function NavBar() {
 					)}
 					{isAuthenticated && !isLoading && (
 						<NotificationDropdown
-							key={notificationCustomerId ?? 'signed-in'}
-							enabled={notificationCustomerId !== null}
+							key={customerId ?? 'signed-in'}
+							enabled={customerId !== null}
 						/>
 					)}
 					{isLoading ? (
@@ -103,26 +102,16 @@ function NavBar() {
 							{isRestaurant ? (
 								<Dropdown
 									label="Restaurant"
-									links={
-										orderingEnabled
-											? RESTAURANT_LINKS
-											: [RESTAURANT_PROFILE_LINK]
-									}
+									links={RESTAURANT_LINKS}
 									buttonClassName={styles.account}
 								/>
-							) : isCustomer ||
-							  (orderingEnabled && isDeliveryAgent) ? (
+							) : isCustomer || isDeliveryAgent ? (
 								<Dropdown
 									label="Din profil"
 									links={
 										isDeliveryAgent
 											? DELIVERY_AGENT_LINKS
-											: orderingEnabled
-												? [
-														...CUSTOMER_PROFILE_LINKS,
-														CUSTOMER_ORDER_LINK,
-													]
-												: CUSTOMER_PROFILE_LINKS
+											: CUSTOMER_LINKS
 									}
 									buttonClassName={styles.account}
 								/>

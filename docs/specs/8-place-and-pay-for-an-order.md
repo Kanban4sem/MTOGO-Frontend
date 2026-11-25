@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 5.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** `orderingEnabled`, off by default (#8); no new flag for #14, #50 or #48
+**Version:** 6.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** none; `orderingEnabled` from #8 was removed in #34
 
 ## Acceptance criteria
 
@@ -12,8 +12,8 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 
 ## Behaviour
 
-1. The basket, the checkout and the order confirmation are shown only when `orderingEnabled` is on. When it is off or unset, the menu page looks as it does today and the checkout and confirmation addresses show the not-found page.
-2. Logging in at checkout also needs `authEnabled`. When it is off, a logged-out user at checkout is told that ordering needs login, with no link to log in.
+1. The basket, the checkout, the order confirmation and the order views are always shown, without a feature flag.
+2. Logging in at checkout needs `authEnabled`. When it is off, a logged-out user at checkout is told that ordering needs login, with no link to log in.
 
 3. Anyone can add a menu item to the basket from the restaurant's menu page, logged in or not.
 4. A basket holds menu items from one restaurant. Adding a menu item from another restaurant asks the customer whether to empty the basket and start a new one; declining leaves the basket unchanged.
@@ -51,7 +51,7 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 
 ## Implementation decisions
 
-- **Flag:** every ordering view and route checks `orderingEnabled` through the existing feature-flag hook. A missing flag counts as off, so the frontend check must be removed before or together with the backend flag: #34 and Kanban4sem/MTOGO-Backend#44.
+- **Flag:** no ordering view or route checks a flag. #34 removed `orderingEnabled` before or together with the backend flag (Kanban4sem/MTOGO-Backend#44), since the frontend treated a missing flag as off.
 - **API:** checkout reads `GET /v1/users/me` for the customer's name and any legacy postal-area data, and `GET /v1/users/me/delivery-addresses` for the selectable addresses. `POST /v1/orders` sends `lines` (`menuItemId`, `quantity`) and `paymentToken`. Choosing a saved address sends `deliveryAddressId` as the address selection. Manual entry sends `deliveryAddress` (`street`, `postalCode`, `city`) and the `saveAsDefault` checkbox value. Requests use the customer's Bearer token. The delivery agent's order response includes `deliveryAddress` for ready, unassigned orders and orders assigned to the signed-in agent.
 - **Payment token:** card payment sends `mock-card`; the simulated decline sends `decline`.
 - **Basket:** a shared basket provider and hook, since the navigation bar, the menu page and checkout all use it. It holds the restaurant, and for each menu item its ID, name, price and quantity, and enforces the rules in behaviours 4–7. It is stored in `localStorage` under one key, read defensively, and emptied after a `201` or when the user explicitly signs out. The basket total uses the menu prices from `GET /v1/restaurants/{id}/menus`.
@@ -67,9 +67,9 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 
 ## Testing decisions
 
-There is no frontend test framework yet, so `npm run lint` passes and these manual checks run against the API with `orderingEnabled` and `authEnabled` on unless stated:
+There is no frontend test framework yet, so `npm run lint` passes and these manual checks run against the API with `authEnabled` on unless stated:
 
-- **Flag:** with `orderingEnabled` on, off and unset, the basket, navigation link, checkout and confirmation appear only when on (behaviour 1). With `authEnabled` off, checkout shows no login link (2).
+- **Flag:** with no `orderingEnabled` in the backend's `.env`, the menu page's add buttons and basket, the basket link, checkout, the confirmation, the customer's order pages and their profile link, the restaurant's orders and the delivery agent's dashboard all appear for their roles (behaviour 1). With `authEnabled` off, checkout shows no login link (2).
 - **Basket rules:** add, raise, lower and remove; adding the same menu item again; a menu item from a second restaurant asks first, and declining keeps the basket; 20 menu items and quantity 20 disable the buttons with the message; the basket total; a refresh keeps the basket (3–9, 11).
 - **Access:** checkout logged out goes to login and back with the basket; a customer sees the form; a restaurant user sees the customers-only message; an empty basket shows the empty state; plain login still goes to the homepage (12–14).
 - **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and the Danish status name Bestilt; a refresh and the confirmation address opened in a new tab both show the full order as the API returns it (15, 18–21).
@@ -94,7 +94,6 @@ There is no frontend test framework yet, so `npm run lint` passes and these manu
 - Real payment and card input.
 - Delivery fees, service fees and commission.
 - A frontend test framework.
-- Removing the flag: #34, with Kanban4sem/MTOGO-Backend#44.
 - Copying **Basket** and **Basket total** to the backend glossary: Kanban4sem/MTOGO-Backend#54.
 
 ## Further notes
@@ -140,6 +139,13 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 - **Tests:** `npm run lint` and `npm run build` pass. The order access and logout checks above are for the developer to run against the API and record on #48.
 - **Follow-up:** None.
 
+### Spec 6.0 - 2026-11-25 - #34
+
+- **Built:** Removed the `orderingEnabled` checks. `FeatureFlagRoute` and `useCanSeeCustomerOrders` are deleted, since no route or link checks a flag any more. The checkout, confirmation, customer order and restaurant order pages and the delivery agent's layout keep only their route guard. The navigation bar always gives customers "Mine ordrer", restaurants "Ordrer" and delivery agents their dashboard, and the profile page always links to the customer's orders. The order notifications in the navigation bar are always on for a signed-in customer. The menu page always renders the menu with add buttons and the basket, in one `Menus` component with a `MenuItem` per menu item, and its CSS names that layout `menuWithBasket` and no longer has the price layout for when the flag was off. The feature-flag provider and hook stay for `authEnabled`.
+- **Deviations:** None. Built in the light workflow.
+- **Tests:** `npm run lint` and `npm run build` pass, and `git grep orderingEnabled` finds only this spec's history. The flag check above is for the developer to run against the API.
+- **Follow-up:** None.
+
 ## Changelog
 
 | Version | Date       | Change                                                                           | Issue |
@@ -149,3 +155,4 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 | 3.0     | 2026-11-25 | Use API status names and complete order views                                    | #50   |
 | 4.0     | 2026-11-25 | Choose between saved addresses at checkout                                       | #14   |
 | 5.0     | 2026-11-25 | Load the confirmation from the API, customers only, logout lands on the homepage | #48   |
+| 6.0     | 2026-11-25 | Remove the `orderingEnabled` feature flag                                        | #34   |

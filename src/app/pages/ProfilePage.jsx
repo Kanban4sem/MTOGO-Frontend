@@ -9,12 +9,10 @@ import {
 } from '@/shared/data/paths.js'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
-import { useCanSeeCustomerOrders } from '@/shared/hooks/useCanSeeCustomerOrders.js'
 
 // Not limited to customers: any logged-in user who opens the profile sees their own account details.
 export default function ProfilePage() {
 	const { user } = useAuth()
-	const canSeeCustomerOrders = useCanSeeCustomerOrders()
 	const isCustomer = user?.role === USER_ROLES.CUSTOMER
 
 	return (
@@ -33,11 +31,9 @@ export default function ProfilePage() {
 					actions={
 						isCustomer && (
 							<>
-								{canSeeCustomerOrders && (
-									<Link to={CUSTOMER_ORDERS_PATH}>
-										Mine ordrer
-									</Link>
-								)}
+								<Link to={CUSTOMER_ORDERS_PATH}>
+									Mine ordrer
+								</Link>
 								<Link to={CUSTOMER_SETTINGS_PATH}>
 									Indstillinger
 								</Link>

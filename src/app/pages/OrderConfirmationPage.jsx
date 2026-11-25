@@ -1,7 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 import OrderConfirmation from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.jsx'
-import FeatureFlagRoute from '@/app/routes/FeatureFlagRoute.jsx'
 import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
@@ -12,7 +11,7 @@ export default function OrderConfirmationPage() {
 	const { user } = useAuth()
 
 	return (
-		<FeatureFlagRoute flag="orderingEnabled">
+		<>
 			<Helmet title="Ordrebekræftelse" />
 			<ProtectedRoute
 				requiredRole={USER_ROLES.CUSTOMER}
@@ -28,6 +27,6 @@ export default function OrderConfirmationPage() {
 					orderId={orderId}
 				/>
 			</ProtectedRoute>
-		</FeatureFlagRoute>
+		</>
 	)
 }

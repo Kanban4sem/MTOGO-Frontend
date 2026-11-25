@@ -109,7 +109,6 @@
 	border: 1px solid var(--color-border);
 	border-radius: var(--mtogo-border-radius);
 	background: var(--color-surface);
-	cursor: pointer;
 	transition: box-shadow var(--transition);
 }
 
@@ -155,7 +154,7 @@
 	gap: 10px;
 }
 
-.ordering {
+.menuWithBasket {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(296px, 356px);
 	align-items: start;
@@ -168,10 +167,6 @@
 	border-inline-start: 1px solid var(--color-border);
 }
 
-.ordering .item {
-	cursor: default;
-}
-
 .priceNote {
 	margin-top: 25px;
 	color: var(--color-muted);
@@ -179,7 +174,7 @@
 }
 
 @media (max-width: 900px) {
-	.ordering {
+	.menuWithBasket {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
@@ -216,14 +211,8 @@
 		justify-items: start;
 	}
 
-	/* With ordering off the price sits in the item grid itself, as before ordering. */
 	.price {
-		grid-column: 2;
 		margin: 0;
 		font-size: 15px;
-	}
-
-	.order .price {
-		grid-column: auto;
 	}
 }
