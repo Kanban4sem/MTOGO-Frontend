@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 6.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** none; `orderingEnabled` from #8 was removed in #34
+**Version:** 7.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** none; `orderingEnabled` from #8 was removed in #34 and `authEnabled` in #22
 
 ## Acceptance criteria
 
@@ -13,7 +13,7 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 ## Behaviour
 
 1. The basket, the checkout, the order confirmation and the order views are always shown, without a feature flag.
-2. Logging in at checkout needs `authEnabled`. When it is off, a logged-out user at checkout is told that ordering needs login, with no link to log in.
+2. Logging in at checkout is always available, without a feature flag.
 
 3. Anyone can add a menu item to the basket from the restaurant's menu page, logged in or not.
 4. A basket holds menu items from one restaurant. Adding a menu item from another restaurant asks the customer whether to empty the basket and start a new one; declining leaves the basket unchanged.
@@ -67,9 +67,9 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 
 ## Testing decisions
 
-There is no frontend test framework yet, so `npm run lint` passes and these manual checks run against the API with `authEnabled` on unless stated:
+There is no frontend test framework yet, so `npm run lint` passes and these manual checks run against the API:
 
-- **Flag:** with no `orderingEnabled` in the backend's `.env`, the menu page's add buttons and basket, the basket link, checkout, the confirmation, the customer's order pages and their profile link, the restaurant's orders and the delivery agent's dashboard all appear for their roles (behaviour 1). With `authEnabled` off, checkout shows no login link (2).
+- **Flag:** with no `orderingEnabled` in the backend's `.env`, the menu page's add buttons and basket, the basket link, checkout, the confirmation, the customer's order pages and their profile link, the restaurant's orders and the delivery agent's dashboard all appear for their roles (behaviour 1). With no `authEnabled` in the backend's `.env`, the navigation bar shows "Log ind" and "Opret bruger", `/login` and `/register` show their forms after a refresh, and checkout logged out goes to login (2).
 - **Basket rules:** add, raise, lower and remove; adding the same menu item again; a menu item from a second restaurant asks first, and declining keeps the basket; 20 menu items and quantity 20 disable the buttons with the message; the basket total; a refresh keeps the basket (3–9, 11).
 - **Access:** checkout logged out goes to login and back with the basket; a customer sees the form; a restaurant user sees the customers-only message; an empty basket shows the empty state; plain login still goes to the homepage (12–14).
 - **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and the Danish status name Bestilt; a refresh and the confirmation address opened in a new tab both show the full order as the API returns it (15, 18–21).
@@ -146,6 +146,13 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 - **Tests:** `npm run lint` and `npm run build` pass, and `git grep orderingEnabled` finds only this spec's history. The flag check above is for the developer to run against the API.
 - **Follow-up:** None.
 
+### Spec 7.0 - 2026-11-25 - #22
+
+- **Built:** Removed the `authEnabled` checks. The login and registration views and the navigation bar's "Log ind" and "Opret bruger" links are always shown. The route guard always sends a logged-out user to login, so it no longer waits for the flags or takes a `loginUnavailable` message, and the pages and the delivery agent's layout no longer pass one. The feature-flag provider, hook and `GET /v1/features` endpoint stay for future flags, as the developer decided on #22, and the coding standards say how to restore `FeatureFlagRoute`.
+- **Deviations:** None. Built in the light workflow.
+- **Tests:** `npm run lint` and `npm run build` pass, and `git grep authEnabled` finds only spec history. The flag check above is for the developer to run against the API.
+- **Follow-up:** None.
+
 ## Changelog
 
 | Version | Date       | Change                                                                           | Issue |
@@ -156,3 +163,4 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 | 4.0     | 2026-11-25 | Choose between saved addresses at checkout                                       | #14   |
 | 5.0     | 2026-11-25 | Load the confirmation from the API, customers only, logout lands on the homepage | #48   |
 | 6.0     | 2026-11-25 | Remove the `orderingEnabled` feature flag                                        | #34   |
+| 7.0     | 2026-11-25 | Remove the `authEnabled` feature flag                                            | #22   |

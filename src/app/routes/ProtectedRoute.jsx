@@ -3,18 +3,15 @@ import { Navigate, useLocation } from 'react-router-dom'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { LOGIN_PATH } from '@/shared/data/paths.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 
 // The one place that sends a logged-out user to login, and back to the same address afterwards.
 // A 401 anywhere clears the session in the client, so an expired session lands here too.
 export default function ProtectedRoute({
-	loginUnavailable,
 	requiredRole,
 	deniedLayout: DeniedLayout = Fragment,
 	children,
 }) {
 	const { user, isAuthenticated, isLoading, isSessionExpired } = useAuth()
-	const { isEnabled, isLoading: areFlagsLoading } = useFeatureFlags()
 	const { pathname, search } = useLocation()
 
 	if (isLoading) {
@@ -29,12 +26,6 @@ export default function ProtectedRoute({
 			)
 		}
 		return children
-	}
-	if (areFlagsLoading) {
-		return <RequestState title="Indlæser…" isLoading />
-	}
-	if (!isEnabled('authEnabled')) {
-		return <DeniedLayout>{loginUnavailable}</DeniedLayout>
 	}
 
 	return (

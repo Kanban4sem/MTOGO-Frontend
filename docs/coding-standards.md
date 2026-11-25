@@ -1,6 +1,6 @@
 # Coding Standards
 
-**Version:** 6.0 · **Date:** 2026-11-25
+**Version:** 7.0 · **Date:** 2026-11-25
 
 ## Overview
 
@@ -119,6 +119,7 @@ The backend generates the API documentation with springdoc-openapi. The specific
 - `FeatureFlagsProvider` fetches the flags from `GET /v1/features` once at startup and keeps them in memory.
 - A missing flag and a failed request both count as false.
 - Show the unfinished feature with conditional rendering on `isEnabled` from `useFeatureFlags`, and remove the condition once the feature is fully released.
+- To hide a whole route behind a flag, restore the route guard `FeatureFlagRoute` with `git show 68907ec^:src/app/routes/FeatureFlagRoute.jsx`. It waits for the flags to load, so a refresh doesn't flash the not-found page.
 
 ```http
 GET /v1/features
@@ -126,26 +127,27 @@ GET /v1/features
 
 ```json
 {
-  "authEnabled": false
+  "reviewsEnabled": false
 }
 ```
 
 ```jsx
 const { isEnabled } = useFeatureFlags();
 
-return isEnabled("authEnabled") && <LoginButton />;
+return isEnabled("reviewsEnabled") && <ReviewForm />;
 ```
 
 ## Changelog
 
-| Version | Date       | Change                                                                    | Issue    |
-| ------- | ---------- | ------------------------------------------------------------------------- | -------- |
-| 1.0     | 2026-11-10 | First version                                                             | -        |
-| 1.1     | 2026-11-10 | API changes get a linked frontend issue                                   | MTOGO#32 |
-| 1.2     | 2026-11-10 | Fixes to Frontend Architecture                                            | MTOGO#33 |
-| 2.0     | 2026-11-11 | Moved from `MTOGO`, frontend rules only                                   | #3       |
-| 3.0     | 2026-11-12 | The tool configuration replaces `.editorconfig`                           | #23      |
-| 4.0     | 2026-11-16 | Tests for changes to behaviour, feature flag steps, each rule stated once | #26      |
-| 4.1     | 2026-11-20 | Where page folders and services go                                        | #36      |
-| 5.0     | 2026-11-22 | Layout and route-level page styles belong in globals.css                  | #42      |
-| 6.0     | 2026-11-25 | REST paths: singular role scopes, login and logout as session actions     | #55      |
+| Version | Date       | Change                                                                           | Issue    |
+| ------- | ---------- | -------------------------------------------------------------------------------- | -------- |
+| 1.0     | 2026-11-10 | First version                                                                    | -        |
+| 1.1     | 2026-11-10 | API changes get a linked frontend issue                                          | MTOGO#32 |
+| 1.2     | 2026-11-10 | Fixes to Frontend Architecture                                                   | MTOGO#33 |
+| 2.0     | 2026-11-11 | Moved from `MTOGO`, frontend rules only                                          | #3       |
+| 3.0     | 2026-11-12 | The tool configuration replaces `.editorconfig`                                  | #23      |
+| 4.0     | 2026-11-16 | Tests for changes to behaviour, feature flag steps, each rule stated once        | #26      |
+| 4.1     | 2026-11-20 | Where page folders and services go                                               | #36      |
+| 5.0     | 2026-11-22 | Layout and route-level page styles belong in globals.css                         | #42      |
+| 6.0     | 2026-11-25 | REST paths: singular role scopes, login and logout as session actions            | #55      |
+| 7.0     | 2026-11-25 | Restore `FeatureFlagRoute` to hide a route; example flag no longer `authEnabled` | #22      |

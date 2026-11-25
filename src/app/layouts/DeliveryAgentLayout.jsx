@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom'
 import DashboardLayout from '@/app/layouts/DashboardLayout.jsx'
 import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
 import HomeLayout from '@/app/layouts/HomeLayout.jsx'
-import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { DASHBOARD_ORDERS_PATH, DASHBOARD_PATH } from '@/shared/data/paths.js'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 
@@ -16,11 +15,6 @@ export default function DeliveryAgentLayout() {
 		<ProtectedRoute
 			requiredRole={USER_ROLES.DELIVERY_AGENT}
 			deniedLayout={HomeLayout}
-			loginUnavailable={
-				<RequestState title="Dashboardet kræver login">
-					Login er ikke tilgængeligt lige nu.
-				</RequestState>
-			}
 		>
 			<DashboardLayout label="Leveringsbud" links={LINKS}>
 				<Outlet />

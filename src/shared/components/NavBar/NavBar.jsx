@@ -16,7 +16,6 @@ import {
 	RESTAURANT_PROFILE_PATH,
 } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags.js'
 import { formatItemCount } from '@/shared/utils/basketMessages.js'
 import { useNavBar } from '@/shared/components/NavBar/NavBar.hooks.js'
 import styles from '@/shared/components/NavBar/NavBar.module.css'
@@ -54,7 +53,6 @@ function NavBar() {
 		error,
 		logout,
 	} = useNavBar()
-	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
 	const showBasket =
 		!isLoading && (!isAuthenticated || isCustomer) && itemCount > 0
@@ -124,7 +122,7 @@ function NavBar() {
 								</Link>
 							)}
 						</>
-					) : isEnabled('authEnabled') ? (
+					) : (
 						<>
 							<Link className={styles.link} to={LOGIN_PATH}>
 								Log ind
@@ -133,7 +131,7 @@ function NavBar() {
 								Opret bruger
 							</Link>
 						</>
-					) : null}
+					)}
 					<LanguageIndicator />
 				</div>
 			</nav>

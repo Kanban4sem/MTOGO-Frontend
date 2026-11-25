@@ -12,7 +12,7 @@ The app calls the API on the relative path `/v1` (set in `src/api/client.js`). I
 
 ## Feature flags
 
-The backend declares the feature flags, and the frontend reads them from `GET /v1/features` at startup. How the frontend uses them is described in the [coding standards](coding-standards.md#feature-flags). To try a feature behind a flag, such as `authEnabled`, switch it on in the backend's `.env` as described under [Feature flags and login](https://github.com/Kanban4sem/MTOGO-Backend/blob/main/docs/local-development.md#feature-flags-and-login), restart the backend and reload the page.
+The backend declares the feature flags, and the frontend reads them from `GET /v1/features` at startup. How the frontend uses them is described in the [coding standards](coding-standards.md#feature-flags). No feature is behind a flag right now. To try one that is, switch it on in the backend's `.env` as described under [Feature flags and login](https://github.com/Kanban4sem/MTOGO-Backend/blob/main/docs/local-development.md#feature-flags-and-login), restart the backend and reload the page.
 
 ## Try the API
 
