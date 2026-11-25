@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 7.0 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** none; `orderingEnabled` from #8 was removed in #34 and `authEnabled` in #22
+**Version:** 7.1 · **Date:** 2026-11-25 · **Issue:** #8 · **Feature flag:** none; `orderingEnabled` from #8 was removed in #34 and `authEnabled` in #22
 
 ## Acceptance criteria
 
@@ -114,7 +114,7 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 ### Spec 2.0 - 2026-11-22 - #44
 
 - **Built:** Checkout reads the current profile and lets the customer reuse a complete default delivery address, enter an address for one order, or save an entered address after successful payment. Profiles with only a postal code and city supply those fields for manual entry. Delivery agents see the recorded delivery address on available and assigned orders. Explicit sign-out clears the basket, and the navigation bar shows the basket link only to guests and customers.
-- **Deviations:** Checkout sends both booleans explicitly because Jackson rejects missing values for the backend request record's primitive fields. This issue uses the existing `orderingEnabled` flag.
+- **Deviations:** Checkout sends both booleans explicitly, although they aren't needed: the backend request record uses `Boolean` fields and treats a missing value as `false`. #14 stopped sending them for a saved address. This issue uses the existing `orderingEnabled` flag.
 - **Tests:** The checks above cover the three address requests, legacy profiles, payment decline, existing orders, the agent's view and clearing the basket on sign-out. The developer will run lint and the manual checks against the API.
 - **Follow-up:** None.
 
@@ -164,3 +164,4 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 | 5.0     | 2026-11-25 | Load the confirmation from the API, customers only, logout lands on the homepage | #48   |
 | 6.0     | 2026-11-25 | Remove the `orderingEnabled` feature flag                                        | #34   |
 | 7.0     | 2026-11-25 | Remove the `authEnabled` feature flag                                            | #22   |
+| 7.1     | 2026-11-25 | Correct the reason given for the explicit booleans in the 2.0 note               | #56   |
