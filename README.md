@@ -84,6 +84,10 @@ The app calls the API on the relative path `/v1` (set in `src/api/client.js`). I
 
 With `orderingEnabled` on, signed-in customers can open **Din profil → Mine ordrer** at `/profile/orders`. The list and detail pages read the customer's orders from `/v1/customer/orders` and `/v1/customer/orders/{id}`.
 
+Signed-in users can open the notifications dropdown from the bell next to **Log ud**. When `orderingEnabled` is on, the bell shows the signed-in customer's unread order notification count. The app checks for notifications every 30 seconds with `GET /v1/customer/orders/notifications`. While the dropdown is open, the app marks the displayed notifications as read with `PUT /v1/customer/orders/notifications/{id}/read`. The dropdown keeps the messages available after they have been read.
+
+Delivered notifications show a disabled **Feedback** button.
+
 At `/profile/settings`, signed-in customers can update their name and phone number through `PUT /v1/users/me`. They can add, edit and remove saved delivery addresses through `/v1/users/me/delivery-addresses`. The settings page displays the account email as read-only.
 
 At `/checkout`, customers can choose a saved address or enter one for the current order. They can save the entered address as their default after successful payment. Checkout reads the profile and saved addresses from the API and sends `deliveryAddressId` to `POST /v1/orders` when a saved address is selected. Orders retain the address recorded at checkout. Signing out clears the basket on that browser.

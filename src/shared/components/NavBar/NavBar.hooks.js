@@ -4,6 +4,7 @@ import { useAuth } from '@/shared/hooks/useAuth.js'
 
 export function useNavBar() {
 	const { user, isAuthenticated, isLoading, logout } = useAuth()
+	const isCustomer = user?.role === USER_ROLES.CUSTOMER
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
 	const [error, setError] = useState('')
 
@@ -24,7 +25,8 @@ export function useNavBar() {
 
 	return {
 		isAuthenticated,
-		isCustomer: user?.role === USER_ROLES.CUSTOMER,
+		isCustomer,
+		customerId: isCustomer ? user.id : null,
 		isRestaurant: user?.role === USER_ROLES.RESTAURANT,
 		isDeliveryAgent: user?.role === USER_ROLES.DELIVERY_AGENT,
 		isLoading,

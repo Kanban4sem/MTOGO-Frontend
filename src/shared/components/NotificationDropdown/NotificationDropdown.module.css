@@ -1,0 +1,75 @@
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	min-width: 2.75rem;
+	min-height: 2.75rem;
+	padding: 0.25rem 0.5rem;
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: transparent;
+	color: var(--mtogo-text-primary);
+	cursor: pointer;
+}
+
+.button[aria-expanded="true"] {
+	background: var(--mtogo-muted);
+}
+
+.button:hover,
+.button:focus-visible {
+	border-color: var(--mtogo-color-hover);
+	background: var(--mtogo-color-hover);
+	color: var(--mtogo-surface);
+}
+
+.count {
+	display: inline-grid;
+	place-items: center;
+	min-width: 1.25rem;
+	min-height: 1.25rem;
+	padding-inline: 0.25rem;
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-badge-color);
+	color: var(--mtogo-color-hover);
+	font-size: 0.8125rem;
+	font-weight: 600;
+}
+
+.notifications {
+	width: min(18rem, calc(100vw - 2rem));
+	max-height: 16rem;
+	overflow: auto;
+	overflow-wrap: anywhere;
+}
+
+.empty,
+.notification {
+	padding: 0.65rem 0.75rem;
+}
+
+.empty {
+	color: var(--mtogo-text-secondary);
+}
+
+.notification {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.feedback {
+	flex-shrink: 0;
+}
+
+.notification + .notification {
+	border-top: 1px solid var(--mtogo-border);
+}
+
+@media (max-width: 60rem) {
+	.dropdown {
+		position: static;
+	}
+}

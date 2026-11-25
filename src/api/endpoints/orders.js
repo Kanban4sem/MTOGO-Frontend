@@ -18,6 +18,20 @@ export function getCustomerOrder(orderId, signal) {
 	})
 }
 
+export function getOrderNotifications(signal) {
+	return client('/customer/orders/notifications', {
+		signal,
+		cache: 'no-store',
+	})
+}
+
+export function putOrderNotificationRead(notificationId, signal) {
+	return client(
+		`/customer/orders/notifications/${encodeURIComponent(notificationId)}/read`,
+		{ method: 'PUT', signal },
+	)
+}
+
 export function getRestaurantOrders(signal) {
 	return client('/restaurant/orders', { signal, cache: 'no-store' })
 }

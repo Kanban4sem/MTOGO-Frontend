@@ -3,6 +3,7 @@ import BrandLink from '@/shared/components/BrandLink/BrandLink.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
 import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
 import LanguageIndicator from '@/shared/components/LanguageIndicator/LanguageIndicator.jsx'
+import NotificationDropdown from '@/shared/components/NotificationDropdown/NotificationDropdown.jsx'
 import {
 	CHECKOUT_PATH,
 	CUSTOMER_ORDERS_PATH,
@@ -39,6 +40,7 @@ function NavBar() {
 	const {
 		isAuthenticated,
 		isCustomer,
+		customerId,
 		isRestaurant,
 		isDeliveryAgent,
 		isLoading,
@@ -49,6 +51,7 @@ function NavBar() {
 	const { isEnabled } = useFeatureFlags()
 	const { itemCount } = useBasket()
 	const orderingEnabled = isEnabled('orderingEnabled')
+	const notificationCustomerId = orderingEnabled ? customerId : null
 	const showBasket =
 		orderingEnabled &&
 		!isLoading &&
@@ -82,6 +85,12 @@ function NavBar() {
 								{itemCount}
 							</span>
 						</Link>
+					)}
+					{isAuthenticated && !isLoading && (
+						<NotificationDropdown
+							key={notificationCustomerId ?? 'signed-in'}
+							enabled={notificationCustomerId !== null}
+						/>
 					)}
 					{isLoading ? (
 						<span className={styles.loading} role="status">

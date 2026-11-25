@@ -1,8 +1,18 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styles from '@/shared/components/Dropdown/Dropdown.module.css'
 
-export default function Dropdown({ label, links, buttonClassName }) {
+export default function Dropdown({
+	label,
+	ariaLabel,
+	links,
+	children,
+	className,
+	buttonClassName,
+	listClassName,
+	openOnHover = true,
+	onOpenChange,
+}) {
 	const listId = useId()
 	const dropdown = useRef(null)
 	const button = useRef(null)
@@ -10,18 +20,23 @@ export default function Dropdown({ label, links, buttonClassName }) {
 	const [openedBy, setOpenedBy] = useState(null)
 	const isOpen = openedBy !== null
 
+	const closeDropdown = useCallback(() => {
+		setOpenedBy(null)
+		onOpenChange?.(false)
+	}, [onOpenChange])
+
 	useEffect(() => {
 		if (!isOpen) return
 
 		function closeOnOutsidePress(event) {
-			if (!dropdown.current.contains(event.target)) setOpenedBy(null)
+			if (!dropdown.current.contains(event.target)) closeDropdown()
 		}
 
 		function closeOnEscape(event) {
 			if (event.key !== 'Escape' || event.defaultPrevented) return
 			if (list.current.contains(document.activeElement))
 				button.current.focus()
-			setOpenedBy(null)
+			closeDropdown()
 		}
 
 		document.addEventListener('pointerdown', closeOnOutsidePress)
@@ -30,64 +45,79 @@ export default function Dropdown({ label, links, buttonClassName }) {
 			document.removeEventListener('pointerdown', closeOnOutsidePress)
 			document.removeEventListener('keydown', closeOnEscape)
 		}
-	}, [isOpen])
+	}, [isOpen, closeDropdown])
 
-	function openOnHover(event) {
-		if (event.pointerType === 'mouse') {
-			setOpenedBy((current) => current ?? 'hover')
+	function openFromHover(event) {
+		if (event.pointerType === 'mouse' && !isOpen) {
+			setOpenedBy('hover')
+			onOpenChange?.(true)
 		}
 	}
 
 	function closeAfterHover(event) {
 		if (
 			event.pointerType !== 'mouse' ||
+			openedBy !== 'hover' ||
 			list.current.contains(document.activeElement)
 		)
 			return
-		setOpenedBy((current) => (current === 'hover' ? null : current))
+		closeDropdown()
 	}
 
 	function closeOnFocusOut(event) {
-		if (!event.currentTarget.contains(event.relatedTarget))
-			setOpenedBy(null)
+		if (isOpen && !event.currentTarget.contains(event.relatedTarget))
+			closeDropdown()
+	}
+
+	function toggleFromPress() {
+		const isOpening = openedBy !== 'press'
+		setOpenedBy(isOpening ? 'press' : null)
+		onOpenChange?.(isOpening)
 	}
 
 	return (
 		<div
 			ref={dropdown}
-			className={styles.dropdown}
-			onPointerEnter={openOnHover}
-			onPointerLeave={closeAfterHover}
+			className={
+				className ? `${styles.dropdown} ${className}` : styles.dropdown
+			}
+			onPointerEnter={openOnHover ? openFromHover : undefined}
+			onPointerLeave={openOnHover ? closeAfterHover : undefined}
 			onBlur={closeOnFocusOut}
 		>
 			<button
 				ref={button}
 				className={buttonClassName}
 				type="button"
+				aria-label={ariaLabel}
 				aria-expanded={isOpen}
 				aria-controls={listId}
-				onClick={() =>
-					setOpenedBy((current) =>
-						current === 'press' ? null : 'press',
-					)
-				}
+				onClick={toggleFromPress}
 			>
 				{label}
-				<span className={styles.chevron} aria-hidden="true" />
+				{links && (
+					<span className={styles.chevron} aria-hidden="true" />
+				)}
 			</button>
 			<ul
 				ref={list}
 				id={listId}
-				className={styles.links}
+				className={
+					listClassName
+						? `${styles.links} ${listClassName}`
+						: styles.links
+				}
 				hidden={!isOpen}
+				tabIndex={links ? undefined : 0}
 			>
-				{links.map(({ label, to }) => (
+				{links?.map(({ label, to }) => (
 					<li key={to}>
-						<Link to={to} onClick={() => setOpenedBy(null)}>
+						<Link to={to} onClick={closeDropdown}>
 							{label}
 						</Link>
 					</li>
 				))}
+				{children}
 			</ul>
 		</div>
 	)

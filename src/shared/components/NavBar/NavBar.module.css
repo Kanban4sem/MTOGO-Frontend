@@ -119,10 +119,16 @@
 		order: 1;
 		flex-basis: 100%;
 	}
+
+	.actions {
+		position: relative;
+	}
 }
 
 @media (max-width: 30rem) {
 	.actions {
+		flex-wrap: wrap;
+		justify-content: flex-end;
 		gap: calc(var(--mtogo-component-padding) / 2);
 	}
 
