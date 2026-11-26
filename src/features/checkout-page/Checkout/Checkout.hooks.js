@@ -1,10 +1,15 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getStatusMessage } from '@/api/client.js'
 import { getOrderConfirmationPath } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { useRequest } from '@/shared/hooks/useRequest.js'
 import { listSavedDeliveryAddresses } from '@/shared/services/deliveryAddressService.js'
 import { getSignedInUser } from '@/shared/services/userService.js'
+import {
+	errorReference,
+	withErrorReference,
+} from '@/shared/utils/errorReference.js'
 import { validateDeliveryAddress } from '@/shared/utils/validateDeliveryAddress.js'
 import {
 	PAYMENT_TOKENS,
@@ -36,15 +41,17 @@ function getCheckoutFailure(error) {
 				message: `En eller flere retter i kurven kan ikke bestilles lige nu, eller restauranten tager ikke imod bestillinger. ${BASKET_KEPT}`,
 				showMenuLink: true,
 			}
-		default: {
-			if (error.status === undefined || error.status < 500) {
-				return { message: `${error.message} ${BASKET_KEPT}` }
-			}
-			const reference = error.data?.errorId
+		default:
+			// The reference goes last, so it doesn't split the general message from the basket notice.
+			// A network failure has no status and keeps the client's connection message.
 			return {
-				message: `Der opstod en fejl hos os. ${BASKET_KEPT} Prøv igen om lidt.${reference ? ` Fejlreference: ${reference}` : ''}`,
+				message: error.status
+					? withErrorReference(
+							`${getStatusMessage(error.status)} ${BASKET_KEPT}`,
+							error,
+						)
+					: `${error.message} ${BASKET_KEPT}`,
 			}
-		}
 	}
 }
 
@@ -77,6 +84,7 @@ async function loadAddresses(signal) {
 		profile: user.value?.profile,
 		savedAddresses: addresses.value ?? [],
 		failed: addresses.status === 'rejected',
+		failureReference: errorReference(addresses.reason),
 	}
 }
 
@@ -158,7 +166,7 @@ export function useCheckout() {
 				}))
 				setAddressChoice('')
 				setFailure({
-					message: `${error.message} ${BASKET_KEPT} Vælg en anden adresse, eller indtast den manuelt.`,
+					message: `Den valgte adresse findes ikke længere. ${BASKET_KEPT} Vælg en anden adresse, eller indtast den manuelt.`,
 				})
 			} else {
 				setFailure(getCheckoutFailure(error))
@@ -173,6 +181,7 @@ export function useCheckout() {
 		profile: addressRequest?.profile,
 		isAddressLoading,
 		addressLoadFailed: addressRequest?.failed,
+		addressLoadReference: addressRequest?.failureReference,
 		deliveryAddressFields: withFieldState(
 			DELIVERY_ADDRESS_FIELDS,
 			fieldErrors,

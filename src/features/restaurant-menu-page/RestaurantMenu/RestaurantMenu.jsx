@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { RESTAURANTS_PATH } from '@/shared/data/paths.js'
+import { withErrorReference } from '@/shared/utils/errorReference.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import AddToBasketButton from '@/features/restaurant-menu-page/AddToBasketButton/AddToBasketButton.jsx'
 import BasketBottomBar from '@/features/restaurant-menu-page/BasketBottomBar/BasketBottomBar.jsx'
@@ -39,9 +40,12 @@ export default function RestaurantMenu({ restaurantId }) {
 							: 'Vi kunne ikke hente menuen'
 					}
 				>
-					{error.status === 404
-						? 'Restauranten findes ikke eller tager ikke imod bestillinger lige nu.'
-						: 'Prøv at genindlæse siden om lidt.'}{' '}
+					{withErrorReference(
+						error.status === 404
+							? 'Restauranten findes ikke eller tager ikke imod bestillinger lige nu.'
+							: 'Prøv at genindlæse siden om lidt.',
+						error,
+					)}{' '}
 					<Link to={RESTAURANTS_PATH}>Find en restaurant</Link>
 				</RequestState>
 			) : (

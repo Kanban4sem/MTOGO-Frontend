@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/shared/hooks/useAuth.js'
+import { withErrorReference } from '@/shared/utils/errorReference.js'
 
 export function useLogout() {
 	const { logout: endSession } = useAuth()
@@ -16,10 +17,13 @@ export function useLogout() {
 		navigate('/', { replace: true })
 		try {
 			await endSession()
-		} catch {
+		} catch (error) {
 			// AuthProvider clears the local session even if the server cannot revoke it.
 			setError(
-				'Du er logget ud her, men vi kunne ikke afslutte sessionen på andre enheder.',
+				withErrorReference(
+					'Du er logget ud her, men vi kunne ikke afslutte sessionen på andre enheder.',
+					error,
+				),
 			)
 		} finally {
 			setIsLoggingOut(false)

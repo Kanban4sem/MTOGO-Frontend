@@ -175,11 +175,8 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 			setFeedback({ success: 'Dine indstillinger er opdateret.' })
 		} catch (error) {
 			if (signal.aborted) return
-			const reference = error.data?.errorId
 			const savedNotice = hasSaved ? 'Nogle ændringer er gemt. ' : ''
-			setFeedback({
-				error: `${savedNotice}${error.message}${reference ? ` Fejlreference: ${reference}` : ''}`,
-			})
+			setFeedback({ error: `${savedNotice}${error.message}` })
 		} finally {
 			saveRequest.current = null
 			if (!signal.aborted) setIsSaving(false)

@@ -1,6 +1,6 @@
 # Show restaurants and their menus
 
-**Version:** 3.0 · **Date:** 2026-11-25 · **Issue:** #7 · **Feature flag:** None, as agreed for the restaurant feature
+**Version:** 4.0 · **Date:** 2026-11-26 · **Issue:** #7 · **Feature flag:** None, as agreed for the restaurant feature
 
 ## Acceptance criteria
 
@@ -20,7 +20,7 @@
 
 ## Implementation decisions
 
-- Endpoint functions live under api/endpoints and use the existing client, which remains the only HTTP implementation. ProblemDetail detail is included in client error messages.
+- Endpoint functions live under api/endpoints and use the existing client, which remains the only HTTP implementation. The client gives each error status a Danish message and adds the error reference on a 5xx, as spec 51 describes; the ProblemDetail `detail` is never shown.
 - The shared restaurant service supplies both homepage previews and restaurant details. A shared request hook manages loading, errors and cancellation when a component unmounts or its request changes.
 - GET /v1/restaurants supplies the directory; GET /v1/restaurants/{restaurantId}/menus supplies active menus and available items. Image paths resolve against the frontend origin.
 - The homepage and directory share a restaurant listing component. The homepage uses the first two eligible restaurants in API order. The menu page uses the shared restaurant service and image rendering.
@@ -60,6 +60,7 @@ Ordering, basket, payment, authentication and backend changes.
 
 | Version | Date       | Change                                      | Issue              |
 | ------- | ---------- | ------------------------------------------- | ------------------ |
+| 4.0     | 2026-11-26 | Danish error messages instead of `detail`   | #51                |
 | 3.0     | 2026-11-25 | Require destinations for main navigation    | #54                |
 | 2.0     | 2026-11-25 | Add the public directory and featured cards | Homepage follow-up |
 | 1.0     | 2026-11-15 | Initial restaurant browsing spec            | #7                 |

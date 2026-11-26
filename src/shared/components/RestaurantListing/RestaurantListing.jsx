@@ -4,6 +4,7 @@ import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import { useRestaurants } from '@/shared/components/RestaurantListing/RestaurantListing.hooks.js'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { getRestaurantMenuPath } from '@/shared/data/paths.js'
+import { errorReference } from '@/shared/utils/errorReference.js'
 import styles from '@/shared/components/RestaurantListing/RestaurantListing.module.css'
 
 export default function RestaurantListing({
@@ -18,6 +19,7 @@ export default function RestaurantListing({
 	if (error) {
 		return (
 			<RequestState title="Vi kunne ikke hente restauranterne">
+				{errorReference(error)}{' '}
 				<Button label="Prøv igen" onClick={retry} />
 			</RequestState>
 		)

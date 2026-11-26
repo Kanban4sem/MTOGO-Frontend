@@ -2,15 +2,32 @@ import {
 	ACCESS_TOKEN_KEY,
 	clearAuthSession,
 } from '@/shared/utils/authSession.js'
+import { withErrorReference } from '@/shared/utils/errorReference.js'
 
 // Relative, so the same build works locally (Vite proxy) and on the server (reverse proxy)
 const BASE_URL = '/v1'
 
-// The one place for 403, so every view tells the user the same thing.
-function getErrorMessage(status, data) {
-	if (status === 403) return 'Du har ikke adgang til denne handling.'
+const REJECTED_INPUT =
+	'Oplysningerne blev afvist. Kontrollér dem, og prøv igen.'
+
+const STATUS_MESSAGES = {
+	400: REJECTED_INPUT,
+	403: 'Du har ikke adgang til denne handling.',
+	404: 'Det, du leder efter, findes ikke længere.',
+	409: 'Det er ændret i mellemtiden. Opdatér siden, og prøv igen.',
+	422: REJECTED_INPUT,
+}
+
+// The one place that turns a status into the user's message, so every view says the same thing.
+// The backend's detail is English and stays in error.data for debugging, never in the message.
+// A view that adds its own text to the general message uses this and adds the reference itself.
+export function getStatusMessage(status) {
 	if (status >= 500) return 'Der opstod en serverfejl. Prøv igen senere.'
-	return data?.detail || 'Forespørgslen kunne ikke gennemføres.'
+	return STATUS_MESSAGES[status] ?? 'Forespørgslen kunne ikke gennemføres.'
+}
+
+function getErrorMessage(status, data) {
+	return withErrorReference(getStatusMessage(status), { status, data })
 }
 
 export async function client(endpoint, options = {}) {

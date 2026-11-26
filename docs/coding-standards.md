@@ -1,6 +1,6 @@
 # Coding Standards
 
-**Version:** 7.0 · **Date:** 2026-11-25
+**Version:** 8.0 · **Date:** 2026-11-26
 
 ## Overview
 
@@ -88,13 +88,14 @@ src/
 
 ## Error handling
 
-The backend returns errors as [`ProblemDetail`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html) (RFC 9457). 4xx responses carry a `detail` that is safe to show. 5xx responses are always generic and carry an `errorId`. The rules that produce them are in the backend's coding standards.
+The backend returns errors as [`ProblemDetail`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html) (RFC 9457). 4xx responses carry a `detail` that describes the problem in English. 5xx responses are always generic and carry an `errorId`. The rules that produce them are in the backend's coding standards.
 
 ### Frontend errors
 
-- `src/api/client.js` is the only place that reads error responses. It throws an `Error` with `message` (the `detail` of the `ProblemDetail`), `status` and `data`.
-- Branch on `status`, never on the text of `message`.
-- `401` and `403` are handled in one place, not in each component.
+- `src/api/client.js` is the only place that reads error responses. It throws an `Error` with `message` (the Danish message for the status), `status` and `data`. On a `5xx`, `message` ends with the `errorId` as "Fejlreference" when the server gives one.
+- Views never show the `detail` of the `ProblemDetail`. It is English and stays in `data` for debugging.
+- Branch on `status`, never on the text of `message`. A view may replace `message` with a Danish one that fits its situation. On a `5xx` it still shows the `errorId`, through `withErrorReference` in `src/shared/utils/errorReference.js`.
+- `401` and `403` are handled in one place, not in each component. A view may still replace the `403` message with a more specific one.
 - Show users a friendly message. Include the `errorId` in bug reports so the log entry can be found.
 
 ## Testing
@@ -151,3 +152,4 @@ return isEnabled("reviewsEnabled") && <ReviewForm />;
 | 5.0     | 2026-11-22 | Layout and route-level page styles belong in globals.css                         | #42      |
 | 6.0     | 2026-11-25 | REST paths: singular role scopes, login and logout as session actions            | #55      |
 | 7.0     | 2026-11-25 | Restore `FeatureFlagRoute` to hide a route; example flag no longer `authEnabled` | #22      |
+| 8.0     | 2026-11-26 | Danish message per error status instead of `detail`; the `errorId` on every 5xx  | #51      |

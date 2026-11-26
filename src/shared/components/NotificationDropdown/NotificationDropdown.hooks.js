@@ -3,6 +3,7 @@ import {
 	markOrderNotificationAsRead,
 	readOrderNotifications,
 } from '@/shared/services/orderNotificationService.js'
+import { withErrorReference } from '@/shared/utils/errorReference.js'
 
 const POLL_INTERVAL_MS = 30_000
 
@@ -45,12 +46,15 @@ export function useOrderNotifications(enabled, isOpen) {
 						loadError: '',
 					}
 				})
-			} catch {
+			} catch (error) {
 				if (!signal.aborted)
 					setRequest((current) => ({
 						...current,
 						isLoading: false,
-						loadError: 'Notifikationerne kunne ikke hentes.',
+						loadError: withErrorReference(
+							'Notifikationerne kunne ikke hentes.',
+							error,
+						),
 					}))
 			} finally {
 				if (!signal.aborted)
@@ -88,10 +92,14 @@ export function useOrderNotifications(enabled, isOpen) {
 				),
 			)
 			for (const id of unreadIds) pendingIds.delete(id)
+			const failure = results.find(({ status }) => status === 'rejected')
 			setReadError(
-				readIds.size === unreadIds.length
-					? ''
-					: 'Nogle notifikationer kunne ikke markeres som læst.',
+				failure
+					? withErrorReference(
+							'Nogle notifikationer kunne ikke markeres som læst.',
+							failure.reason,
+						)
+					: '',
 			)
 			if (readIds.size > 0)
 				setRequest((current) => ({

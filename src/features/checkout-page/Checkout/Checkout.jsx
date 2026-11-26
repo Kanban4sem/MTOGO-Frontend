@@ -50,6 +50,7 @@ function CheckoutForm({ accountProfile }) {
 		profile,
 		isAddressLoading,
 		addressLoadFailed,
+		addressLoadReference,
 		deliveryAddressFields,
 		paymentToken,
 		setPaymentToken,
@@ -99,7 +100,8 @@ function CheckoutForm({ accountProfile }) {
 					{addressLoadFailed && (
 						<p role="status" className={styles.note}>
 							Vi kunne ikke hente dine gemte adresser. Du kan
-							indtaste leveringsadressen her.
+							indtaste leveringsadressen her.{' '}
+							{addressLoadReference}
 						</p>
 					)}
 					{savedAddresses.length > 0 && (

@@ -7,6 +7,7 @@ import {
 	useCustomerSettings,
 	useCustomerSettingsRequest,
 } from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.hooks.js'
+import { errorReference } from '@/shared/utils/errorReference.js'
 import styles from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.module.css'
 
 const CONTACT_FIELDS = [
@@ -275,6 +276,7 @@ export default function CustomerSettings() {
 					headingLevel="h1"
 					symbol=":("
 				>
+					{errorReference(error)}{' '}
 					<Button label="Prøv igen" onClick={reload} />
 				</RequestState>
 			</div>

@@ -36,9 +36,9 @@ export function useRestaurantOrders() {
 			)
 			setUpdatedOrder(order)
 		} catch (error) {
-			if (error.status === 409) {
+			if (error.status === 404 || error.status === 409) {
 				refreshOrders()
-				setUpdateError('Ordren har ændret status. Listen opdateres.')
+				setUpdateError('Ordren kan have ændret sig. Listen opdateres.')
 			} else {
 				setUpdateError(error.message)
 			}
