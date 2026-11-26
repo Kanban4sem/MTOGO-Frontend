@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/shared/hooks/useAuth.js'
+import { useMaintenance } from '@/shared/hooks/useMaintenance.js'
 import { useNotification } from '@/shared/hooks/useNotification.js'
 import { getAuthErrorMessage } from '@/shared/utils/authErrors.js'
 
@@ -18,6 +19,7 @@ export function useLogin() {
 	const { state: navigation } = useLocation()
 	const navigate = useNavigate()
 	const notify = useNotification()
+	const { recordPause } = useMaintenance()
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	async function submitLogin(event) {
@@ -32,7 +34,7 @@ export function useLogin() {
 			})
 			navigate(getReturnAddress(navigation?.returnTo), { replace: true })
 		} catch (error) {
-			notify(getAuthErrorMessage(error), 'error')
+			if (!recordPause(error)) notify(getAuthErrorMessage(error), 'error')
 		} finally {
 			setIsSubmitting(false)
 		}

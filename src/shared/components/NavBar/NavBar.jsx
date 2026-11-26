@@ -16,6 +16,8 @@ import {
 	RESTAURANT_PROFILE_PATH,
 } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import { useMaintenance } from '@/shared/hooks/useMaintenance.js'
+import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
 import { formatItemCount } from '@/shared/utils/basketMessages.js'
 import { useNavBar } from '@/shared/components/NavBar/NavBar.hooks.js'
 import styles from '@/shared/components/NavBar/NavBar.module.css'
@@ -53,8 +55,13 @@ function NavBar() {
 		logout,
 	} = useNavBar()
 	const { itemCount } = useBasket()
+	const { pauses, isLoading: isMaintenanceLoading } = useMaintenance()
 	const showBasket =
-		!isLoading && (!isAuthenticated || isCustomer) && itemCount > 0
+		!isLoading &&
+		!isMaintenanceLoading &&
+		!pauses[MAINTENANCE_FEATURES.ORDERING] &&
+		(!isAuthenticated || isCustomer) &&
+		itemCount > 0
 
 	return (
 		<header className={styles.header}>

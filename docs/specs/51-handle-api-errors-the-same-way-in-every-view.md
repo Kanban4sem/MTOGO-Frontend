@@ -1,6 +1,6 @@
 # Handle API errors the same way in every view
 
-**Version:** 1.0 · **Date:** 2026-11-26 · **Issue:** #51 · **Feature flag:** None. Built after `orderingEnabled` and `authEnabled` were removed (#34, #22)
+**Version:** 3.0 · **Date:** 2026-11-27 · **Issue:** #51 · **Feature flag:** None. Built after `orderingEnabled` and `authEnabled` were removed (#34, #22)
 
 ## Acceptance criteria
 
@@ -14,7 +14,7 @@ Copied from #51. The issue is the source: change the issue first, then this copy
 
 ## Behaviour
 
-1. When the API refuses a request, the user sees a Danish message chosen by the status code, never the backend's own text.
+1. When the API refuses a request, the user sees a Danish message chosen by the status code. Maintenance responses use the feature-specific message in behaviour 20.
 2. A `400` or `422` says "Oplysningerne blev afvist. Kontrollér dem, og prøv igen."
 3. A `403` says "Du har ikke adgang til denne handling."
 4. A `404` says "Det, du leder efter, findes ikke længere."
@@ -31,7 +31,9 @@ Copied from #51. The issue is the source: change the issue first, then this copy
 15. Any other failed status change shows the general message on the restaurant's orders and on the delivery agent's orders.
 16. On a `5xx`, these views show the error reference under their own Danish heading: the restaurant directory and the homepage's featured restaurants, the restaurant's menu, the customer's settings when they fail to load, and the order notifications.
 17. On a `5xx`, the order confirmation, the customer's order list and detail, the restaurant's orders and the delivery agent's orders show the error reference with the general message.
-18. On a `5xx`, these messages show the error reference after their own Danish text: checkout's notice that the saved addresses could not be loaded, the notice that some notifications could not be marked as read, and the notice in the navigation bar that logging out could not end the session on other devices. The dashboard leaves for the homepage as soon as the user logs out, so it shows no logout notice.
+18. On a `5xx`, the notices for saved addresses and unread notifications show the error reference after their own Danish text. If the logout request fails, the user lands on the homepage and sees a warning that they are logged out in this browser and that the server did not confirm the session ended. A `5xx` includes the error reference when the server provides it.
+19. When logout completes successfully from the navigation bar or dashboard, the homepage shows a confirmation that the user is logged out.
+20. When a login, registration or order request returns the maintenance `503` from [ADR-010](https://github.com/Kanban4sem/MTOGO-Backend/blob/main/docs/adr/010-maintenance-mode.md), the affected views immediately show the Danish pause message. The views return when the shared status check sees that the feature has resumed.
 
 ## Implementation decisions
 
@@ -51,6 +53,7 @@ There is no frontend test framework yet. The developer moved the manual checks p
 
 - **Mapping in the client:** a throwaway Node script, not committed, runs the client's status mapping over equivalence partitions and boundaries: `400`, `403`, `404`, `409`, `422`, `418` for another `4xx`, `499`, `500` and `599` with and without an `errorId`, and a network failure. It checks that no message contains the `detail` and that only a `5xx` carries the reference (behaviours 1–8). The result is recorded in the implementation note.
 - **Lint and build:** `npm run lint` and `npm run build` pass.
+- **Logout feedback:** Log out from the navigation bar on the homepage and from the dashboard. Check that the homepage shows “Du er logget ud.” after logout. Repeat with a `500` and a known `errorId` on the logout request. Check that the local session ends and the homepage shows the warning with that reference.
 
 ## Out of scope
 
@@ -73,8 +76,20 @@ Grilled together with #41, which stays separate. No glossary term: "Fejlreferenc
 - **Tests:** A throwaway Node script, not committed, ran the client against a stubbed `fetch` for `400`, `403`, `404`, `409`, `422`, `418`, `499`, `500` and `599` with and without an `errorId`, and a network failure. All 12 cases passed: no message contained the `detail`, only a `5xx` with an `errorId` carried the reference, and `status` and `data.detail` were kept. `npm run lint` and `npm run build` pass. Manual checks per view are left to #52, as decided.
 - **Follow-up:** None.
 
+### Spec 2.0 - 2026-11-26
+
+- **Built:** The shared logout flow shows a confirmation on success or a warning if the server does not confirm the session ended. Both messages appear on the homepage after navigating away from the page where logout started.
+- **Tests:** See the logout feedback checks above.
+
+### Spec 3.0 - 2026-11-27 - #69
+
+- **Built:** The client identifies the paused feature on each of the three affected requests. The forms update the shared pause state to show the same Danish inline notice as the status check. Other errors keep their normal handling.
+- **Tests:** The maintenance checks in [spec 8](8-place-and-pay-for-an-order.md#testing-decisions) cover a pause during use and ordinary `503` responses.
+
 ## Changelog
 
-| Version | Date       | Change        | Issue |
-| ------- | ---------- | ------------- | ----- |
-| 1.0     | 2026-11-26 | First version | #51   |
+| Version | Date       | Change                                                   | Issue |
+| ------- | ---------- | -------------------------------------------------------- | ----- |
+| 1.0     | 2026-11-26 | First version                                            | #51   |
+| 2.0     | 2026-11-26 | Show logout feedback on the homepage                     | -     |
+| 3.0     | 2026-11-27 | Show the Danish pause message for a maintenance response | #69   |

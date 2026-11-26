@@ -1,5 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+import MaintenanceGate from '@/shared/components/MaintenanceGate/MaintenanceGate.jsx'
+import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
 
 function AuthLayout({ title, children }) {
 	return (
@@ -9,7 +11,9 @@ function AuthLayout({ title, children }) {
 				<Link className="authBackLink" to="/">
 					Tilbage til forsiden
 				</Link>
-				{children}
+				<MaintenanceGate feature={MAINTENANCE_FEATURES.AUTHENTICATION}>
+					{children}
+				</MaintenanceGate>
 			</main>
 		</div>
 	)

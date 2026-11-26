@@ -1,8 +1,10 @@
 import { client } from '@/api/client.js'
+import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
 
 export function placeOrder(order) {
 	return client('/orders', {
 		method: 'POST',
+		maintenanceFeature: MAINTENANCE_FEATURES.ORDERING,
 		body: JSON.stringify(order),
 	})
 }

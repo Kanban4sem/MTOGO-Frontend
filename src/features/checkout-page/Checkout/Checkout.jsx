@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import BasketSummary from '@/shared/components/BasketSummary/BasketSummary.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
+import FeatureUnavailable from '@/shared/components/FeatureUnavailable/FeatureUnavailable.jsx'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import Select from '@/shared/components/Select/Select.jsx'
+import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
 import { getRestaurantMenuPath, RESTAURANTS_PATH } from '@/shared/data/paths.js'
 import { USER_ROLES } from '@/shared/data/userRoles.js'
 import { useAuth } from '@/shared/hooks/useAuth.js'
@@ -52,6 +54,7 @@ function CheckoutForm({ accountProfile }) {
 		deliveryAddressFields,
 		paymentToken,
 		setPaymentToken,
+		isOrderingPaused,
 		showMenuLink,
 		isSubmitting,
 		submitOrder,
@@ -135,26 +138,35 @@ function CheckoutForm({ accountProfile }) {
 				</fieldset>
 				<fieldset className={styles.group} disabled={isSubmitting}>
 					<legend>Betaling</legend>
-					{PAYMENT_OPTIONS.map(({ token, label }) => (
-						<label key={token} className={styles.option}>
-							<input
-								type="radio"
-								name="paymentToken"
-								value={token}
-								checked={paymentToken === token}
-								onChange={() => setPaymentToken(token)}
-							/>
-							{label}
-						</label>
-					))}
-					{paymentToken === PAYMENT_TOKENS.CARD && (
-						<div className={styles.card}>
-							<p className={styles.note}>
-								Betalingen er simuleret, og der trækkes ingen
-								penge. Du skal ikke indtaste kortoplysninger.
-							</p>
-							<FormFields fields={CARD_FIELDS} />
-						</div>
+					{isOrderingPaused ? (
+						<FeatureUnavailable
+							feature={MAINTENANCE_FEATURES.ORDERING}
+						/>
+					) : (
+						<>
+							{PAYMENT_OPTIONS.map(({ token, label }) => (
+								<label key={token} className={styles.option}>
+									<input
+										type="radio"
+										name="paymentToken"
+										value={token}
+										checked={paymentToken === token}
+										onChange={() => setPaymentToken(token)}
+									/>
+									{label}
+								</label>
+							))}
+							{paymentToken === PAYMENT_TOKENS.CARD && (
+								<div className={styles.card}>
+									<p className={styles.note}>
+										Betalingen er simuleret, og der trækkes
+										ingen penge. Du skal ikke indtaste
+										kortoplysninger.
+									</p>
+									<FormFields fields={CARD_FIELDS} />
+								</div>
+							)}
+						</>
 					)}
 				</fieldset>
 				{showMenuLink && (
@@ -162,16 +174,18 @@ function CheckoutForm({ accountProfile }) {
 						Gå til menuen hos {basket.restaurant.name}
 					</Link>
 				)}
-				<Button
-					type="submit"
-					size="l"
-					label={
-						isSubmitting
-							? 'Afgiver ordren…'
-							: `Betal og bestil · ${formatPrice(total)}`
-					}
-					disabled={isSubmitting || isAddressLoading}
-				/>
+				{!isOrderingPaused && (
+					<Button
+						type="submit"
+						size="l"
+						label={
+							isSubmitting
+								? 'Afgiver ordren…'
+								: `Betal og bestil · ${formatPrice(total)}`
+						}
+						disabled={isSubmitting || isAddressLoading}
+					/>
+				)}
 			</form>
 		</div>
 	)

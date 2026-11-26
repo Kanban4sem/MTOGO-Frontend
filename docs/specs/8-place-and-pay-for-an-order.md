@@ -1,6 +1,6 @@
 # Place and pay for an order
 
-**Version:** 8.0 · **Date:** 2026-11-26 · **Issue:** #8 · **Feature flag:** none; `orderingEnabled` from #8 was removed in #34 and `authEnabled` in #22
+**Version:** 9.0 · **Date:** 2026-11-27 · **Issue:** #8 · **Feature flag:** none; `orderingEnabled` from #8 was removed in #34 and `authEnabled` in #22
 
 ## Acceptance criteria
 
@@ -12,8 +12,8 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 
 ## Behaviour
 
-1. The basket, the checkout, the order confirmation and the order views are always shown, without a feature flag.
-2. Logging in at checkout is always available, without a feature flag.
+1. While `ORDERING` is paused, the customer sees a Danish pause message on the menu and when opening checkout. The restaurant menu and existing orders remain available. If the customer already has checkout open, the message replaces the payment controls and order button. The basket and delivery information stay visible.
+2. While `AUTHENTICATION` is paused, visitors see a Danish pause message in place of the login and registration forms. Existing sessions can still use the app. After either feature resumes, the views return on the next successful status check.
 
 3. Anyone can add a menu item to the basket from the restaurant's menu page, logged in or not.
 4. A basket holds menu items from one restaurant. Adding a menu item from another restaurant asks the customer whether to empty the basket and start a new one; declining leaves the basket unchanged.
@@ -38,7 +38,7 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 21. The order confirmation loads the order from the API, so it shows the same order after a refresh, in a new tab or from a pasted address. An unknown order, another customer's order or an order number that isn't a number shows "Ordren blev ikke fundet".
 22. When the payment is declined, no order is placed, the basket is kept, and the customer is told the payment was declined and can try again.
 23. When a menu item is no longer available, or its menu or restaurant no longer accepts orders, the basket is kept and the customer is told so, with a link back to the restaurant's menu.
-24. When the backend refuses the input, the basket is kept and the Danish message for its status is shown, as spec 51 describes. The backend's own text is never shown.
+24. When the backend refuses the input, the basket is kept and the Danish message for its status is shown, as spec 51 describes. If the order is refused because ordering was paused, checkout shows the Danish pause message inline.
 25. When the session has expired, the user is sent to login with a message that the session has expired, and back to checkout, with the basket kept. Logging out shows no such message, and from any page it lands on the homepage.
 26. When the user is not a customer, or ordering is switched off on the server, the basket is kept and a Danish message explains it.
 27. When the server fails or cannot be reached, the basket is kept and a Danish message asks the customer to try again. A server failure shows its error reference when the server gives one, on every page that calls the API (spec 51). A page that shows an error message gives a Danish message for a network failure instead of the browser's.
@@ -69,7 +69,9 @@ Copied from #8. The issue is the source: change the issue first, then this copy.
 
 There is no frontend test framework yet, so `npm run lint` passes and these manual checks run against the API:
 
-- **Flag:** with no `orderingEnabled` in the backend's `.env`, the menu page's add buttons and basket, the basket link, checkout, the confirmation, the customer's order pages and their profile link, the restaurant's orders and the delivery agent's dashboard all appear for their roles (behaviour 1). With no `authEnabled` in the backend's `.env`, the navigation bar shows "Log ind" and "Opret bruger", `/login` and `/register` show their forms after a refresh, and checkout logged out goes to login (2).
+- **Maintenance on page load:** Pause `ORDERING` and reload a restaurant menu and `/checkout`. Check for the inline message, visible menu prices and hidden ordering controls. Open an existing order and check that it is still available. Pause `AUTHENTICATION`, then open `/login` and `/register` without signing in. Both show the Danish pause message in place of their forms.
+- **Pause and resume in an open tab:** With the app visible, pause and resume each feature without reloading. Check that the message, forms and ordering controls update after the next refresh, that the basket retains its items and that navigation does not start extra status requests. Switch away from the tab for over 30 seconds and return. Check that polling was suspended and the status is checked on return.
+- **Maintenance during use:** Open login, registration or checkout while it is available, then pause its feature before submitting. Login and registration show the inline message in place of the form. In checkout it appears under Payment, the order button disappears and the basket and entered delivery information stay visible. Resume ordering and check that payment becomes available without re-entering the delivery information. Repeat with an ordinary `503` and verify that the usual error appears and the form remains available.
 - **Basket rules:** add, raise, lower and remove; adding the same menu item again; a menu item from a second restaurant asks first, and declining keeps the basket; 20 menu items and quantity 20 disable the buttons with the message; the basket total; a refresh keeps the basket (3–9, 11).
 - **Access:** checkout logged out goes to login and back with the basket; a customer sees the form; a restaurant user sees the customers-only message; an empty basket shows the empty state; plain login still goes to the homepage (12–14).
 - **Confirmed payment:** a `201` empties the basket and shows the confirmation with the backend's order total and the Danish status name Bestilt; a refresh and the confirmation address opened in a new tab both show the full order as the API returns it (15, 18–21).
@@ -153,6 +155,11 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 - **Tests:** `npm run lint` and `npm run build` pass, and `git grep authEnabled` finds only spec history. The flag check above is for the developer to run against the API.
 - **Follow-up:** None.
 
+### Spec 9.0 - 2026-11-27 - #69
+
+- **Built:** Auth and checkout share a gate, and the restaurant menu uses the same Danish inline message in place of ordering controls. An open checkout shows the message under Payment and keeps the basket and delivery information visible. One in-memory status is loaded at startup and refreshed every 30 seconds while the tab is visible. The last confirmed status remains visible if a refresh fails. A maintenance response to login, registration or order placement records the pause immediately.
+- **Tests:** See the maintenance checks above.
+
 ## Changelog
 
 | Version | Date       | Change                                                                           | Issue |
@@ -166,3 +173,4 @@ The grilling added **Basket** and **Basket total** to the glossary. The ordering
 | 7.0     | 2026-11-25 | Remove the `authEnabled` feature flag                                            | #22   |
 | 7.1     | 2026-11-25 | Correct the reason given for the explicit booleans in the 2.0 note               | #56   |
 | 8.0     | 2026-11-26 | Show Danish messages per status instead of the backend's text                    | #51   |
+| 9.0     | 2026-11-27 | Update the views while authentication or ordering is paused                      | #69   |

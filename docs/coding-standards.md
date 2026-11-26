@@ -1,6 +1,6 @@
 # Coding Standards
 
-**Version:** 8.0 · **Date:** 2026-11-26
+**Version:** 9.0 · **Date:** 2026-11-27
 
 ## Overview
 
@@ -93,7 +93,7 @@ The backend returns errors as [`ProblemDetail`](https://docs.spring.io/spring-fr
 ### Frontend errors
 
 - `src/api/client.js` is the only place that reads error responses. It throws an `Error` with `message` (the Danish message for the status), `status` and `data`. On a `5xx`, `message` ends with the `errorId` as "Fejlreference" when the server gives one.
-- Views never show the `detail` of the `ProblemDetail`. It is English and stays in `data` for debugging.
+- The `detail` of a `ProblemDetail` stays in `data` for debugging. For maintenance responses defined by [ADR-010](https://github.com/Kanban4sem/MTOGO-Backend/blob/main/docs/adr/010-maintenance-mode.md), the client identifies the paused feature and the affected view shows the Danish pause message inline.
 - Branch on `status`, never on the text of `message`. A view may replace `message` with a Danish one that fits its situation. On a `5xx` it still shows the `errorId`, through `withErrorReference` in `src/shared/utils/errorReference.js`.
 - `401` and `403` are handled in one place, not in each component. A view may still replace the `403` message with a more specific one.
 - Show users a friendly message. Include the `errorId` in bug reports so the log entry can be found.
@@ -153,3 +153,4 @@ return isEnabled("reviewsEnabled") && <ReviewForm />;
 | 6.0     | 2026-11-25 | REST paths: singular role scopes, login and logout as session actions            | #55      |
 | 7.0     | 2026-11-25 | Restore `FeatureFlagRoute` to hide a route; example flag no longer `authEnabled` | #22      |
 | 8.0     | 2026-11-26 | Danish message per error status instead of `detail`; the `errorId` on every 5xx  | #51      |
+| 9.0     | 2026-11-27 | Provide inline Danish messages for maintenance responses                         | #69      |

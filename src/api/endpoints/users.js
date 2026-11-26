@@ -1,9 +1,11 @@
 import { client } from '@/api/client.js'
+import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
 
 export function registerUser(registration) {
 	return client('/users', {
 		method: 'POST',
 		authenticated: false,
+		maintenanceFeature: MAINTENANCE_FEATURES.AUTHENTICATION,
 		body: JSON.stringify(registration),
 	})
 }
@@ -12,6 +14,7 @@ export function loginUser(credentials) {
 	return client('/users/login', {
 		method: 'POST',
 		authenticated: false,
+		maintenanceFeature: MAINTENANCE_FEATURES.AUTHENTICATION,
 		body: JSON.stringify(credentials),
 	})
 }

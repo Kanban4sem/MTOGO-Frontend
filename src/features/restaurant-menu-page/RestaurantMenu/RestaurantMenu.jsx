@@ -1,8 +1,11 @@
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
+import FeatureUnavailable from '@/shared/components/FeatureUnavailable/FeatureUnavailable.jsx'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { RESTAURANTS_PATH } from '@/shared/data/paths.js'
+import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
+import { useMaintenance } from '@/shared/hooks/useMaintenance.js'
 import { useRequestErrorNotification } from '@/shared/hooks/useNotification.js'
 import { withErrorReference } from '@/shared/utils/errorReference.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
@@ -66,6 +69,9 @@ export default function RestaurantMenu({ restaurantId }) {
 }
 
 function Menus({ restaurant, menus }) {
+	const { pauses, isLoading } = useMaintenance()
+	const orderingPause = pauses[MAINTENANCE_FEATURES.ORDERING]
+	const canOrder = !isLoading && !orderingPause
 	const basketRestaurant = { id: restaurant.id, name: restaurant.name }
 	const {
 		requestAdd,
@@ -76,7 +82,14 @@ function Menus({ restaurant, menus }) {
 
 	return (
 		<>
-			<div className={styles.menuWithBasket}>
+			{orderingPause && (
+				<div className={styles.orderingPause}>
+					<FeatureUnavailable
+						feature={MAINTENANCE_FEATURES.ORDERING}
+					/>
+				</div>
+			)}
+			<div className={canOrder ? styles.menuWithBasket : undefined}>
 				<div className={styles.menus}>
 					{menus.length === 0 ? (
 						<RequestState title="Menuen er på vej">
@@ -108,7 +121,11 @@ function Menus({ restaurant, menus }) {
 												key={item.id}
 												restaurantId={restaurant.id}
 												item={item}
-												onAdd={requestAdd}
+												onAdd={
+													canOrder
+														? requestAdd
+														: undefined
+												}
 											/>
 										))}
 									</ul>
@@ -120,16 +137,22 @@ function Menus({ restaurant, menus }) {
 						Alle priser er i danske kroner.
 					</p>
 				</div>
-				<div className={styles.basketRail}>
-					<BasketSidePanel />
-				</div>
+				{canOrder && (
+					<div className={styles.basketRail}>
+						<BasketSidePanel />
+					</div>
+				)}
 			</div>
-			<BasketBottomBar />
-			<NewBasketDialog
-				menuItem={menuItemAwaitingNewBasket}
-				onConfirm={startNewBasket}
-				onCancel={keepBasket}
-			/>
+			{canOrder && (
+				<>
+					<BasketBottomBar />
+					<NewBasketDialog
+						menuItem={menuItemAwaitingNewBasket}
+						onConfirm={startNewBasket}
+						onCancel={keepBasket}
+					/>
+				</>
+			)}
 		</>
 	)
 }
@@ -165,11 +188,13 @@ function MenuItem({ restaurantId, item, onAdd }) {
 			</div>
 			<div className={styles.order}>
 				<Price price={item.price} />
-				<AddToBasketButton
-					restaurantId={restaurantId}
-					menuItem={item}
-					onAdd={onAdd}
-				/>
+				{onAdd && (
+					<AddToBasketButton
+						restaurantId={restaurantId}
+						menuItem={item}
+						onAdd={onAdd}
+					/>
+				)}
 			</div>
 		</li>
 	)

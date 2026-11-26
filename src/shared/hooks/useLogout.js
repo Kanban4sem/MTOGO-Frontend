@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/shared/hooks/useAuth.js'
+import { useNotification } from '@/shared/hooks/useNotification.js'
+import { withErrorReference } from '@/shared/utils/errorReference.js'
 
 export function useLogout() {
 	const { logout: endSession } = useAuth()
+	const notify = useNotification()
 	const navigate = useNavigate()
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
 
@@ -14,8 +17,15 @@ export function useLogout() {
 		navigate('/', { replace: true })
 		try {
 			await endSession()
-		} catch {
-			// AuthProvider clears the local session even if the server cannot revoke it.
+			notify('Du er logget ud.', 'success')
+		} catch (error) {
+			notify(
+				withErrorReference(
+					'Du er logget ud i denne browser. Serveren bekræftede ikke, at sessionen blev afsluttet.',
+					error,
+				),
+				'warning',
+			)
 		} finally {
 			setIsLoggingOut(false)
 		}

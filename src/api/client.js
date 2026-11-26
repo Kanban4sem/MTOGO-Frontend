@@ -19,7 +19,7 @@ const STATUS_MESSAGES = {
 }
 
 // The one place that turns a status into the user's message, so every view says the same thing.
-// The backend's detail is English and stays in error.data for debugging, never in the message.
+// The backend's detail stays in error.data. Maintenance responses identify the paused feature.
 // A view that adds its own text to the general message uses this and adds the reference itself.
 export function getStatusMessage(status) {
 	if (status >= 500) return 'Der opstod en serverfejl. Prøv igen senere.'
@@ -31,7 +31,11 @@ function getErrorMessage(status, data) {
 }
 
 export async function client(endpoint, options = {}) {
-	const { authenticated = true, ...requestOptions } = options
+	const {
+		authenticated = true,
+		maintenanceFeature,
+		...requestOptions
+	} = options
 
 	const url = `${BASE_URL}${endpoint}`
 	const token = authenticated ? localStorage.getItem(ACCESS_TOKEN_KEY) : null
@@ -75,6 +79,19 @@ export async function client(endpoint, options = {}) {
 
 		error.status = response.status
 		error.data = data
+		if (
+			maintenanceFeature &&
+			response.status === 503 &&
+			response.headers.get('content-type')?.split(';')[0] ===
+				'application/problem+json' &&
+			data?.status === 503 &&
+			data.instance === url &&
+			data.errorId == null &&
+			typeof data.detail === 'string' &&
+			data.detail.trim()
+		) {
+			error.maintenanceFeature = maintenanceFeature
+		}
 
 		throw error
 	}

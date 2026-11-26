@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { LOGIN_PATH } from '@/shared/data/paths.js'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useNotification } from '@/shared/hooks/useNotification.js'
+import { useMaintenance } from '@/shared/hooks/useMaintenance.js'
 import { registerAccount } from '@/shared/services/userService.js'
 import { getAuthErrorMessage } from '@/shared/utils/authErrors.js'
 import { REGISTER_STEPS } from '@/features/register-page/RegisterForm/registerFields.js'
@@ -13,6 +14,7 @@ export function useRegister() {
 	const returnTo = navigation?.returnTo
 	const [stepIndex, setStepIndex] = useState(0)
 	const notify = useNotification()
+	const { recordPause } = useMaintenance()
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const registrationRef = useRef({})
 	const headingRef = useRef(null)
@@ -70,6 +72,7 @@ export function useRegister() {
 				},
 			})
 		} catch (error) {
+			if (recordPause(error)) return
 			notify(getAuthErrorMessage(error), 'error')
 			if (error.status === 409) changeStep(0)
 		} finally {

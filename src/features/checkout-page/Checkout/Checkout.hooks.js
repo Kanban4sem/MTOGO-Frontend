@@ -2,7 +2,9 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getStatusMessage } from '@/api/client.js'
 import { getOrderConfirmationPath } from '@/shared/data/paths.js'
+import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import { useMaintenance } from '@/shared/hooks/useMaintenance.js'
 import {
 	useNotification,
 	useRequestErrorNotification,
@@ -91,6 +93,8 @@ async function loadAddresses(signal) {
 export function useCheckout() {
 	const navigate = useNavigate()
 	const notify = useNotification()
+	const { pauses, recordPause } = useMaintenance()
+	const isOrderingPaused = pauses[MAINTENANCE_FEATURES.ORDERING] === true
 	const { basket, emptyBasket } = useBasket()
 	const [fieldErrors, setFieldErrors] = useState({})
 	const {
@@ -127,7 +131,8 @@ export function useCheckout() {
 
 	async function submitOrder(event) {
 		event.preventDefault()
-		if (isSubmittingRef.current || isAddressLoading) return
+		if (isSubmittingRef.current || isAddressLoading || isOrderingPaused)
+			return
 		setShowMenuLink(false)
 		let addressSelection = { deliveryAddressId: selectedAddress?.id }
 		if (!selectedAddress) {
@@ -167,6 +172,7 @@ export function useCheckout() {
 		} catch (error) {
 			isSubmittingRef.current = false
 			setIsSubmitting(false)
+			if (recordPause(error)) return
 			if (error.status === 404 && selectedAddress) {
 				updateAddresses((previous) => ({
 					...previous,
@@ -200,6 +206,7 @@ export function useCheckout() {
 		),
 		paymentToken,
 		setPaymentToken,
+		isOrderingPaused,
 		showMenuLink,
 		isSubmitting,
 		submitOrder,
