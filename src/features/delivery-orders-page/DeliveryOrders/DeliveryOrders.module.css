@@ -108,19 +108,3 @@
 .total {
 	margin: 0 0 0.5rem;
 }
-
-.error,
-.notice {
-	margin: 0 0 1rem;
-	padding: 0.75rem 1rem;
-	border-radius: var(--mtogo-border-radius);
-}
-
-.error {
-	background: var(--mtogo-error-surface);
-	color: var(--mtogo-error-text);
-}
-
-.notice {
-	background: var(--mtogo-success-surface);
-}

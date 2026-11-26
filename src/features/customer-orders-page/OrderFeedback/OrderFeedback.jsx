@@ -12,7 +12,7 @@ const RATING_OPTIONS = [
 	...[1, 2, 3, 4, 5, 6].map((rating) => ({ value: rating, label: rating })),
 ]
 
-function OrderFeedbackForm({ isSubmitting, error, sendFeedback }) {
+function OrderFeedbackForm({ isSubmitting, sendFeedback }) {
 	return (
 		<form onSubmit={sendFeedback}>
 			<fieldset className={styles.fields} disabled={isSubmitting}>
@@ -45,11 +45,6 @@ function OrderFeedbackForm({ isSubmitting, error, sendFeedback }) {
 					Kommentar (valgfri)
 					<textarea name="description" rows={4} maxLength={1000} />
 				</label>
-				{error && (
-					<p className={styles.error} role="alert">
-						{error.message}
-					</p>
-				)}
 				<Button
 					type="submit"
 					label={isSubmitting ? 'Sender feedback…' : 'Send feedback'}
@@ -62,13 +57,8 @@ function OrderFeedbackForm({ isSubmitting, error, sendFeedback }) {
 export default function OrderFeedback({ orderId }) {
 	const section = useRef(null)
 	const location = useLocation()
-	const {
-		availability,
-		isSubmitting,
-		isSubmitted,
-		submitError,
-		sendFeedback,
-	} = useOrderFeedback(orderId)
+	const { availability, isSubmitting, isSubmitted, sendFeedback } =
+		useOrderFeedback(orderId)
 
 	useEffect(() => {
 		if (location.hash === `#${ORDER_FEEDBACK_SECTION_ID}`) {
@@ -86,26 +76,18 @@ export default function OrderFeedback({ orderId }) {
 		>
 			<h2 id="order-feedback-title">Feedback</h2>
 			{isSubmitted ? (
-				<p role="status">
-					Du har allerede givet feedback på denne ordre.
-				</p>
+				<p>Feedback modtaget.</p>
 			) : availability.isLoading ? (
 				<p role="status">Henter feedbackstatus…</p>
 			) : availability.error ? (
-				<>
-					<p className={styles.error} role="alert">
-						{availability.error.message}
-					</p>
-					<Button
-						label="Prøv igen"
-						variant="secondary"
-						onClick={availability.reload}
-					/>
-				</>
+				<Button
+					label="Prøv igen"
+					variant="secondary"
+					onClick={availability.reload}
+				/>
 			) : (
 				<OrderFeedbackForm
 					isSubmitting={isSubmitting}
-					error={submitError}
 					sendFeedback={sendFeedback}
 				/>
 			)}

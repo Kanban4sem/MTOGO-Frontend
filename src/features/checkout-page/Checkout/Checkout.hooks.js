@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { getStatusMessage } from '@/api/client.js'
 import { getOrderConfirmationPath } from '@/shared/data/paths.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
+import {
+	useNotification,
+	useRequestErrorNotification,
+} from '@/shared/hooks/useNotification.js'
 import { useRequest } from '@/shared/hooks/useRequest.js'
 import { listSavedDeliveryAddresses } from '@/shared/services/deliveryAddressService.js'
 import { getSignedInUser } from '@/shared/services/userService.js'
-import {
-	errorReference,
-	withErrorReference,
-} from '@/shared/utils/errorReference.js'
+import { withErrorReference } from '@/shared/utils/errorReference.js'
 import { validateDeliveryAddress } from '@/shared/utils/validateDeliveryAddress.js'
 import {
 	PAYMENT_TOKENS,
@@ -26,7 +27,7 @@ function getCheckoutFailure(error) {
 	switch (error.status) {
 		case 403:
 			return {
-				message: `Kun kunder kan bestille, og du er logget ind med en konto, der ikke kan afgive ordrer. ${BASKET_KEPT}`,
+				message: `Kun kunder kan bestille. ${BASKET_KEPT}`,
 			}
 		case 402:
 			return {
@@ -83,13 +84,13 @@ async function loadAddresses(signal) {
 	return {
 		profile: user.value?.profile,
 		savedAddresses: addresses.value ?? [],
-		failed: addresses.status === 'rejected',
-		failureReference: errorReference(addresses.reason),
+		addressError: addresses.reason,
 	}
 }
 
 export function useCheckout() {
 	const navigate = useNavigate()
+	const notify = useNotification()
 	const { basket, emptyBasket } = useBasket()
 	const [fieldErrors, setFieldErrors] = useState({})
 	const {
@@ -99,7 +100,7 @@ export function useCheckout() {
 	} = useRequest(loadAddresses)
 	const [addressChoice, setAddressChoice] = useState(null)
 	const [paymentToken, setPaymentToken] = useState(PAYMENT_TOKENS.CARD)
-	const [failure, setFailure] = useState(null)
+	const [showMenuLink, setShowMenuLink] = useState(false)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	// State only updates on the next render, so a second submit in the same tick needs the ref to be stopped.
 	const isSubmittingRef = useRef(false)
@@ -111,16 +112,23 @@ export function useCheckout() {
 			: savedAddresses.find(
 					(address) => String(address.id) === addressChoice,
 				)
+	const addressError = addressRequest?.addressError
+	useRequestErrorNotification(
+		addressError,
+		addressError &&
+			withErrorReference(
+				'Vi kunne ikke hente dine gemte adresser. Du kan indtaste leveringsadressen manuelt.',
+				addressError,
+			),
+	)
 	const profileAddress = addressRequest?.profile?.address
 	const addressDefaults =
-		addressRequest?.failed || !profileAddress?.street
-			? profileAddress
-			: null
+		addressError || !profileAddress?.street ? profileAddress : null
 
 	async function submitOrder(event) {
 		event.preventDefault()
 		if (isSubmittingRef.current || isAddressLoading) return
-		setFailure(null)
+		setShowMenuLink(false)
 		let addressSelection = { deliveryAddressId: selectedAddress?.id }
 		if (!selectedAddress) {
 			const form = event.currentTarget
@@ -135,6 +143,7 @@ export function useCheckout() {
 			const firstInvalidField = Object.keys(errors)[0]
 			if (firstInvalidField) {
 				form.elements.namedItem(firstInvalidField)?.focus()
+				notify(Object.values(errors).join(' '), 'warning')
 				return
 			}
 			addressSelection = {
@@ -152,6 +161,7 @@ export function useCheckout() {
 				addressSelection,
 				paymentToken,
 			)
+			notify('Din ordre er sendt!', 'success')
 			navigate(getOrderConfirmationPath(order.id))
 			emptyBasket()
 		} catch (error) {
@@ -165,11 +175,14 @@ export function useCheckout() {
 					),
 				}))
 				setAddressChoice('')
-				setFailure({
-					message: `Den valgte adresse findes ikke længere. ${BASKET_KEPT} Vælg en anden adresse, eller indtast den manuelt.`,
-				})
-			} else {
-				setFailure(getCheckoutFailure(error))
+				notify(
+					`Den valgte adresse findes ikke længere. ${BASKET_KEPT} Vælg en anden adresse, eller indtast den manuelt.`,
+					'warning',
+				)
+			} else if (error.status !== 401) {
+				const failure = getCheckoutFailure(error)
+				setShowMenuLink(failure.showMenuLink === true)
+				notify(failure.message, 'error')
 			}
 		}
 	}
@@ -180,8 +193,6 @@ export function useCheckout() {
 		setAddressChoice,
 		profile: addressRequest?.profile,
 		isAddressLoading,
-		addressLoadFailed: addressRequest?.failed,
-		addressLoadReference: addressRequest?.failureReference,
 		deliveryAddressFields: withFieldState(
 			DELIVERY_ADDRESS_FIELDS,
 			fieldErrors,
@@ -189,7 +200,7 @@ export function useCheckout() {
 		),
 		paymentToken,
 		setPaymentToken,
-		failure,
+		showMenuLink,
 		isSubmitting,
 		submitOrder,
 	}

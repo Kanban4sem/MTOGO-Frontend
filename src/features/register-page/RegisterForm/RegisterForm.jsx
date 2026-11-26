@@ -13,7 +13,6 @@ function RegisterForm() {
 		isLastStep,
 		submitRegistration,
 		goBack,
-		error,
 		isSubmitting,
 		returnTo,
 	} = useRegister()
@@ -27,7 +26,6 @@ function RegisterForm() {
 				Trin {stepIndex + 1} af {REGISTER_STEPS.length} ·{' '}
 				{REGISTER_STEPS[stepIndex].label}
 			</p>
-			{error && <p role="alert">{error}</p>}
 			<form
 				className={styles.form}
 				onSubmit={submitRegistration}

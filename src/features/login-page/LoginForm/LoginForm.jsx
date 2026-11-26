@@ -1,31 +1,27 @@
 import { Link } from 'react-router-dom'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
+import { useNotificationMessage } from '@/shared/hooks/useNotification.js'
 import { LOGIN_FIELDS } from '@/features/login-page/LoginForm/loginFields.js'
 import { useLogin } from '@/features/login-page/LoginForm/LoginForm.hooks.js'
 import styles from '@/features/login-page/LoginForm/LoginForm.module.css'
 
 function LoginForm() {
 	const {
-		error,
 		isSubmitting,
 		submitLogin,
 		returnTo,
-		registered,
 		sessionExpired,
 		initialEmail,
 	} = useLogin()
+	useNotificationMessage(
+		sessionExpired ? 'Din session er udløbet. Log ind igen.' : '',
+		'warning',
+	)
 
 	return (
 		<section className={styles.login} aria-labelledby="login-title">
 			<h1 id="login-title">Log ind</h1>
-			{error && <p role="alert">{error}</p>}
-			{sessionExpired && (
-				<p role="status">Din session er udløbet. Log ind igen.</p>
-			)}
-			{registered && (
-				<p role="status">Din konto er oprettet. Du kan nu logge ind.</p>
-			)}
 			<form
 				className={styles.form}
 				onSubmit={submitLogin}

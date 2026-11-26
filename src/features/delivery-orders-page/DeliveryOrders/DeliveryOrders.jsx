@@ -85,12 +85,7 @@ function DeliveryOrderList({
 	onChange,
 }) {
 	if (isLoading) return <RequestState title="Henter ordrer…" isLoading />
-	if (error)
-		return (
-			<RequestState title="Vi kunne ikke hente ordrerne">
-				{error.message}
-			</RequestState>
-		)
+	if (error) return null
 	if (orders.length === 0) return <RequestState title={emptyTitle} />
 
 	return (
@@ -116,7 +111,6 @@ export default function DeliveryOrders({ available }) {
 		isLoading,
 		error,
 		pendingOrderId,
-		orderUpdate,
 		changeOrder,
 		refreshOrders,
 	} = useDeliveryOrders(available)
@@ -125,9 +119,6 @@ export default function DeliveryOrders({ available }) {
 		: filter === 'completed'
 			? 'Du har ingen afsluttede leveringer'
 			: 'Du har ingen aktive leveringer'
-
-	const updatedOrder = orderUpdate?.order
-	const orderTaken = orderUpdate?.action === TAKE.action
 
 	return (
 		<section
@@ -153,30 +144,14 @@ export default function DeliveryOrders({ available }) {
 					onSelect={setFilter}
 				/>
 			)}
-			<div>
-				<div role="alert">
-					{orderUpdate?.error && (
-						<p className={styles.error}>{orderUpdate.error}</p>
-					)}
-				</div>
-				<div role="status">
-					{updatedOrder && (
-						<p className={styles.notice}>
-							Ordre nr. {updatedOrder.id} ·{' '}
-							{updatedOrder.statusName.danish}
-							{orderTaken && ' · Overtaget. Se den under Ordrer.'}
-						</p>
-					)}
-				</div>
-				<DeliveryOrderList
-					orders={visibleOrders}
-					isLoading={isLoading}
-					error={error}
-					emptyTitle={emptyTitle}
-					pendingOrderId={pendingOrderId}
-					onChange={changeOrder}
-				/>
-			</div>
+			<DeliveryOrderList
+				orders={visibleOrders}
+				isLoading={isLoading}
+				error={error}
+				emptyTitle={emptyTitle}
+				pendingOrderId={pendingOrderId}
+				onChange={changeOrder}
+			/>
 		</section>
 	)
 }

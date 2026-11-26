@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import OrderFeedback from '@/features/customer-orders-page/OrderFeedback/OrderFeedback.jsx'
+import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
 import {
@@ -9,6 +10,7 @@ import {
 import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
 import { ORDER_DATE } from '@/shared/utils/orderDate.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
+import { useRequestErrorNotification } from '@/shared/hooks/useNotification.js'
 import { isOrderNotFound } from '@/shared/utils/orderErrors.js'
 import { useCustomerOrders } from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.hooks.js'
 import styles from '@/features/customer-orders-page/CustomerOrders/CustomerOrders.module.css'
@@ -87,20 +89,24 @@ function OrderDetails({ order }) {
 }
 
 function OrderContent({ orderId }) {
-	const { isLoading, data, error } = useCustomerOrders(orderId)
+	const { isLoading, data, error, reload } = useCustomerOrders(orderId)
+	const orderNotFound =
+		orderId !== undefined && error && isOrderNotFound(error)
+	useRequestErrorNotification(
+		error,
+		orderNotFound
+			? 'Ordren blev ikke fundet.'
+			: error && `Vi kunne ikke hente dine ordrer. ${error.message}`,
+	)
 
 	if (isLoading) {
 		return <RequestState title="Henter ordrer…" isLoading />
 	}
 	if (error) {
-		if (orderId !== undefined && isOrderNotFound(error)) {
+		if (orderNotFound) {
 			return <RequestState title="Ordren blev ikke fundet" />
 		}
-		return (
-			<RequestState title="Vi kunne ikke hente dine ordrer">
-				{error.message}
-			</RequestState>
-		)
+		return <Button label="Prøv igen" onClick={reload} />
 	}
 	if (orderId === undefined) return <OrderList orders={data} />
 	return <OrderDetails order={data} />

@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import {
+	useNotification,
+	useRequestErrorNotification,
+} from '@/shared/hooks/useNotification.js'
 import { useRequest } from '@/shared/hooks/useRequest.js'
 import {
 	getRestaurantOrders,
@@ -13,20 +17,15 @@ export function useRestaurantOrders() {
 		reload,
 		updateData,
 	} = useRequest(getRestaurantOrders)
+	useRequestErrorNotification(
+		error,
+		error && `Vi kunne ikke hente ordrerne. ${error.message}`,
+	)
 	const [pendingOrderId, setPendingOrderId] = useState(null)
-	const [updateError, setUpdateError] = useState('')
-	const [updatedOrder, setUpdatedOrder] = useState(null)
-
-	function refreshOrders() {
-		setUpdateError('')
-		setUpdatedOrder(null)
-		reload()
-	}
+	const notify = useNotification()
 
 	async function changeStatus(orderId, status) {
 		setPendingOrderId(orderId)
-		setUpdateError('')
-		setUpdatedOrder(null)
 		try {
 			const order = await updateRestaurantOrderStatus(orderId, status)
 			updateData((currentOrders) =>
@@ -34,13 +33,19 @@ export function useRestaurantOrders() {
 					current.id === order.id ? order : current,
 				),
 			)
-			setUpdatedOrder(order)
+			notify(
+				`Ordre nr. ${order.id} · ${order.statusName.danish}`,
+				'success',
+			)
 		} catch (error) {
 			if (error.status === 404 || error.status === 409) {
-				refreshOrders()
-				setUpdateError('Ordren kan have ændret sig. Listen opdateres.')
-			} else {
-				setUpdateError(error.message)
+				reload()
+				notify(
+					'Ordren kan have ændret sig. Listen opdateres.',
+					'warning',
+				)
+			} else if (error.status !== 401) {
+				notify(error.message, 'error')
 			}
 		} finally {
 			setPendingOrderId(null)
@@ -52,9 +57,7 @@ export function useRestaurantOrders() {
 		isLoading,
 		error,
 		pendingOrderId,
-		updateError,
-		updatedOrder,
 		changeStatus,
-		refreshOrders,
+		refreshOrders: reload,
 	}
 }

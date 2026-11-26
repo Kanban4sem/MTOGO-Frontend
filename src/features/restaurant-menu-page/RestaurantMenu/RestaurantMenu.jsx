@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { RESTAURANTS_PATH } from '@/shared/data/paths.js'
+import { useRequestErrorNotification } from '@/shared/hooks/useNotification.js'
 import { withErrorReference } from '@/shared/utils/errorReference.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import AddToBasketButton from '@/features/restaurant-menu-page/AddToBasketButton/AddToBasketButton.jsx'
@@ -18,6 +19,16 @@ import styles from '@/features/restaurant-menu-page/RestaurantMenu/RestaurantMen
 export default function RestaurantMenu({ restaurantId }) {
 	const { restaurant, menus, isLoading, error } =
 		useRestaurantMenu(restaurantId)
+	useRequestErrorNotification(
+		error,
+		error &&
+			withErrorReference(
+				error.status === 404
+					? 'Restauranten findes ikke eller tager ikke imod bestillinger lige nu.'
+					: 'Vi kunne ikke hente menuen. Prøv at genindlæse siden om lidt.',
+				error,
+			),
+	)
 
 	return (
 		<div className={styles.page}>
@@ -33,21 +44,7 @@ export default function RestaurantMenu({ restaurantId }) {
 			{isLoading ? (
 				<RequestState title="Vi finder menuen frem…" isLoading />
 			) : error ? (
-				<RequestState
-					title={
-						error.status === 404
-							? 'Denne restaurant er ikke tilgængelig'
-							: 'Vi kunne ikke hente menuen'
-					}
-				>
-					{withErrorReference(
-						error.status === 404
-							? 'Restauranten findes ikke eller tager ikke imod bestillinger lige nu.'
-							: 'Prøv at genindlæse siden om lidt.',
-						error,
-					)}{' '}
-					<Link to={RESTAURANTS_PATH}>Find en restaurant</Link>
-				</RequestState>
+				<Link to={RESTAURANTS_PATH}>Find en restaurant</Link>
 			) : (
 				<>
 					<header className={styles.intro}>

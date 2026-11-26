@@ -2,15 +2,6 @@
 	display: none;
 }
 
-.limit {
-	margin: 0;
-}
-
-/* Out of flow while empty, but still rendered so screen readers announce the message when it appears. */
-.limit:empty {
-	position: absolute;
-}
-
 .bar {
 	display: flex;
 	align-items: center;

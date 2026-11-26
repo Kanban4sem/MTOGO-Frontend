@@ -6,7 +6,6 @@ import { useLogout } from '@/shared/hooks/useLogout.js'
 
 export default function DashboardLayout({ label, links, children }) {
 	const { user } = useAuth()
-	// The error is not shown: signing out leaves the dashboard for the homepage at once.
 	const { isLoggingOut, logout } = useLogout()
 	const name = [user?.profile?.firstName, user?.profile?.lastName]
 		.filter(Boolean)

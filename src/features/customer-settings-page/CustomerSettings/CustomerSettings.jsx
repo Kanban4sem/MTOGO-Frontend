@@ -7,7 +7,7 @@ import {
 	useCustomerSettings,
 	useCustomerSettingsRequest,
 } from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.hooks.js'
-import { errorReference } from '@/shared/utils/errorReference.js'
+import { useRequestErrorNotification } from '@/shared/hooks/useNotification.js'
 import styles from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.module.css'
 
 const CONTACT_FIELDS = [
@@ -137,7 +137,6 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 		addAddress,
 		editAddress,
 		toggleRemoval,
-		feedback,
 		hasChanges,
 		isSaving,
 		saveSettings,
@@ -195,16 +194,6 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 				<p className={styles.description}>
 					Udfyld de felter, du vil ændre, og vælg Opdatér.
 				</p>
-				{feedback?.error && (
-					<p className={styles.error} role="alert">
-						{feedback.error}
-					</p>
-				)}
-				{feedback?.success && (
-					<p className={styles.status} role="status">
-						{feedback.success}
-					</p>
-				)}
 				<fieldset className={styles.section} disabled={isSaving}>
 					<legend>Kontaktoplysninger</legend>
 					<div className={styles.fields}>
@@ -260,6 +249,10 @@ export default function CustomerSettings() {
 		error,
 		reload,
 	} = useCustomerSettingsRequest()
+	useRequestErrorNotification(
+		error,
+		error && `Vi kunne ikke hente dine indstillinger. ${error.message}`,
+	)
 
 	if (isLoading) {
 		return (
@@ -271,12 +264,7 @@ export default function CustomerSettings() {
 	if (error) {
 		return (
 			<div className={styles.request}>
-				<RequestState
-					title="Vi kunne ikke hente dine indstillinger"
-					headingLevel="h1"
-					symbol=":("
-				>
-					{errorReference(error)}{' '}
+				<RequestState title="Indstillinger" headingLevel="h1">
 					<Button label="Prøv igen" onClick={reload} />
 				</RequestState>
 			</div>

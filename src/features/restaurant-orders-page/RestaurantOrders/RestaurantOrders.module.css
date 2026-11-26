@@ -124,23 +124,6 @@
 	white-space: nowrap;
 }
 
-.total,
-.error,
-.notice {
+.total {
 	margin: 0;
-}
-
-.error,
-.notice {
-	padding: 0.75rem;
-	border-radius: var(--mtogo-border-radius);
-}
-
-.error {
-	background: var(--mtogo-error-surface);
-	color: var(--mtogo-error-text);
-}
-
-.notice {
-	background: var(--mtogo-success-surface);
 }

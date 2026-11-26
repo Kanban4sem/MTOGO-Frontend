@@ -102,13 +102,6 @@
 	color: var(--mtogo-text-secondary);
 }
 
-.error {
-	margin: 0;
-	padding: var(--mtogo-component-padding);
-	padding-inline: calc(var(--mtogo-component-padding) * 3);
-	color: var(--mtogo-error-text);
-}
-
 @media (max-width: 60rem) {
 	.nav {
 		gap: var(--mtogo-component-padding);

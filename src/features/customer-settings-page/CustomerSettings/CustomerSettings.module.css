@@ -19,23 +19,13 @@
 }
 
 .heading h1,
-.description,
-.error,
-.status {
+.description {
 	margin: 0;
 }
 
 .description,
 .dialog p {
 	color: var(--mtogo-text-secondary);
-}
-
-.error {
-	color: var(--mtogo-error-text);
-}
-
-.status {
-	color: var(--color-success);
 }
 
 .section {

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { LOGIN_PATH } from '@/shared/data/paths.js'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useNotification } from '@/shared/hooks/useNotification.js'
 import { registerAccount } from '@/shared/services/userService.js'
 import { getAuthErrorMessage } from '@/shared/utils/authErrors.js'
 import { REGISTER_STEPS } from '@/features/register-page/RegisterForm/registerFields.js'
@@ -11,7 +12,7 @@ export function useRegister() {
 	// The address login should return to, kept through registration.
 	const returnTo = navigation?.returnTo
 	const [stepIndex, setStepIndex] = useState(0)
-	const [error, setError] = useState('')
+	const notify = useNotification()
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const registrationRef = useRef({})
 	const headingRef = useRef(null)
@@ -25,7 +26,6 @@ export function useRegister() {
 	async function submitRegistration(event) {
 		event.preventDefault()
 		if (isSubmitting) return
-		setError('')
 		const fields = Object.fromEntries(new FormData(event.currentTarget))
 		for (const name of Object.keys(fields)) {
 			if (name !== 'password' && name !== 'confirmPassword') {
@@ -37,7 +37,7 @@ export function useRegister() {
 
 		if (!isLastStep) {
 			if (registration.password !== registration.confirmPassword) {
-				setError('De to passwords skal være ens.')
+				notify('De to adgangskoder skal være ens.', 'warning')
 				return
 			}
 			changeStep(stepIndex + 1)
@@ -50,8 +50,9 @@ export function useRegister() {
 			registration.country,
 		]
 		if (address.some(Boolean) && !address.every(Boolean)) {
-			setError(
+			notify(
 				'Udfyld både postnummer, by og land, eller lad hele adressen være tom.',
+				'warning',
 			)
 			return
 		}
@@ -60,16 +61,16 @@ export function useRegister() {
 		try {
 			await registerAccount(registration)
 			registrationRef.current = {}
+			notify('Din konto er oprettet. Du kan nu logge ind.', 'success')
 			navigate(LOGIN_PATH, {
 				replace: true,
 				state: {
-					registered: true,
 					email: registration.email,
 					returnTo,
 				},
 			})
 		} catch (error) {
-			setError(getAuthErrorMessage(error))
+			notify(getAuthErrorMessage(error), 'error')
 			if (error.status === 409) changeStep(0)
 		} finally {
 			setIsSubmitting(false)
@@ -78,7 +79,6 @@ export function useRegister() {
 
 	function goBack() {
 		if (stepIndex > 0 && !isSubmitting) {
-			setError('')
 			changeStep(stepIndex - 1)
 		}
 	}
@@ -89,7 +89,6 @@ export function useRegister() {
 		isLastStep,
 		submitRegistration,
 		goBack,
-		error,
 		isSubmitting,
 		returnTo,
 	}

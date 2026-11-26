@@ -26,7 +26,7 @@ export default function Checkout() {
 	if (user.role !== USER_ROLES.CUSTOMER) {
 		return (
 			<RequestState title="Kun kunder kan bestille">
-				Du er logget ind med en konto, der ikke kan afgive ordrer.
+				Du skal bruge en kundekonto for at afgive en ordre.
 			</RequestState>
 		)
 	}
@@ -49,12 +49,10 @@ function CheckoutForm({ accountProfile }) {
 		setAddressChoice,
 		profile,
 		isAddressLoading,
-		addressLoadFailed,
-		addressLoadReference,
 		deliveryAddressFields,
 		paymentToken,
 		setPaymentToken,
-		failure,
+		showMenuLink,
 		isSubmitting,
 		submitOrder,
 	} = useCheckout()
@@ -95,13 +93,6 @@ function CheckoutForm({ accountProfile }) {
 					{isAddressLoading && (
 						<p role="status" className={styles.note}>
 							Henter dine gemte adresser…
-						</p>
-					)}
-					{addressLoadFailed && (
-						<p role="status" className={styles.note}>
-							Vi kunne ikke hente dine gemte adresser. Du kan
-							indtaste leveringsadressen her.{' '}
-							{addressLoadReference}
 						</p>
 					)}
 					{savedAddresses.length > 0 && (
@@ -166,15 +157,10 @@ function CheckoutForm({ accountProfile }) {
 						</div>
 					)}
 				</fieldset>
-				{failure && (
-					<div className={styles.failure} role="alert">
-						<p>{failure.message}</p>
-						{failure.showMenuLink && (
-							<Link to={menuPath}>
-								Gå til menuen hos {basket.restaurant.name}
-							</Link>
-						)}
-					</div>
+				{showMenuLink && (
+					<Link to={menuPath}>
+						Gå til menuen hos {basket.restaurant.name}
+					</Link>
 				)}
 				<Button
 					type="submit"

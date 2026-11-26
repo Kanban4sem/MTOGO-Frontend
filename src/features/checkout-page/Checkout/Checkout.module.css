@@ -107,25 +107,6 @@
 	font-size: 13px;
 }
 
-.failure {
-	display: grid;
-	gap: 8px;
-	padding: 16px;
-	border: 1px solid var(--mtogo-status-error);
-	border-radius: var(--mtogo-border-radius);
-	background: var(--mtogo-error-surface);
-	color: var(--mtogo-error-text);
-}
-
-.failure p {
-	margin: 0;
-}
-
-.failure a {
-	color: var(--mtogo-error-text);
-	font-weight: 600;
-}
-
 @media (max-width: 900px) {
 	.checkout {
 		grid-template-columns: minmax(0, 1fr);

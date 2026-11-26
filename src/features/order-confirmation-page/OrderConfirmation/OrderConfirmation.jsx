@@ -4,6 +4,7 @@ import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import { getCountryName } from '@/shared/data/countries.js'
 import { formatDeliveryAddress } from '@/shared/utils/formatDeliveryAddress.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
+import { useRequestErrorNotification } from '@/shared/hooks/useNotification.js'
 import { isOrderNotFound } from '@/shared/utils/orderErrors.js'
 import { useOrderConfirmation } from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.hooks.js'
 import styles from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.module.css'
@@ -15,18 +16,26 @@ export default function OrderConfirmation({ orderId }) {
 		error,
 		reload,
 	} = useOrderConfirmation(orderId)
+	const orderNotFound = error && isOrderNotFound(error)
+	useRequestErrorNotification(
+		error,
+		orderNotFound
+			? 'Ordren blev ikke fundet.'
+			: error &&
+					`Vi kunne ikke hente ordre nr. ${orderId}. ${error.message}`,
+	)
 
 	if (isLoading) {
 		return <RequestState title="Henter din ordre…" isLoading />
 	}
 	if (error) {
-		if (isOrderNotFound(error)) {
+		if (orderNotFound) {
 			return <RequestState title="Ordren blev ikke fundet" />
 		}
 		// Checkout has already emptied the basket, so keep the order number in view and let the customer retry.
 		return (
-			<RequestState title={`Vi kunne ikke hente ordre nr. ${orderId}`}>
-				{error.message} <Button label="Prøv igen" onClick={reload} />
+			<RequestState title={`Ordre nr. ${orderId}`}>
+				<Button label="Prøv igen" onClick={reload} />
 			</RequestState>
 		)
 	}

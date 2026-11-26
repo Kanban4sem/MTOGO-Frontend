@@ -9,18 +9,13 @@ import { formatPrice } from '@/shared/utils/formatPrice.js'
 import styles from '@/features/restaurant-menu-page/BasketBottomBar/BasketBottomBar.module.css'
 
 export default function BasketBottomBar() {
-	const { isEmpty, itemCount, total, limitMessage } = useBasket()
+	const { isEmpty, itemCount, total } = useBasket()
 
 	return (
 		<div className={styles.bottom}>
-			<p className={styles.limit} role="status">
-				{limitMessage}
-			</p>
 			{!isEmpty && (
 				<>
-					{!limitMessage && (
-						<p className={styles.limits}>{BASKET_LIMITS_MESSAGE}</p>
-					)}
+					<p className={styles.limits}>{BASKET_LIMITS_MESSAGE}</p>
 					<Link className={styles.bar} to={CHECKOUT_PATH}>
 						<span>
 							{formatItemCount(itemCount)} · {formatPrice(total)}

@@ -101,8 +101,6 @@ export default function RestaurantOrders() {
 		error,
 		isLoading,
 		pendingOrderId,
-		updateError,
-		updatedOrder,
 		changeStatus,
 		refreshOrders,
 	} = useRestaurantOrders()
@@ -150,26 +148,9 @@ export default function RestaurantOrders() {
 				selected={activeFilter}
 				onSelect={selectFilter}
 			/>
-			{updateError && (
-				<p className={styles.error} role="alert">
-					{updateError}
-				</p>
-			)}
-			<div aria-live="polite">
-				{updatedOrder && (
-					<p className={styles.notice}>
-						Ordre nr. {updatedOrder.id} ·{' '}
-						{updatedOrder.statusName.danish}
-					</p>
-				)}
-			</div>
 			{isLoading ? (
 				<RequestState title="Henter ordrer…" isLoading />
-			) : error ? (
-				<RequestState title="Vi kunne ikke hente ordrerne">
-					{error.message}
-				</RequestState>
-			) : visibleOrders.length === 0 ? (
+			) : error ? null : visibleOrders.length === 0 ? (
 				<RequestState title="Restauranten har ingen ordrer endnu" />
 			) : (
 				<ul className={styles.orders} aria-label="Restaurantens ordrer">

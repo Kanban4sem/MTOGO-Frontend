@@ -47,9 +47,3 @@
 .input[aria-invalid="true"] {
 	border-color: var(--mtogo-status-error);
 }
-
-.error {
-	margin: 0;
-	color: var(--mtogo-error-text);
-	font-size: var(--mtogo-text-size);
-}

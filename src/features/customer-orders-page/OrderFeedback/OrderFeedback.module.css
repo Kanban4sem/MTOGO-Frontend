@@ -57,7 +57,3 @@
 .fields > button {
 	justify-self: start;
 }
-
-.error {
-	color: var(--mtogo-error-text);
-}

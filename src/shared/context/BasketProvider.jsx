@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BasketContext } from '@/shared/context/BasketContext.jsx'
+import { useNotification } from '@/shared/hooks/useNotification.js'
 import { AUTH_SESSION_CLEARED } from '@/shared/utils/authSession.js'
 import {
 	EMPTY_BASKET,
@@ -39,6 +40,16 @@ function storeBasket(basket) {
 
 export function BasketProvider({ children }) {
 	const [basket, setBasket] = useState(readStoredBasket)
+	const notify = useNotification()
+	const limitMessage = getLimitMessage(basket)
+	const previousLimitMessage = useRef(limitMessage)
+
+	useEffect(() => {
+		if (limitMessage && limitMessage !== previousLimitMessage.current) {
+			notify(limitMessage, 'warning')
+		}
+		previousLimitMessage.current = limitMessage
+	}, [limitMessage, notify])
 
 	useEffect(() => {
 		storeBasket(basket)
@@ -74,7 +85,6 @@ export function BasketProvider({ children }) {
 				basket,
 				itemCount: getItemCount(basket),
 				total: getBasketTotal(basket),
-				limitMessage: getLimitMessage(basket),
 				isEmpty: basket.lines.length === 0,
 				getQuantity: (menuItemId) =>
 					findLine(basket, menuItemId)?.quantity ?? 0,

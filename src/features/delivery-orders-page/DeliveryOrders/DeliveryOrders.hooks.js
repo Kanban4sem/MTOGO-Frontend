@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
+import {
+	useNotification,
+	useRequestErrorNotification,
+} from '@/shared/hooks/useNotification.js'
 import { useRequest } from '@/shared/hooks/useRequest.js'
 import {
 	getDeliveryAgentOrders,
 	updateDeliveryOrder,
 } from '@/features/delivery-orders-page/services/deliveryOrderService.js'
-
-const ORDER_UPDATE_DURATION_MS = 4000
 
 export function useDeliveryOrders(available) {
 	const {
@@ -16,9 +18,13 @@ export function useDeliveryOrders(available) {
 		reload,
 		updateData,
 	} = useRequest(getDeliveryAgentOrders)
+	useRequestErrorNotification(
+		error,
+		error && `Vi kunne ikke hente ordrerne. ${error.message}`,
+	)
 	const [filter, setFilter] = useState('active')
 	const [pendingOrderId, setPendingOrderId] = useState(null)
-	const [orderUpdate, setOrderUpdate] = useState(null)
+	const notify = useNotification()
 	const updating = useRef(false)
 
 	const completed = filter === 'completed'
@@ -34,19 +40,8 @@ export function useDeliveryOrders(available) {
 		)
 	})
 
-	useEffect(() => {
-		if (!orderUpdate) return
-		const timeout = setTimeout(() => {
-			setOrderUpdate((current) =>
-				current === orderUpdate ? null : current,
-			)
-		}, ORDER_UPDATE_DURATION_MS)
-		return () => clearTimeout(timeout)
-	}, [orderUpdate])
-
 	function refreshOrders() {
 		if (updating.current) return
-		setOrderUpdate(null)
 		reload()
 	}
 
@@ -54,7 +49,6 @@ export function useDeliveryOrders(available) {
 		if (updating.current || isLoading) return
 		updating.current = true
 		setPendingOrderId(orderId)
-		setOrderUpdate(null)
 		try {
 			const order = await updateDeliveryOrder(orderId, action)
 			updateData((currentOrders) =>
@@ -62,15 +56,22 @@ export function useDeliveryOrders(available) {
 					current.id === order.id ? order : current,
 				),
 			)
-			setOrderUpdate({ order, action })
+			const status = `Ordre nr. ${order.id} · ${order.statusName.danish}`
+			notify(
+				action === 'TAKE'
+					? `${status} · Overtaget. Se den under Ordrer.`
+					: status,
+				'success',
+			)
 		} catch (error) {
 			if (error.status === 404 || error.status === 409) {
-				setOrderUpdate({
-					error: 'Ordren kan have ændret sig. Listen opdateres.',
-				})
+				notify(
+					'Ordren kan have ændret sig. Listen opdateres.',
+					'warning',
+				)
 				reload()
-			} else {
-				setOrderUpdate({ error: error.message })
+			} else if (error.status !== 401) {
+				notify(error.message, 'error')
 			}
 		} finally {
 			updating.current = false
@@ -85,7 +86,6 @@ export function useDeliveryOrders(available) {
 		filter,
 		setFilter,
 		pendingOrderId,
-		orderUpdate,
 		changeOrder,
 		refreshOrders,
 	}

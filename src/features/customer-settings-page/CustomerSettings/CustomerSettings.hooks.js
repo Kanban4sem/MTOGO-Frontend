@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/shared/hooks/useAuth.js'
+import { useNotification } from '@/shared/hooks/useNotification.js'
 import { useRequest } from '@/shared/hooks/useRequest.js'
 import {
 	listSavedDeliveryAddresses,
@@ -56,7 +57,7 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 		initialAddresses.map(savedRow),
 	)
 	const [addressErrors, setAddressErrors] = useState({})
-	const [feedback, setFeedback] = useState(null)
+	const notify = useNotification()
 	const [isSaving, setIsSaving] = useState(false)
 	const nextAddressKey = useRef(0)
 	const saveRequest = useRef(null)
@@ -118,7 +119,6 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 	async function saveSettings(event) {
 		event.preventDefault()
 		if (!hasChanges || saveRequest.current) return
-		setFeedback(null)
 
 		const errors = {}
 		for (const row of pendingAddresses) {
@@ -128,11 +128,17 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 		}
 		setAddressErrors(errors)
 		if (contactChanged && (!contact.firstName || !contact.lastName)) {
-			setFeedback({ error: 'Udfyld både fornavn og efternavn.' })
+			notify('Udfyld både fornavn og efternavn.', 'warning')
 			return
 		}
-		if (Object.keys(errors).length) {
-			setFeedback({ error: 'Tjek de markerede adressefelter.' })
+		const firstInvalidIndex = addresses.findIndex((row) => errors[row.key])
+		if (firstInvalidIndex !== -1) {
+			const { key, saved } = addresses[firstInvalidIndex]
+			const label = saved
+				? `Adresse ${firstInvalidIndex + 1}`
+				: 'Ny adresse'
+			const message = Object.values(errors[key]).join(' ')
+			notify(`${label}. ${message}`, 'warning')
 			return
 		}
 
@@ -172,11 +178,13 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 				}
 				hasSaved = true
 			}
-			setFeedback({ success: 'Dine indstillinger er opdateret.' })
+			notify('Dine indstillinger er opdateret.', 'success')
 		} catch (error) {
 			if (signal.aborted) return
 			const savedNotice = hasSaved ? 'Nogle ændringer er gemt. ' : ''
-			setFeedback({ error: `${savedNotice}${error.message}` })
+			if (error.status !== 401) {
+				notify(`${savedNotice}${error.message}`, 'error')
+			}
 		} finally {
 			saveRequest.current = null
 			if (!signal.aborted) setIsSaving(false)
@@ -194,7 +202,6 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 		addAddress,
 		editAddress,
 		toggleRemoval,
-		feedback,
 		hasChanges,
 		isSaving,
 		saveSettings,

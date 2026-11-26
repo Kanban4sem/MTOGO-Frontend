@@ -12,7 +12,6 @@ export default function BasketSummary({
 	const {
 		basket,
 		total,
-		limitMessage,
 		increaseQuantity,
 		decreaseQuantity,
 		removeMenuItem,
@@ -83,9 +82,6 @@ export default function BasketSummary({
 					</li>
 				))}
 			</ul>
-			<p className={styles.limit} role="status">
-				{limitMessage}
-			</p>
 			<div className={styles.total}>
 				<span>{totalLabel}</span>
 				<strong>{formatPrice(total)}</strong>

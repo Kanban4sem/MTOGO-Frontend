@@ -24,6 +24,9 @@
 	--mtogo-error-surface: #fef2f2;
 	--mtogo-error-text: #991b1b;
 	--mtogo-stauts-info: #3b82f6;
+	--mtogo-notification-success: var(--mtogo-status-success);
+	--mtogo-notification-warning: var(--mtogo-status-warning);
+	--mtogo-notification-error: var(--mtogo-status-error);
 
 	--mtogo-star-color: var(--mtogo-color);
 	--mtogo-rating-star-size: 20px;

@@ -24,7 +24,7 @@ function Input({ label, size = 'm', id, className, error, ...options }) {
 				})}
 			/>
 			{error && (
-				<p id={errorId} className={styles.error}>
+				<p id={errorId} className="visuallyHidden">
 					{error}
 				</p>
 			)}

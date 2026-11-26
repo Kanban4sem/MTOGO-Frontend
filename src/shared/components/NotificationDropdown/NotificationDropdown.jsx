@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
 import { useOrderNotifications } from '@/shared/components/NotificationDropdown/NotificationDropdown.hooks.js'
 import styles from '@/shared/components/NotificationDropdown/NotificationDropdown.module.css'
+import { useNotificationMessage } from '@/shared/hooks/useNotification.js'
 import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
 import { getCustomerOrderFeedbackPath } from '@/shared/data/paths.js'
 
@@ -11,6 +12,8 @@ export default function NotificationDropdown({ enabled }) {
 	const { notifications, isLoading, loadError, readError } =
 		useOrderNotifications(enabled, isOpen)
 	const unreadCount = notifications.filter(({ read }) => !read).length
+	useNotificationMessage(isOpen ? loadError : '')
+	useNotificationMessage(isOpen && unreadCount > 0 ? readError : '')
 	const label = unreadCount
 		? `Notifikationer, ${unreadCount} ${unreadCount === 1 ? 'ulæst' : 'ulæste'}`
 		: 'Notifikationer'
@@ -49,16 +52,6 @@ export default function NotificationDropdown({ enabled }) {
 			{isLoading && (
 				<li className={styles.empty} role="status">
 					Henter notifikationer…
-				</li>
-			)}
-			{loadError && (
-				<li className={styles.empty} role="status">
-					{loadError}
-				</li>
-			)}
-			{readError && unreadCount > 0 && (
-				<li className={styles.empty} role="status">
-					{readError}
 				</li>
 			)}
 			{!isLoading && !loadError && notifications.length === 0 && (

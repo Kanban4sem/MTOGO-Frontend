@@ -50,7 +50,6 @@ function NavBar() {
 		isDeliveryAgent,
 		isLoading,
 		isLoggingOut,
-		error,
 		logout,
 	} = useNavBar()
 	const { itemCount } = useBasket()
@@ -135,11 +134,6 @@ function NavBar() {
 					<LanguageIndicator />
 				</div>
 			</nav>
-			{error && (
-				<p className={styles.error} role="alert">
-					{error}
-				</p>
-			)}
 		</header>
 	)
 }

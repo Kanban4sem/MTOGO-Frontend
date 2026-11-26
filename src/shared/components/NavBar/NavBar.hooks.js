@@ -5,7 +5,7 @@ import { useLogout } from '@/shared/hooks/useLogout.js'
 export function useNavBar() {
 	const { user, isAuthenticated, isLoading } = useAuth()
 	const isCustomer = user?.role === USER_ROLES.CUSTOMER
-	const { isLoggingOut, error, logout } = useLogout()
+	const { isLoggingOut, logout } = useLogout()
 
 	return {
 		isAuthenticated,
@@ -15,7 +15,6 @@ export function useNavBar() {
 		isDeliveryAgent: user?.role === USER_ROLES.DELIVERY_AGENT,
 		isLoading,
 		isLoggingOut,
-		error,
 		logout,
 	}
 }
