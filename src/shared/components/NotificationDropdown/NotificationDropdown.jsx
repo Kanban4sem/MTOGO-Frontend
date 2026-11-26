@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import Button from '@/shared/components/Button/Button.jsx'
+import { Link } from 'react-router-dom'
 import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
 import { useOrderNotifications } from '@/shared/components/NotificationDropdown/NotificationDropdown.hooks.js'
 import styles from '@/shared/components/NotificationDropdown/NotificationDropdown.module.css'
 import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
+import { getCustomerOrderFeedbackPath } from '@/shared/data/paths.js'
 
 export default function NotificationDropdown({ enabled }) {
 	const [isOpen, setIsOpen] = useState(false)
@@ -69,13 +70,13 @@ export default function NotificationDropdown({ enabled }) {
 						Ordre #{orderId} · {statusName.danish}
 					</span>
 					{status === ORDER_STATUS.DELIVERED && (
-						<Button
+						<Link
 							className={styles.feedback}
-							label="Feedback"
-							size="s"
-							variant="secondary"
-							disabled
-						/>
+							to={getCustomerOrderFeedbackPath(orderId)}
+							aria-label={`Feedback til ordre ${orderId}`}
+						>
+							Feedback
+						</Link>
 					)}
 				</li>
 			))}

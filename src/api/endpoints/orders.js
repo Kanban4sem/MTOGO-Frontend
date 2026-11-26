@@ -18,6 +18,13 @@ export function getCustomerOrder(orderId, signal) {
 	})
 }
 
+export function postCustomerOrderFeedback(orderId, feedback) {
+	return client(`/customer/orders/${encodeURIComponent(orderId)}/feedback`, {
+		method: 'POST',
+		body: JSON.stringify(feedback),
+	})
+}
+
 export function getOrderNotifications(signal) {
 	return client('/customer/orders/notifications', {
 		signal,

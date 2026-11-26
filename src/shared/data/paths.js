@@ -23,7 +23,12 @@ export const RESTAURANT_PROFILE_PATH = '/restaurant/profile'
 export const DASHBOARD_PATH = '/dashboard'
 export const DASHBOARD_ORDERS_PATH = `${DASHBOARD_PATH}/orders`
 export const CUSTOMER_ORDER_ROUTE = `${CUSTOMER_ORDERS_PATH}/:orderId`
+export const ORDER_FEEDBACK_SECTION_ID = 'feedback'
 
 export function getCustomerOrderPath(orderId) {
 	return `${CUSTOMER_ORDERS_PATH}/${orderId}`
+}
+
+export function getCustomerOrderFeedbackPath(orderId) {
+	return `${getCustomerOrderPath(orderId)}#${ORDER_FEEDBACK_SECTION_ID}`
 }

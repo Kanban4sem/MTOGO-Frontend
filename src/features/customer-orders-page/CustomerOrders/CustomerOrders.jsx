@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import OrderFeedback from '@/features/customer-orders-page/OrderFeedback/OrderFeedback.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
+import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
 import {
 	CUSTOMER_ORDERS_PATH,
 	getCustomerOrderPath,
@@ -77,6 +79,9 @@ function OrderDetails({ order }) {
 					<strong>{formatPrice(order.total)}</strong>
 				</p>
 			</section>
+			{order.status === ORDER_STATUS.DELIVERED && (
+				<OrderFeedback orderId={order.id} />
+			)}
 		</>
 	)
 }
