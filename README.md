@@ -27,6 +27,8 @@ We work with Kanban and trunk-based development using [TakT](https://github.com/
 - [Build and test](docs/build-and-test.md): lint, build and how changes are checked
 - [Deployment](docs/deployment.md): stage, releasing to prod and rolling back
 
+The dev container runs `npm ci` before VS Code starts checking spelling. The Danish cSpell dictionary is a project dev dependency loaded from `node_modules`. GitHub Actions installs the same dependencies from `package-lock.json` before running cSpell.
+
 ## How we work
 
 - [CONTRIBUTING](CONTRIBUTING.md): issues, workflow, commit messages, quality gates and ADRs

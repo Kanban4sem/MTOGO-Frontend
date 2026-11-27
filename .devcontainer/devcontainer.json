@@ -14,7 +14,9 @@
 		"source=mtogo-codex,target=/home/vscode/.codex,type=volume"
 	],
 	"forwardPorts": [5173],
-	"postCreateCommand": "gh ext install devx-cafe/gh-insitu && gh insitu run post-create install-agents && npm ci",
+	"onCreateCommand": "npm ci",
+	"waitFor": "onCreateCommand",
+	"postCreateCommand": "gh ext install devx-cafe/gh-insitu && gh insitu run post-create install-agents",
 	"customizations": {
 		"vscode": {
 			"extensions": [

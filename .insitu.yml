@@ -53,7 +53,11 @@ inventory:
   - id: install-npm-tools
     name: Install linting and checker tools
     command: |
-      npm install -g prettier markdownlint-cli2 cspell @cspell/dict-da-dk
+      npm install -g prettier markdownlint-cli2 cspell
+
+  - id: install-project-dependencies
+    name: Install project dependencies from the lockfile
+    command: npm ci
 
   # Separate from install-npm-tools, which the GitHub runner also runs.
   # Set MTOGO_SKIP_CLAUDE=1 or MTOGO_SKIP_CODEX=1 on your own machine to skip
@@ -86,7 +90,7 @@ inventory:
 
   - id: frontend-verify
     name: Frontend lint, tests and build (React + Vite)
-    command: npm ci && npm run lint && npm test && npm run build
+    command: npm run lint && npm test && npm run build
 
   - id: fix-markdown
     name: Fix all fixable markdown issues
@@ -128,6 +132,7 @@ waves:
       - install-gh-insitu
       - repo-gitconfig
       - install-npm-tools
+      - install-project-dependencies
 
   # Run by the wrapup workflow on issue branches. The pre-commit hook has already
   # run trunk-worthy, frontend lint and build included, so the workflow repeats
