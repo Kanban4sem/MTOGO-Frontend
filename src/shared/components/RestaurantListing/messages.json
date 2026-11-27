@@ -1,0 +1,22 @@
+{
+	"da": {
+		"restaurantsFailed": "Vi kunne ikke hente restauranterne. {message}",
+		"loadingRestaurants": "Vi finder restauranterne frem…",
+		"retryRestaurants": "Hent restauranter igen",
+		"quietKitchen": "Der er lidt stille i køkkenet",
+		"noRestaurants": "Ingen restauranter tager imod bestillinger lige nu. Kig forbi igen senere.",
+		"seeRestaurantMenu": "Se udvalg hos {name}",
+		"restaurantListingDescription": "Se restaurantens menu og find din næste favorit.",
+		"seeMenu": "Se udvalg"
+	},
+	"en": {
+		"restaurantsFailed": "We couldn't load the restaurants. {message}",
+		"loadingRestaurants": "Loading restaurants…",
+		"retryRestaurants": "Reload restaurants",
+		"quietKitchen": "The kitchen is a little quiet",
+		"noRestaurants": "No restaurants are taking orders right now. Check back later.",
+		"seeRestaurantMenu": "View the menu at {name}",
+		"restaurantListingDescription": "Browse the menu and find your next favourite.",
+		"seeMenu": "View menu"
+	}
+}

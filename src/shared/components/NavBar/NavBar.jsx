@@ -1,3 +1,6 @@
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import messages from '@/shared/components/NavBar/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Link, NavLink } from 'react-router-dom'
 import BrandLink from '@/shared/components/BrandLink/BrandLink.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
@@ -22,28 +25,19 @@ import { formatItemCount } from '@/shared/utils/basketMessages.js'
 import { useNavBar } from '@/shared/components/NavBar/NavBar.hooks.js'
 import styles from '@/shared/components/NavBar/NavBar.module.css'
 
-const CUSTOMER_PROFILE_LINK = { label: 'Profiloversigt', to: PROFILE_PATH }
-const CUSTOMER_SETTINGS_LINK = {
-	label: 'Indstillinger',
-	to: CUSTOMER_SETTINGS_PATH,
-}
-const CUSTOMER_ORDER_LINK = { label: 'Mine ordrer', to: CUSTOMER_ORDERS_PATH }
-const CUSTOMER_LINKS = [
-	CUSTOMER_PROFILE_LINK,
-	CUSTOMER_SETTINGS_LINK,
-	CUSTOMER_ORDER_LINK,
-]
-const RESTAURANT_PROFILE_LINK = {
-	label: 'Virksomhedsprofil',
-	to: RESTAURANT_PROFILE_PATH,
-}
-const RESTAURANT_LINKS = [
-	{ label: 'Ordrer', to: RESTAURANT_ORDERS_PATH },
-	RESTAURANT_PROFILE_LINK,
-]
-const DELIVERY_AGENT_LINKS = [{ label: 'Dashboard', to: DASHBOARD_PATH }]
-
 function NavBar() {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
+	const customerLinks = [
+		{ label: t('profileOverview'), to: PROFILE_PATH },
+		{ label: t('settings'), to: CUSTOMER_SETTINGS_PATH },
+		{ label: t('myOrders'), to: CUSTOMER_ORDERS_PATH },
+	]
+	const restaurantLinks = [
+		{ label: t('orders'), to: RESTAURANT_ORDERS_PATH },
+		{ label: t('businessProfile'), to: RESTAURANT_PROFILE_PATH },
+	]
+	const deliveryAgentLinks = [{ label: t('dashboard'), to: DASHBOARD_PATH }]
 	const {
 		isAuthenticated,
 		isCustomer,
@@ -65,11 +59,13 @@ function NavBar() {
 
 	return (
 		<header className={styles.header}>
-			<nav className={styles.nav} aria-label="Hovednavigation">
+			<nav className={styles.nav} aria-label={t('mainNavigation')}>
 				<BrandLink />
 				<ul className={styles.entries}>
 					<li>
-						<NavLink to={RESTAURANTS_PATH}>Restauranter</NavLink>
+						<NavLink to={RESTAURANTS_PATH}>
+							{t('restaurants')}
+						</NavLink>
 					</li>
 				</ul>
 				<div className={styles.actions}>
@@ -77,9 +73,11 @@ function NavBar() {
 						<Link
 							className={styles.link}
 							to={CHECKOUT_PATH}
-							aria-label={`Kurv, ${formatItemCount(itemCount)}`}
+							aria-label={t('basketWithCount', {
+								count: formatItemCount(itemCount, language),
+							})}
 						>
-							Kurv
+							{t('basket')}
 							<span className={styles.basketCount}>
 								{itemCount}
 							</span>
@@ -93,29 +91,31 @@ function NavBar() {
 					)}
 					{isLoading ? (
 						<span className={styles.loading} role="status">
-							Henter loginstatus…
+							{t('checkingLoginStatus')}
 						</span>
 					) : isAuthenticated ? (
 						<>
 							<Button
 								className={styles.logout}
-								label={isLoggingOut ? 'Logger ud…' : 'Log ud'}
+								label={
+									isLoggingOut ? t('loggingOut') : t('logout')
+								}
 								onClick={logout}
 								disabled={isLoggingOut}
 							/>
 							{isRestaurant ? (
 								<Dropdown
-									label="Restaurant"
-									links={RESTAURANT_LINKS}
+									label={t('restaurant')}
+									links={restaurantLinks}
 									buttonClassName={styles.account}
 								/>
 							) : isCustomer || isDeliveryAgent ? (
 								<Dropdown
-									label="Din profil"
+									label={t('yourProfile')}
 									links={
 										isDeliveryAgent
-											? DELIVERY_AGENT_LINKS
-											: CUSTOMER_LINKS
+											? deliveryAgentLinks
+											: customerLinks
 									}
 									buttonClassName={styles.account}
 								/>
@@ -124,17 +124,17 @@ function NavBar() {
 									className={styles.account}
 									to={PROFILE_PATH}
 								>
-									Din profil
+									{t('yourProfile')}
 								</Link>
 							)}
 						</>
 					) : (
 						<>
 							<Link className={styles.link} to={LOGIN_PATH}>
-								Log ind
+								{t('login')}
 							</Link>
 							<Link className={styles.account} to="/register">
-								Opret bruger
+								{t('createUser')}
 							</Link>
 						</>
 					)}

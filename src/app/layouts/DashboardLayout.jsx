@@ -1,10 +1,14 @@
+import messages from '@/app/layouts/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import BrandLink from '@/shared/components/BrandLink/BrandLink.jsx'
+import LanguageIndicator from '@/shared/components/LanguageIndicator/LanguageIndicator.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
 import { SubNavLinks } from '@/shared/components/SubNavBar/SubNavBar.jsx'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 import { useLogout } from '@/shared/hooks/useLogout.js'
 
 export default function DashboardLayout({ label, links, children }) {
+	const t = useTranslations(messages)
 	const { user } = useAuth()
 	const { isLoggingOut, logout } = useLogout()
 	const name = [user?.profile?.firstName, user?.profile?.lastName]
@@ -16,6 +20,7 @@ export default function DashboardLayout({ label, links, children }) {
 			<aside className="dashboardSidebar">
 				<div className="dashboardBrand">
 					<BrandLink />
+					<LanguageIndicator />
 				</div>
 				<div className="dashboardIdentity">
 					<p className="dashboardTitle">{label}</p>
@@ -25,7 +30,7 @@ export default function DashboardLayout({ label, links, children }) {
 				<SubNavLinks label={label} links={links} />
 				<Button
 					className="dashboardLogout"
-					label={isLoggingOut ? 'Logger ud…' : 'Log ud'}
+					label={isLoggingOut ? t('loggingOut') : t('logout')}
 					variant="secondary"
 					onClick={logout}
 					disabled={isLoggingOut}

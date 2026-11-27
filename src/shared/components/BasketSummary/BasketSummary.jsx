@@ -1,7 +1,10 @@
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import messages from '@/shared/components/BasketSummary/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { MAX_QUANTITY } from '@/shared/utils/basket.js'
-import { BASKET_LIMITS_MESSAGE } from '@/shared/utils/basketMessages.js'
+import { getBasketLimitsMessage } from '@/shared/utils/basketMessages.js'
 import styles from '@/shared/components/BasketSummary/BasketSummary.module.css'
 
 export default function BasketSummary({
@@ -9,6 +12,8 @@ export default function BasketSummary({
 	totalNote,
 	disabled = false,
 }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const {
 		basket,
 		total,
@@ -21,7 +26,7 @@ export default function BasketSummary({
 		<div className={styles.summary}>
 			{basket.restaurant && (
 				<p className={styles.restaurant}>
-					Fra <strong>{basket.restaurant.name}</strong>
+					{t('from')} <strong>{basket.restaurant.name}</strong>
 				</p>
 			)}
 			<ul className={styles.lines}>
@@ -30,7 +35,10 @@ export default function BasketSummary({
 						<div className={styles.lineHeading}>
 							<span className={styles.name}>{line.name}</span>
 							<span className={styles.subtotal}>
-								{formatPrice(line.price * line.quantity)}
+								{formatPrice(
+									line.price * line.quantity,
+									language,
+								)}
 							</span>
 						</div>
 						<div className={styles.controls}>
@@ -43,14 +51,18 @@ export default function BasketSummary({
 								disabled={disabled}
 								aria-label={
 									line.quantity === 1
-										? `Fjern ${line.name}`
-										: `Færre ${line.name}`
+										? t('removeItem', { name: line.name })
+										: t('decreaseQuantity', {
+												name: line.name,
+											})
 								}
 							>
 								<span aria-hidden="true">−</span>
 							</button>
 							<span className={styles.quantity}>
-								<span className="visuallyHidden">Antal: </span>
+								<span className="visuallyHidden">
+									{t('quantityLabel')}{' '}
+								</span>
 								{line.quantity}
 							</span>
 							<button
@@ -62,21 +74,26 @@ export default function BasketSummary({
 								disabled={
 									disabled || line.quantity >= MAX_QUANTITY
 								}
-								aria-label={`Flere ${line.name}`}
+								aria-label={t('increaseQuantity', {
+									name: line.name,
+								})}
 							>
 								<span aria-hidden="true">+</span>
 							</button>
 							<span className={styles.unitPrice}>
-								à {formatPrice(line.price)}
+								{t('unitPricePrefix')}{' '}
+								{formatPrice(line.price, language)}
 							</span>
 							<button
 								type="button"
 								className={styles.remove}
 								onClick={() => removeMenuItem(line.menuItemId)}
 								disabled={disabled}
-								aria-label={`Fjern ${line.name} fra kurven`}
+								aria-label={t('removeFromBasket', {
+									name: line.name,
+								})}
 							>
-								Fjern
+								{t('remove')}
 							</button>
 						</div>
 					</li>
@@ -84,10 +101,10 @@ export default function BasketSummary({
 			</ul>
 			<div className={styles.total}>
 				<span>{totalLabel}</span>
-				<strong>{formatPrice(total)}</strong>
+				<strong>{formatPrice(total, language)}</strong>
 			</div>
 			{totalNote && <p className={styles.note}>{totalNote}</p>}
-			<p className={styles.note}>{BASKET_LIMITS_MESSAGE}</p>
+			<p className={styles.note}>{getBasketLimitsMessage(language)}</p>
 		</div>
 	)
 }

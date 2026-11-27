@@ -1,0 +1,24 @@
+{
+	"da": {
+		"backHome": "Tilbage til forsiden",
+		"loggingOut": "Logger ud…",
+		"logout": "Log ud",
+		"dashboard": "Dashboard",
+		"orders": "Ordrer",
+		"deliveryAgent": "Leveringsbud",
+		"skipToContent": "Gå til indhold",
+		"footerTagline": "God mad. Gode øjeblikke.",
+		"footerDescription": "Et godt måltid er kun et kig væk."
+	},
+	"en": {
+		"backHome": "Back to the homepage",
+		"loggingOut": "Logging out…",
+		"logout": "Log out",
+		"dashboard": "Dashboard",
+		"orders": "Orders",
+		"deliveryAgent": "Delivery agent",
+		"skipToContent": "Skip to content",
+		"footerTagline": "Good food. Good moments.",
+		"footerDescription": "A good meal is just a look away."
+	}
+}

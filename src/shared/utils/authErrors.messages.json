@@ -1,0 +1,14 @@
+{
+	"da": {
+		"checkAccountDetails": "Kontrollér dine oplysninger, og prøv igen.",
+		"invalidCredentials": "Email eller password er forkert. Prøv igen.",
+		"authUnavailable": "Login og registrering er ikke tilgængeligt lige nu.",
+		"emailAlreadyInUse": "Der findes allerede en konto med denne email."
+	},
+	"en": {
+		"checkAccountDetails": "Check your details and try again.",
+		"invalidCredentials": "The email or password is incorrect. Please try again.",
+		"authUnavailable": "Login and registration are currently unavailable.",
+		"emailAlreadyInUse": "An account with this email already exists."
+	}
+}

@@ -1,3 +1,6 @@
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/customer-settings-page/messages.json'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/shared/hooks/useAuth.js'
 import { useNotification } from '@/shared/hooks/useNotification.js'
@@ -8,7 +11,10 @@ import {
 	storeDeliveryAddress,
 } from '@/shared/services/deliveryAddressService.js'
 import { getSignedInUser } from '@/shared/services/userService.js'
-import { validateDeliveryAddress } from '@/shared/utils/validateDeliveryAddress.js'
+import {
+	formatAddressErrors,
+	validateDeliveryAddress,
+} from '@/shared/utils/validateDeliveryAddress.js'
 
 const ADDRESS_NAMES = ['street', 'postalCode', 'city']
 
@@ -128,17 +134,23 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 		}
 		setAddressErrors(errors)
 		if (contactChanged && (!contact.firstName || !contact.lastName)) {
-			notify('Udfyld både fornavn og efternavn.', 'warning')
+			notify(
+				(language) => translate(messages, language, 'fullNameRequired'),
+				'warning',
+			)
 			return
 		}
 		const firstInvalidIndex = addresses.findIndex((row) => errors[row.key])
 		if (firstInvalidIndex !== -1) {
 			const { key, saved } = addresses[firstInvalidIndex]
-			const label = saved
-				? `Adresse ${firstInvalidIndex + 1}`
-				: 'Ny adresse'
-			const message = Object.values(errors[key]).join(' ')
-			notify(`${label}. ${message}`, 'warning')
+			notify((language) => {
+				const label = saved
+					? translate(messages, language, 'addressNumber', {
+							number: firstInvalidIndex + 1,
+						})
+					: translate(messages, language, 'newAddress')
+				return label + '. ' + formatAddressErrors(errors[key], language)
+			}, 'warning')
 			return
 		}
 
@@ -178,12 +190,19 @@ export function useCustomerSettings(initialUser, initialAddresses) {
 				}
 				hasSaved = true
 			}
-			notify('Dine indstillinger er opdateret.', 'success')
+			notify(
+				(language) => translate(messages, language, 'settingsSaved'),
+				'success',
+			)
 		} catch (error) {
 			if (signal.aborted) return
-			const savedNotice = hasSaved ? 'Nogle ændringer er gemt. ' : ''
 			if (error.status !== 401) {
-				notify(`${savedNotice}${error.message}`, 'error')
+				notify((language) => {
+					const savedNotice = hasSaved
+						? translate(messages, language, 'settingsPartlySaved')
+						: ''
+					return savedNotice + getRequestErrorMessage(error, language)
+				}, 'error')
 			}
 		} finally {
 			saveRequest.current = null

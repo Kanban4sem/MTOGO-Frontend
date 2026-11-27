@@ -1,0 +1,40 @@
+{
+	"da": {
+		"profileOverview": "Profiloversigt",
+		"settings": "Indstillinger",
+		"myOrders": "Mine ordrer",
+		"businessProfile": "Virksomhedsprofil",
+		"orders": "Ordrer",
+		"dashboard": "Dashboard",
+		"mainNavigation": "Hovednavigation",
+		"restaurants": "Restauranter",
+		"basketWithCount": "Kurv, {count}",
+		"basket": "Kurv",
+		"checkingLoginStatus": "Henter loginstatus…",
+		"loggingOut": "Logger ud…",
+		"logout": "Log ud",
+		"restaurant": "Restaurant",
+		"yourProfile": "Din profil",
+		"login": "Log ind",
+		"createUser": "Opret bruger"
+	},
+	"en": {
+		"profileOverview": "Profile overview",
+		"settings": "Settings",
+		"myOrders": "My orders",
+		"businessProfile": "Business profile",
+		"orders": "Orders",
+		"dashboard": "Dashboard",
+		"mainNavigation": "Main navigation",
+		"restaurants": "Restaurants",
+		"basketWithCount": "Basket, {count}",
+		"basket": "Basket",
+		"checkingLoginStatus": "Checking login status…",
+		"loggingOut": "Logging out…",
+		"logout": "Log out",
+		"restaurant": "Restaurant",
+		"yourProfile": "Your profile",
+		"login": "Log in",
+		"createUser": "Sign up"
+	}
+}

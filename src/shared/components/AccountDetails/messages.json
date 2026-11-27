@@ -1,0 +1,12 @@
+{
+	"da": {
+		"name": "Navn",
+		"emailAddress": "E-mail",
+		"phone": "Telefon"
+	},
+	"en": {
+		"name": "Name",
+		"emailAddress": "Email",
+		"phone": "Phone"
+	}
+}

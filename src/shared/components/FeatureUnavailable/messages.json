@@ -1,0 +1,12 @@
+{
+	"da": {
+		"authPaused": "Login og registrering er midlertidigt utilgængelige.",
+		"orderingPaused": "Det er midlertidigt ikke muligt at afgive nye bestillinger.",
+		"featurePaused": "Denne funktion er midlertidigt utilgængelig."
+	},
+	"en": {
+		"authPaused": "Login and registration are temporarily unavailable.",
+		"orderingPaused": "New orders are temporarily unavailable.",
+		"featurePaused": "This feature is temporarily unavailable."
+	}
+}

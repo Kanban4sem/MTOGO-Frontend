@@ -1,6 +1,10 @@
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/checkout-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getStatusMessage } from '@/api/client.js'
+import { getRequestMessage } from '@/shared/utils/requestErrors.js'
 import { getOrderConfirmationPath } from '@/shared/data/paths.js'
 import { MAINTENANCE_FEATURES } from '@/shared/data/maintenanceFeatures.js'
 import { useBasket } from '@/shared/hooks/useBasket.js'
@@ -13,52 +17,51 @@ import { useRequest } from '@/shared/hooks/useRequest.js'
 import { listSavedDeliveryAddresses } from '@/shared/services/deliveryAddressService.js'
 import { getSignedInUser } from '@/shared/services/userService.js'
 import { withErrorReference } from '@/shared/utils/errorReference.js'
-import { validateDeliveryAddress } from '@/shared/utils/validateDeliveryAddress.js'
+import {
+	formatAddressError,
+	formatAddressErrors,
+	validateDeliveryAddress,
+} from '@/shared/utils/validateDeliveryAddress.js'
 import {
 	PAYMENT_TOKENS,
 	placeOrderFromBasket,
 } from '@/features/checkout-page/services/orderService.js'
-import { DELIVERY_ADDRESS_FIELDS } from '@/features/checkout-page/Checkout/checkoutFields.js'
-
-const BASKET_KEPT = 'Din kurv er gemt.'
+import { getDeliveryAddressFields } from '@/features/checkout-page/Checkout/checkoutFields.js'
 
 // Every failure keeps the basket, since it is only emptied after the order is placed.
 // The client handles 401: it clears the session, and ProtectedRoute sends the user to login.
 // A 403 here can only mean the account is not a customer, so checkout says so instead of the client's general message.
-function getCheckoutFailure(error) {
+function getCheckoutErrorMessage(error, language) {
+	const basketKept = translate(messages, language, 'basketKept')
 	switch (error.status) {
 		case 403:
-			return {
-				message: `Kun kunder kan bestille. ${BASKET_KEPT}`,
-			}
+			return translate(messages, language, 'customerOnlyError', {
+				basketKept,
+			})
 		case 402:
-			return {
-				message: `Betalingen blev afvist, så der er ikke afgivet nogen ordre. ${BASKET_KEPT} Du kan prøve igen.`,
-			}
+			return translate(messages, language, 'paymentDeclined', {
+				basketKept,
+			})
 		case 404:
-			return {
-				message: `Bestilling er ikke tilgængelig lige nu. ${BASKET_KEPT} Prøv igen senere.`,
-			}
+			return translate(messages, language, 'orderingUnavailable', {
+				basketKept,
+			})
 		case 409:
-			return {
-				message: `En eller flere retter i kurven kan ikke bestilles lige nu, eller restauranten tager ikke imod bestillinger. ${BASKET_KEPT}`,
-				showMenuLink: true,
-			}
+			return translate(messages, language, 'basketItemsUnavailable', {
+				basketKept,
+			})
 		default:
 			// The reference goes last, so it doesn't split the general message from the basket notice.
 			// A network failure has no status and keeps the client's connection message.
-			return {
-				message: error.status
-					? withErrorReference(
-							`${getStatusMessage(error.status)} ${BASKET_KEPT}`,
-							error,
-						)
-					: `${error.message} ${BASKET_KEPT}`,
-			}
+			return withErrorReference(
+				getRequestMessage(error, language) + ' ' + basketKept,
+				error,
+				language,
+			)
 	}
 }
 
-function withFieldState(fields, fieldErrors, addressDefaults) {
+function withFieldState(fields, fieldErrors, addressDefaults, language) {
 	return fields.map((field) =>
 		field.fields
 			? {
@@ -67,13 +70,18 @@ function withFieldState(fields, fieldErrors, addressDefaults) {
 						field.fields,
 						fieldErrors,
 						addressDefaults,
+						language,
 					),
 				}
 			: {
 					...field,
-					error: fieldErrors[field.name],
-					defaultValue:
-						field.defaultValue ?? addressDefaults?.[field.name],
+					error: formatAddressError(
+						fieldErrors[field.name],
+						language,
+					),
+					...(field.value === undefined && {
+						defaultValue: addressDefaults?.[field.name],
+					}),
 				},
 	)
 }
@@ -91,6 +99,8 @@ async function loadAddresses(signal) {
 }
 
 export function useCheckout() {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const navigate = useNavigate()
 	const notify = useNotification()
 	const { pauses, recordPause } = useMaintenance()
@@ -117,13 +127,12 @@ export function useCheckout() {
 					(address) => String(address.id) === addressChoice,
 				)
 	const addressError = addressRequest?.addressError
-	useRequestErrorNotification(
-		addressError,
-		addressError &&
-			withErrorReference(
-				'Vi kunne ikke hente dine gemte adresser. Du kan indtaste leveringsadressen manuelt.',
-				addressError,
-			),
+	useRequestErrorNotification(addressError, (language) =>
+		withErrorReference(
+			translate(messages, language, 'savedAddressesFailed'),
+			addressError,
+			language,
+		),
 	)
 	const profileAddress = addressRequest?.profile?.address
 	const addressDefaults =
@@ -148,7 +157,10 @@ export function useCheckout() {
 			const firstInvalidField = Object.keys(errors)[0]
 			if (firstInvalidField) {
 				form.elements.namedItem(firstInvalidField)?.focus()
-				notify(Object.values(errors).join(' '), 'warning')
+				notify(
+					(language) => formatAddressErrors(errors, language),
+					'warning',
+				)
 				return
 			}
 			addressSelection = {
@@ -166,7 +178,10 @@ export function useCheckout() {
 				addressSelection,
 				paymentToken,
 			)
-			notify('Din ordre er sendt!', 'success')
+			notify(
+				(language) => translate(messages, language, 'orderSent'),
+				'success',
+			)
 			navigate(getOrderConfirmationPath(order.id))
 			emptyBasket()
 		} catch (error) {
@@ -182,13 +197,22 @@ export function useCheckout() {
 				}))
 				setAddressChoice('')
 				notify(
-					`Den valgte adresse findes ikke længere. ${BASKET_KEPT} Vælg en anden adresse, eller indtast den manuelt.`,
+					(language) =>
+						translate(messages, language, 'savedAddressRemoved', {
+							basketKept: translate(
+								messages,
+								language,
+								'basketKept',
+							),
+						}),
 					'warning',
 				)
 			} else if (error.status !== 401) {
-				const failure = getCheckoutFailure(error)
-				setShowMenuLink(failure.showMenuLink === true)
-				notify(failure.message, 'error')
+				setShowMenuLink(error.status === 409)
+				notify(
+					(language) => getCheckoutErrorMessage(error, language),
+					'error',
+				)
 			}
 		}
 	}
@@ -200,9 +224,10 @@ export function useCheckout() {
 		profile: addressRequest?.profile,
 		isAddressLoading,
 		deliveryAddressFields: withFieldState(
-			DELIVERY_ADDRESS_FIELDS,
+			getDeliveryAddressFields(t, language),
 			fieldErrors,
 			addressDefaults,
+			language,
 		),
 		paymentToken,
 		setPaymentToken,

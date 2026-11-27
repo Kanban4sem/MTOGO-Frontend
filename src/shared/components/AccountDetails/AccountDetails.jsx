@@ -1,6 +1,9 @@
+import messages from '@/shared/components/AccountDetails/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import styles from '@/shared/components/AccountDetails/AccountDetails.module.css'
 
 export default function AccountDetails({ user }) {
+	const t = useTranslations(messages)
 	const profile = user?.profile
 	const name = [profile?.firstName, profile?.lastName]
 		.filter(Boolean)
@@ -10,15 +13,15 @@ export default function AccountDetails({ user }) {
 		<dl className={styles.details}>
 			{name && (
 				<>
-					<dt>Navn</dt>
+					<dt>{t('name')}</dt>
 					<dd>{name}</dd>
 				</>
 			)}
-			<dt>E-mail</dt>
+			<dt>{t('emailAddress')}</dt>
 			<dd>{user?.email}</dd>
 			{profile?.phoneNumber && (
 				<>
-					<dt>Telefon</dt>
+					<dt>{t('phone')}</dt>
 					<dd>{profile.phoneNumber}</dd>
 				</>
 			)}

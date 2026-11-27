@@ -1,30 +1,36 @@
+import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import messages from '@/features/restaurant-orders-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useState } from 'react'
 import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
 import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
-import { ORDER_DATE } from '@/shared/utils/orderDate.js'
+import { formatOrderDate } from '@/shared/utils/orderDate.js'
 import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { useRestaurantOrders } from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.hooks.js'
 import styles from '@/features/restaurant-orders-page/RestaurantOrders/RestaurantOrders.module.css'
 
-const ALL_ORDERS = { value: 'all', label: 'Nyeste' }
+const ALL_ORDERS = 'all'
 
 const ACTIONS = {
 	[ORDER_STATUS.PLACED]: [
-		{ status: ORDER_STATUS.ACCEPTED, label: 'Acceptér' },
+		{ status: ORDER_STATUS.ACCEPTED, labelKey: 'accept' },
 		{
 			status: ORDER_STATUS.REJECTED,
-			label: 'Afvis',
+			labelKey: 'reject',
 			variant: 'secondary',
 		},
 	],
 	[ORDER_STATUS.ACCEPTED]: [
-		{ status: ORDER_STATUS.READY, label: 'Markér som klar' },
+		{ status: ORDER_STATUS.READY, labelKey: 'markReady' },
 	],
 }
 
 function OrderCard({ order, isOpen, onOpen, pendingOrderId, onStatusChange }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const actions = ACTIONS[order.status] ?? []
 	const titleId = `order-${order.id}-title`
 	const detailsId = `order-${order.id}-details`
@@ -41,13 +47,15 @@ function OrderCard({ order, isOpen, onOpen, pendingOrderId, onStatusChange }) {
 					onClick={onOpen}
 				>
 					<span className={styles.orderHeading}>
-						<span id={titleId}>Ordre nr. {order.id}</span>
+						<span id={titleId}>
+							{t('orderNumberLabel')} {order.id}
+						</span>
 						<time dateTime={order.placedAt}>
-							{ORDER_DATE.format(new Date(order.placedAt))}
+							{formatOrderDate(order.placedAt, language)}
 						</time>
 					</span>
 					<span className={styles.status}>
-						{order.statusName.danish}
+						{getOrderStatusName(order, language)}
 					</span>
 					<span className={styles.chevron} aria-hidden="true" />
 				</button>
@@ -57,30 +65,33 @@ function OrderCard({ order, isOpen, onOpen, pendingOrderId, onStatusChange }) {
 				className={styles.orderDetails}
 				hidden={!isOpen}
 			>
-				<ul className={styles.lines} aria-label="Ordrelinjer">
+				<ul className={styles.lines} aria-label={t('orderLines')}>
 					{order.lines.map((line) => (
 						<li key={line.menuItemId}>
 							<span>
 								{line.quantity} × {line.name}
 							</span>
-							<span>{formatPrice(line.subtotal)}</span>
+							<span>{formatPrice(line.subtotal, language)}</span>
 						</li>
 					))}
 				</ul>
 				<p className={styles.total}>
-					<span>I alt</span>
-					<strong>{formatPrice(order.total)}</strong>
+					<span>{t('total')}</span>
+					<strong>{formatPrice(order.total, language)}</strong>
 				</p>
 				{actions.length > 0 && (
 					<div
 						className={styles.actions}
 						aria-busy={pendingOrderId === order.id}
 					>
-						{actions.map(({ status, label, variant }) => (
+						{actions.map(({ status, labelKey, variant }) => (
 							<Button
 								key={status}
-								label={label}
-								aria-label={`${label}, ordre nr. ${order.id}`}
+								label={t(labelKey)}
+								aria-label={t('orderAction', {
+									label: t(labelKey),
+									id: order.id,
+								})}
 								variant={variant}
 								disabled={pendingOrderId !== null}
 								onClick={() => onStatusChange(order.id, status)}
@@ -94,7 +105,9 @@ function OrderCard({ order, isOpen, onOpen, pendingOrderId, onStatusChange }) {
 }
 
 export default function RestaurantOrders() {
-	const [filter, setFilter] = useState(ALL_ORDERS.value)
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
+	const [filter, setFilter] = useState(ALL_ORDERS)
 	const [selectedOrderId, setSelectedOrderId] = useState(null)
 	const {
 		orders = [],
@@ -105,17 +118,20 @@ export default function RestaurantOrders() {
 		refreshOrders,
 	} = useRestaurantOrders()
 	const statusNames = new Map(
-		orders.map(({ status, statusName }) => [status, statusName.danish]),
+		orders.map((order) => [
+			order.status,
+			getOrderStatusName(order, language),
+		]),
 	)
 	const filters = [
-		ALL_ORDERS,
+		{ value: ALL_ORDERS, label: t('latest') },
 		...Object.values(ORDER_STATUS)
 			.filter((status) => statusNames.has(status))
 			.map((value) => ({ value, label: statusNames.get(value) })),
 	]
-	const activeFilter = statusNames.has(filter) ? filter : ALL_ORDERS.value
+	const activeFilter = statusNames.has(filter) ? filter : ALL_ORDERS
 	const visibleOrders =
-		activeFilter === ALL_ORDERS.value
+		activeFilter === ALL_ORDERS
 			? orders
 			: orders.filter((order) => order.status === activeFilter)
 	const openOrderId =
@@ -134,26 +150,29 @@ export default function RestaurantOrders() {
 			aria-labelledby="restaurant-orders-title"
 		>
 			<div className={styles.heading}>
-				<h1 id="restaurant-orders-title">Ordrer</h1>
+				<h1 id="restaurant-orders-title">{t('orders')}</h1>
 				<Button
-					label="Opdatér ordrer"
+					label={t('refreshOrders')}
 					variant="secondary"
 					disabled={isLoading || pendingOrderId !== null}
 					onClick={refreshOrders}
 				/>
 			</div>
 			<SubNavBar
-				label="Filtrér efter status"
+				label={t('filterByStatus')}
 				options={filters}
 				selected={activeFilter}
 				onSelect={selectFilter}
 			/>
 			{isLoading ? (
-				<RequestState title="Henter ordrer…" isLoading />
+				<RequestState title={t('loadingOrders')} isLoading />
 			) : error ? null : visibleOrders.length === 0 ? (
-				<RequestState title="Restauranten har ingen ordrer endnu" />
+				<RequestState title={t('noRestaurantOrders')} />
 			) : (
-				<ul className={styles.orders} aria-label="Restaurantens ordrer">
+				<ul
+					className={styles.orders}
+					aria-label={t('restaurantOrders')}
+				>
 					{visibleOrders.map((order) => (
 						<li key={order.id}>
 							<OrderCard

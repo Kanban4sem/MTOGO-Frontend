@@ -1,3 +1,8 @@
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/customer-settings-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useCallback, useEffect, useRef } from 'react'
 import { useBeforeUnload, useBlocker } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
@@ -7,25 +12,26 @@ import {
 	useCustomerSettings,
 	useCustomerSettingsRequest,
 } from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.hooks.js'
+import { formatAddressError } from '@/shared/utils/validateDeliveryAddress.js'
 import { useRequestErrorNotification } from '@/shared/hooks/useNotification.js'
 import styles from '@/features/customer-settings-page/CustomerSettings/CustomerSettings.module.css'
 
 const CONTACT_FIELDS = [
 	{
 		name: 'firstName',
-		label: 'Fornavn',
+		labelKey: 'firstName',
 		autoComplete: 'given-name',
 		maxLength: 100,
 	},
 	{
 		name: 'lastName',
-		label: 'Efternavn',
+		labelKey: 'lastName',
 		autoComplete: 'family-name',
 		maxLength: 100,
 	},
 	{
 		name: 'phoneNumber',
-		label: 'Telefonnummer',
+		labelKey: 'phoneNumber',
 		type: 'tel',
 		autoComplete: 'tel',
 		maxLength: 30,
@@ -35,19 +41,20 @@ const CONTACT_FIELDS = [
 const ADDRESS_FIELDS = [
 	{
 		name: 'street',
-		label: 'Vej og husnummer',
+		labelKey: 'street',
 		autoComplete: 'street-address',
 	},
 	{
 		name: 'postalCode',
-		label: 'Postnummer',
+		labelKey: 'postalCode',
 		autoComplete: 'postal-code',
 		inputMode: 'numeric',
 	},
-	{ name: 'city', label: 'By', autoComplete: 'address-level2' },
+	{ name: 'city', labelKey: 'city', autoComplete: 'address-level2' },
 ]
 
 function LeaveSettingsDialog({ blocker, isSaving }) {
+	const t = useTranslations(messages)
 	const dialogRef = useRef(null)
 	const isBlocked = blocker.state === 'blocked'
 
@@ -69,20 +76,12 @@ function LeaveSettingsDialog({ blocker, isSaving }) {
 			aria-labelledby="leave-settings-title"
 			onCancel={stay}
 		>
-			<h2 id="leave-settings-title">Kassér dine ændringer?</h2>
-			<p>
-				{isSaving
-					? 'Vi gemmer dine ændringer.'
-					: 'Du har ændringer, som du kan miste.'}
-			</p>
+			<h2 id="leave-settings-title">{t('discardChanges')}</h2>
+			<p>{isSaving ? t('savingChanges') : t('unsavedChanges')}</p>
 			<div className={styles.dialogActions}>
+				<Button variant="secondary" label={t('stay')} onClick={stay} />
 				<Button
-					variant="secondary"
-					label="Bliv på siden"
-					onClick={stay}
-				/>
-				<Button
-					label="Kassér og forlad"
+					label={t('discardAndLeave')}
 					onClick={blocker.proceed}
 					disabled={isSaving}
 				/>
@@ -92,24 +91,34 @@ function LeaveSettingsDialog({ blocker, isSaving }) {
 }
 
 function AddressEditor({ row, index, errors, onEdit, onToggleRemoval }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	return (
 		<fieldset className={styles.section}>
 			<legend>
-				{row.saved ? `Adresse ${index + 1}` : 'Ny adresse'}
-				{row.saved?.isDefault && ' · Standardadresse'}
+				{row.saved
+					? t('addressNumber', { number: index + 1 })
+					: t('newAddress')}
+				{row.saved?.isDefault && t('defaultAddress')}
 			</legend>
 			{row.removed ? (
-				<p>Adressen fjernes, når du opdaterer.</p>
+				<p>{t('pendingAddressRemoval')}</p>
 			) : (
 				<div className={`${styles.fields} ${styles.address}`}>
 					<FormFields
-						fields={ADDRESS_FIELDS.map((field) => ({
-							...field,
-							placeholder: row.saved?.[field.name],
-							value: row.draft[field.name] ?? '',
-							error: errors?.[field.name],
-							onChange: (event) => onEdit(row.key, event),
-						}))}
+						fields={ADDRESS_FIELDS.map(
+							({ labelKey, ...field }) => ({
+								...field,
+								label: t(labelKey),
+								placeholder: row.saved?.[field.name],
+								value: row.draft[field.name] ?? '',
+								error: formatAddressError(
+									errors?.[field.name],
+									language,
+								),
+								onChange: (event) => onEdit(row.key, event),
+							}),
+						)}
 					/>
 				</div>
 			)}
@@ -117,7 +126,7 @@ function AddressEditor({ row, index, errors, onEdit, onToggleRemoval }) {
 				<Button
 					size="s"
 					variant="secondary"
-					label={row.removed ? 'Fortryd' : 'Fjern adresse'}
+					label={row.removed ? t('undo') : t('removeAddress')}
 					onClick={() => onToggleRemoval(row)}
 				/>
 			</div>
@@ -126,6 +135,7 @@ function AddressEditor({ row, index, errors, onEdit, onToggleRemoval }) {
 }
 
 function CustomerSettingsForm({ user, initialAddresses }) {
+	const t = useTranslations(messages)
 	const {
 		profile,
 		contactDraft,
@@ -158,8 +168,9 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 		),
 	)
 
-	const contactFields = CONTACT_FIELDS.map((field) => ({
+	const contactFields = CONTACT_FIELDS.map(({ labelKey, ...field }) => ({
 		...field,
+		label: t(labelKey),
 		placeholder: profile?.[field.name] ?? undefined,
 		value:
 			field.name === 'phoneNumber' && clearPhone
@@ -170,7 +181,7 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 	}))
 	contactFields.push({
 		name: 'email',
-		label: 'E-mail',
+		labelKey: 'emailAddress',
 		type: 'email',
 		value: user.email ?? '',
 		readOnly: true,
@@ -184,18 +195,18 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 				aria-busy={isSaving}
 			>
 				<div className={styles.heading}>
-					<h1>Indstillinger</h1>
+					<h1>{t('settings')}</h1>
 					<Button
 						type="submit"
-						label={isSaving ? 'Gemmer…' : 'Opdatér'}
+						label={isSaving ? t('saving') : t('update')}
 						disabled={!hasChanges || isSaving}
 					/>
 				</div>
 				<p className={styles.description}>
-					Udfyld de felter, du vil ændre, og vælg Opdatér.
+					{t('settingsInstructions')}
 				</p>
 				<fieldset className={styles.section} disabled={isSaving}>
-					<legend>Kontaktoplysninger</legend>
+					<legend>{t('contactDetails')}</legend>
 					<div className={styles.fields}>
 						<FormFields fields={contactFields} />
 					</div>
@@ -208,15 +219,13 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 									setClearPhone(event.target.checked)
 								}
 							/>
-							Fjern mit telefonnummer
+							{t('removePhone')}
 						</label>
 					)}
 				</fieldset>
 				<fieldset className={styles.addressList} disabled={isSaving}>
-					<legend>Leveringsadresser</legend>
-					{addresses.length === 0 && (
-						<p>Du har ingen gemte leveringsadresser.</p>
-					)}
+					<legend>{t('deliveryAddresses')}</legend>
+					{addresses.length === 0 && <p>{t('noSavedAddresses')}</p>}
 					{addresses.map((row, index) => (
 						<AddressEditor
 							key={row.key}
@@ -227,12 +236,10 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 							onToggleRemoval={toggleRemoval}
 						/>
 					))}
-					<p className={styles.description}>
-						Vi leverer kun i Danmark.
-					</p>
+					<p className={styles.description}>{t('denmarkOnly')}</p>
 					<Button
 						variant="secondary"
-						label="Tilføj adresse"
+						label={t('addAddress')}
 						onClick={addAddress}
 					/>
 				</fieldset>
@@ -243,29 +250,31 @@ function CustomerSettingsForm({ user, initialAddresses }) {
 }
 
 export default function CustomerSettings() {
+	const t = useTranslations(messages)
 	const {
 		data: settings,
 		isLoading,
 		error,
 		reload,
 	} = useCustomerSettingsRequest()
-	useRequestErrorNotification(
-		error,
-		error && `Vi kunne ikke hente dine indstillinger. ${error.message}`,
+	useRequestErrorNotification(error, (language) =>
+		translate(messages, language, 'settingsFailed', {
+			message: getRequestErrorMessage(error, language),
+		}),
 	)
 
 	if (isLoading) {
 		return (
 			<div className={styles.request}>
-				<RequestState title="Henter indstillinger…" isLoading />
+				<RequestState title={t('loadingSettings')} isLoading />
 			</div>
 		)
 	}
 	if (error) {
 		return (
 			<div className={styles.request}>
-				<RequestState title="Indstillinger" headingLevel="h1">
-					<Button label="Prøv igen" onClick={reload} />
+				<RequestState title={t('settings')} headingLevel="h1">
+					<Button label={t('retry')} onClick={reload} />
 				</RequestState>
 			</div>
 		)

@@ -1,3 +1,6 @@
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import messages from '@/features/checkout-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Link } from 'react-router-dom'
 import BasketSummary from '@/shared/components/BasketSummary/BasketSummary.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
@@ -15,28 +18,29 @@ import { formatPrice } from '@/shared/utils/formatPrice.js'
 import { PAYMENT_TOKENS } from '@/features/checkout-page/services/orderService.js'
 import { useCheckout } from '@/features/checkout-page/Checkout/Checkout.hooks.js'
 import {
-	CARD_FIELDS,
-	PAYMENT_OPTIONS,
+	getCardFields,
+	getPaymentOptions,
 } from '@/features/checkout-page/Checkout/checkoutFields.js'
 import styles from '@/features/checkout-page/Checkout/Checkout.module.css'
 
 export default function Checkout() {
+	const t = useTranslations(messages)
 	const { user } = useAuth()
 	const { isEmpty } = useBasket()
 
 	// CheckoutPage only renders this for a logged-in user.
 	if (user.role !== USER_ROLES.CUSTOMER) {
 		return (
-			<RequestState title="Kun kunder kan bestille">
-				Du skal bruge en kundekonto for at afgive en ordre.
+			<RequestState title={t('customersOnly')}>
+				{t('customerAccountRequired')}
 			</RequestState>
 		)
 	}
 	if (isEmpty) {
 		return (
-			<RequestState title="Din kurv er tom">
-				Læg nogle retter i kurven, før du bestiller.{' '}
-				<Link to={RESTAURANTS_PATH}>Find en restaurant</Link>
+			<RequestState title={t('emptyBasket')}>
+				{t('addBeforeOrdering')}{' '}
+				<Link to={RESTAURANTS_PATH}>{t('findRestaurant')}</Link>
 			</RequestState>
 		)
 	}
@@ -44,6 +48,8 @@ export default function Checkout() {
 }
 
 function CheckoutForm({ accountProfile }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const { basket, total } = useBasket()
 	const {
 		savedAddresses,
@@ -67,19 +73,19 @@ function CheckoutForm({ accountProfile }) {
 
 	return (
 		<div className={styles.checkout}>
-			<h1 className={styles.title}>Kassen</h1>
+			<h1 className={styles.title}>{t('checkout')}</h1>
 			<section
 				className={styles.basket}
 				aria-labelledby="checkout-basket"
 			>
-				<h2 id="checkout-basket">Din kurv</h2>
+				<h2 id="checkout-basket">{t('yourBasket')}</h2>
 				<BasketSummary
-					totalLabel="Kurvens total (forhåndsvisning)"
-					totalNote="Den endelige ordretotal beregnes, når ordren afgives."
+					totalLabel={t('basketTotalPreview')}
+					totalNote={t('finalTotalOnOrder')}
 					disabled={isSubmitting}
 				/>
 				<Link className={styles.back} to={menuPath}>
-					Tilføj flere retter
+					{t('addMoreDishes')}
 				</Link>
 			</section>
 			<form
@@ -89,18 +95,20 @@ function CheckoutForm({ accountProfile }) {
 				aria-busy={isSubmitting}
 			>
 				<fieldset className={styles.group} disabled={isSubmitting}>
-					<legend>Leveringsadresse</legend>
+					<legend>{t('deliveryAddress')}</legend>
 					{recipient && (
-						<p className={styles.note}>Leveres til {recipient}</p>
+						<p className={styles.note}>
+							{t('deliverTo')} {recipient}
+						</p>
 					)}
 					{isAddressLoading && (
 						<p role="status" className={styles.note}>
-							Henter dine gemte adresser…
+							{t('loadingSavedAddresses')}
 						</p>
 					)}
 					{savedAddresses.length > 0 && (
 						<Select
-							label="Vælg leveringsadresse"
+							label={t('selectDeliveryAddress')}
 							value={
 								selectedAddress
 									? String(selectedAddress.id)
@@ -110,13 +118,20 @@ function CheckoutForm({ accountProfile }) {
 								setAddressChoice(event.target.value)
 							}
 							options={[
-								...savedAddresses.map((address) => ({
-									value: String(address.id),
-									label: `${formatDeliveryAddress(address)}${address.isDefault ? ' (standard)' : ''}`,
-								})),
+								...savedAddresses.map((address) => {
+									const label = formatDeliveryAddress(address)
+									return {
+										value: String(address.id),
+										label: address.isDefault
+											? t('defaultAddressOption', {
+													address: label,
+												})
+											: label,
+									}
+								}),
 								{
 									value: '',
-									label: 'Indtast en anden adresse',
+									label: t('differentAddress'),
 								},
 							]}
 						/>
@@ -130,21 +145,21 @@ function CheckoutForm({ accountProfile }) {
 							<FormFields fields={deliveryAddressFields} />
 							<label className={styles.option}>
 								<input type="checkbox" name="saveAsDefault" />
-								Gem som standardadresse efter godkendt betaling
+								{t('saveDefaultAddress')}
 							</label>
 						</fieldset>
 					)}
-					<p className={styles.note}>Vi leverer kun i Danmark.</p>
+					<p className={styles.note}>{t('denmarkOnly')}</p>
 				</fieldset>
 				<fieldset className={styles.group} disabled={isSubmitting}>
-					<legend>Betaling</legend>
+					<legend>{t('payment')}</legend>
 					{isOrderingPaused ? (
 						<FeatureUnavailable
 							feature={MAINTENANCE_FEATURES.ORDERING}
 						/>
 					) : (
 						<>
-							{PAYMENT_OPTIONS.map(({ token, label }) => (
+							{getPaymentOptions(t).map(({ token, label }) => (
 								<label key={token} className={styles.option}>
 									<input
 										type="radio"
@@ -159,11 +174,9 @@ function CheckoutForm({ accountProfile }) {
 							{paymentToken === PAYMENT_TOKENS.CARD && (
 								<div className={styles.card}>
 									<p className={styles.note}>
-										Betalingen er simuleret, og der trækkes
-										ingen penge. Du skal ikke indtaste
-										kortoplysninger.
+										{t('simulatedPayment')}
 									</p>
-									<FormFields fields={CARD_FIELDS} />
+									<FormFields fields={getCardFields(t)} />
 								</div>
 							)}
 						</>
@@ -171,7 +184,7 @@ function CheckoutForm({ accountProfile }) {
 				</fieldset>
 				{showMenuLink && (
 					<Link to={menuPath}>
-						Gå til menuen hos {basket.restaurant.name}
+						{t('restaurantMenuLink')} {basket.restaurant.name}
 					</Link>
 				)}
 				{!isOrderingPaused && (
@@ -180,8 +193,10 @@ function CheckoutForm({ accountProfile }) {
 						size="l"
 						label={
 							isSubmitting
-								? 'Afgiver ordren…'
-								: `Betal og bestil · ${formatPrice(total)}`
+								? t('placingOrder')
+								: t('payAndOrder', {
+										price: formatPrice(total, language),
+									})
 						}
 						disabled={isSubmitting || isAddressLoading}
 					/>

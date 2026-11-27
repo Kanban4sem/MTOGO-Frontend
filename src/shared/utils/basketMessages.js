@@ -4,30 +4,41 @@ import {
 	ADD_LIMITS,
 	getAddLimit,
 } from '@/shared/utils/basket.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/shared/utils/basketMessages.messages.json'
 
-// The Danish text about a basket, kept apart from the basket rules in basket.js.
-export const BASKET_LIMITS_MESSAGE = `Højst ${MAX_BASKET_MENU_ITEMS} forskellige retter og ${MAX_QUANTITY} stk. af hver.`
+const LIMITS = { maxItems: MAX_BASKET_MENU_ITEMS, maxQuantity: MAX_QUANTITY }
 
-export function formatItemCount(itemCount) {
-	return `${itemCount} ${itemCount === 1 ? 'vare' : 'varer'}`
+export function getBasketLimitsMessage(language) {
+	return translate(messages, language, 'basketLimits', LIMITS)
 }
 
-const ADD_BLOCKED_REASONS = {
-	[ADD_LIMITS.QUANTITY]: `Højst ${MAX_QUANTITY} stk.`,
-	[ADD_LIMITS.BASKET_FULL]: 'Kurven er fuld',
+export function formatItemCount(count, language) {
+	return translate(
+		messages,
+		language,
+		count === 1 ? 'oneItem' : 'manyItems',
+		{ count },
+	)
 }
 
-// The short reason next to a disabled add button.
-export function getAddBlockedReason(basket, menuItemId) {
-	return ADD_BLOCKED_REASONS[getAddLimit(basket, menuItemId)] ?? ''
+const ADD_BLOCKED_KEYS = {
+	[ADD_LIMITS.QUANTITY]: 'quantityLimit',
+	[ADD_LIMITS.BASKET_FULL]: 'basketFull',
 }
 
-export function getLimitMessage(basket) {
-	if (basket.lines.length >= MAX_BASKET_MENU_ITEMS) {
-		return `Kurven er fuld. Den kan højst have ${MAX_BASKET_MENU_ITEMS} forskellige retter.`
-	}
-	if (basket.lines.some((line) => line.quantity >= MAX_QUANTITY)) {
-		return `Du kan højst bestille ${MAX_QUANTITY} stk. af hver ret.`
-	}
-	return ''
+export function getAddBlockedReason(basket, menuItemId, language) {
+	const key = ADD_BLOCKED_KEYS[getAddLimit(basket, menuItemId)]
+	return key ? translate(messages, language, key, LIMITS) : ''
+}
+
+export function getBasketLimitMessageKey(basket) {
+	if (basket.lines.length >= MAX_BASKET_MENU_ITEMS) return 'basketFullDetails'
+	if (basket.lines.some((line) => line.quantity >= MAX_QUANTITY))
+		return 'quantityLimitDetails'
+	return null
+}
+
+export function formatBasketLimit(key, language) {
+	return translate(messages, language, key, LIMITS)
 }

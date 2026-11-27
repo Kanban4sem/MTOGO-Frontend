@@ -1,19 +1,22 @@
+import messages from '@/app/pages/NotFoundPage.messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 
 export default function NotFoundPage() {
+	const t = useTranslations(messages)
 	return (
 		<div className="notFoundPage">
-			<Helmet title="404 – Siden blev ikke fundet" />
+			<Helmet title={t('pageNotFoundTitle')} />
 			<RequestState
-				title="Denne side er desværre ikke på menuen!"
+				title={t('pageNotFound')}
 				headingLevel="h1"
 				symbol=":("
 			>
-				<span>Fejl 404.</span>
+				<span>{t('error404')}</span>
 				<Link className="notFoundPageHomeLink" to="/">
-					Tilbage til forsiden
+					{t('backHome')}
 				</Link>
 			</RequestState>
 		</div>

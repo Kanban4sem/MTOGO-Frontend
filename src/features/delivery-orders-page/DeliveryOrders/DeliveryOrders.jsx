@@ -1,3 +1,7 @@
+import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import messages from '@/features/delivery-orders-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
 import SubNavBar from '@/shared/components/SubNavBar/SubNavBar.jsx'
@@ -8,36 +12,43 @@ import { useDeliveryOrders } from '@/features/delivery-orders-page/DeliveryOrder
 import styles from '@/features/delivery-orders-page/DeliveryOrders/DeliveryOrders.module.css'
 
 const FILTERS = [
-	{ value: 'active', label: 'Aktive' },
-	{ value: 'completed', label: 'Afsluttede' },
+	{ value: 'active', labelKey: 'active' },
+	{ value: 'completed', labelKey: 'completed' },
 ]
 
-const TAKE = { action: 'TAKE', label: 'Tag ordre' }
+const TAKE = { action: 'TAKE', labelKey: 'takeOrder' }
 const ASSIGNED_ACTIONS = {
-	[ORDER_STATUS.READY]: { action: 'PICK_UP', label: 'Markér som afhentet' },
+	[ORDER_STATUS.READY]: { action: 'PICK_UP', labelKey: 'markPickedUp' },
 	[ORDER_STATUS.PICKED_UP]: {
 		action: 'DELIVER',
-		label: 'Markér som leveret',
+		labelKey: 'markDelivered',
 	},
 }
 
 function OrderCard({ order, pendingOrderId, onChange }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const next = order.assignedToMe ? ASSIGNED_ACTIONS[order.status] : TAKE
 	const deliveryAddress =
-		formatDeliveryAddress(order.deliveryAddress) ??
-		'Adresse ikke tilgængelig'
+		formatDeliveryAddress(order.deliveryAddress) ?? t('addressUnavailable')
 
 	return (
 		<details className={styles.card}>
 			<summary className={styles.summary}>
 				<span className={styles.orderTitle}>
-					<strong>Ordre nr. {order.id}</strong>
+					<strong>
+						{t('orderNumberLabel')} {order.id}
+					</strong>
 					<span>{order.restaurantName}</span>
 					{!order.assignedToMe && (
-						<span>Levering til: {deliveryAddress}</span>
+						<span>
+							{t('deliveringTo')} {deliveryAddress}
+						</span>
 					)}
 				</span>
-				<span className={styles.status}>{order.statusName.danish}</span>
+				<span className={styles.status}>
+					{getOrderStatusName(order, language)}
+				</span>
 				<span className={styles.chevron} aria-hidden="true" />
 			</summary>
 			<div
@@ -46,27 +57,30 @@ function OrderCard({ order, pendingOrderId, onChange }) {
 			>
 				{order.assignedToMe && (
 					<p>
-						<strong>Levering til:</strong> {deliveryAddress}
+						<strong>{t('deliveringTo')}</strong> {deliveryAddress}
 					</p>
 				)}
-				<ul className={styles.lines} aria-label="Ordrelinjer">
+				<ul className={styles.lines} aria-label={t('orderLines')}>
 					{order.lines.map((line) => (
 						<li key={line.menuItemId}>
 							<span>
 								{line.quantity} × {line.name}
 							</span>
-							<span>{formatPrice(line.subtotal)}</span>
+							<span>{formatPrice(line.subtotal, language)}</span>
 						</li>
 					))}
 				</ul>
 				<p className={styles.total}>
-					<span>I alt</span>
-					<strong>{formatPrice(order.total)}</strong>
+					<span>{t('total')}</span>
+					<strong>{formatPrice(order.total, language)}</strong>
 				</p>
 				{next && (
 					<Button
-						label={next.label}
-						aria-label={`${next.label}, ordre nr. ${order.id}`}
+						label={t(next.labelKey)}
+						aria-label={t('orderAction', {
+							label: t(next.labelKey),
+							id: order.id,
+						})}
 						disabled={pendingOrderId !== null}
 						onClick={() => onChange(order.id, next.action)}
 					/>
@@ -84,7 +98,8 @@ function DeliveryOrderList({
 	pendingOrderId,
 	onChange,
 }) {
-	if (isLoading) return <RequestState title="Henter ordrer…" isLoading />
+	const t = useTranslations(messages)
+	if (isLoading) return <RequestState title={t('loadingOrders')} isLoading />
 	if (error) return null
 	if (orders.length === 0) return <RequestState title={emptyTitle} />
 
@@ -104,6 +119,7 @@ function DeliveryOrderList({
 }
 
 export default function DeliveryOrders({ available }) {
+	const t = useTranslations(messages)
 	const {
 		visibleOrders,
 		filter,
@@ -115,10 +131,10 @@ export default function DeliveryOrders({ available }) {
 		refreshOrders,
 	} = useDeliveryOrders(available)
 	const emptyTitle = available
-		? 'Ingen ledige ordrer til afhentning'
+		? t('noAvailableOrders')
 		: filter === 'completed'
-			? 'Du har ingen afsluttede leveringer'
-			: 'Du har ingen aktive leveringer'
+			? t('noCompletedDeliveries')
+			: t('noActiveDeliveries')
 
 	return (
 		<section
@@ -127,10 +143,10 @@ export default function DeliveryOrders({ available }) {
 		>
 			<header className={styles.heading}>
 				<h1 id="delivery-orders-title">
-					{available ? 'Ledige ordrer' : 'Ordrer'}
+					{available ? t('availableOrders') : t('orders')}
 				</h1>
 				<Button
-					label="Opdatér ordrer"
+					label={t('refreshOrders')}
 					variant="secondary"
 					disabled={isLoading || pendingOrderId !== null}
 					onClick={refreshOrders}
@@ -138,8 +154,11 @@ export default function DeliveryOrders({ available }) {
 			</header>
 			{!available && (
 				<SubNavBar
-					label="Filtrér dine leveringer"
-					options={FILTERS}
+					label={t('filterDeliveries')}
+					options={FILTERS.map(({ value, labelKey }) => ({
+						value,
+						label: t(labelKey),
+					}))}
 					selected={filter}
 					onSelect={setFilter}
 				/>

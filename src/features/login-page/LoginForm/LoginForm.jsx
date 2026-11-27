@@ -1,3 +1,6 @@
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/login-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Link } from 'react-router-dom'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
@@ -7,6 +10,7 @@ import { useLogin } from '@/features/login-page/LoginForm/LoginForm.hooks.js'
 import styles from '@/features/login-page/LoginForm/LoginForm.module.css'
 
 function LoginForm() {
+	const t = useTranslations(messages)
 	const {
 		isSubmitting,
 		submitLogin,
@@ -15,21 +19,23 @@ function LoginForm() {
 		initialEmail,
 	} = useLogin()
 	useNotificationMessage(
-		sessionExpired ? 'Din session er udløbet. Log ind igen.' : '',
+		sessionExpired,
+		(language) => translate(messages, language, 'sessionExpired'),
 		'warning',
 	)
 
 	return (
 		<section className={styles.login} aria-labelledby="login-title">
-			<h1 id="login-title">Log ind</h1>
+			<h1 id="login-title">{t('login')}</h1>
 			<form
 				className={styles.form}
 				onSubmit={submitLogin}
 				aria-busy={isSubmitting}
 			>
 				<FormFields
-					fields={LOGIN_FIELDS.map((field) => ({
+					fields={LOGIN_FIELDS.map(({ labelKey, ...field }) => ({
 						...field,
+						label: t(labelKey),
 						disabled: isSubmitting,
 						...(field.name === 'email' && {
 							defaultValue: initialEmail,
@@ -37,15 +43,15 @@ function LoginForm() {
 					}))}
 				/>
 				<Button
-					label={isSubmitting ? 'Logger ind…' : 'Log ind'}
+					label={isSubmitting ? t('loggingIn') : t('login')}
 					type="submit"
 					disabled={isSubmitting}
 				/>
 			</form>
 			<p>
-				Har du ikke en konto?{' '}
+				{t('noAccount')}{' '}
 				<Link to="/register" state={{ returnTo }}>
-					Opret en konto
+					{t('createAnAccount')}
 				</Link>
 			</p>
 		</section>

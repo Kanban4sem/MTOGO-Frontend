@@ -1,3 +1,9 @@
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/order-confirmation-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Link } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
@@ -10,6 +16,8 @@ import { useOrderConfirmation } from '@/features/order-confirmation-page/OrderCo
 import styles from '@/features/order-confirmation-page/OrderConfirmation/OrderConfirmation.module.css'
 
 export default function OrderConfirmation({ orderId }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const {
 		isLoading,
 		data: order,
@@ -17,30 +25,32 @@ export default function OrderConfirmation({ orderId }) {
 		reload,
 	} = useOrderConfirmation(orderId)
 	const orderNotFound = error && isOrderNotFound(error)
-	useRequestErrorNotification(
-		error,
+	useRequestErrorNotification(error, (language) =>
 		orderNotFound
-			? 'Ordren blev ikke fundet.'
-			: error &&
-					`Vi kunne ikke hente ordre nr. ${orderId}. ${error.message}`,
+			? translate(messages, language, 'orderNotFoundNotice')
+			: translate(messages, language, 'confirmationFailed', {
+					orderId,
+					message: getRequestErrorMessage(error, language),
+				}),
 	)
 
 	if (isLoading) {
-		return <RequestState title="Henter din ordre…" isLoading />
+		return <RequestState title={t('loadingYourOrder')} isLoading />
 	}
 	if (error) {
 		if (orderNotFound) {
-			return <RequestState title="Ordren blev ikke fundet" />
+			return <RequestState title={t('orderNotFound')} />
 		}
 		// Checkout has already emptied the basket, so keep the order number in view and let the customer retry.
 		return (
-			<RequestState title={`Ordre nr. ${orderId}`}>
-				<Button label="Prøv igen" onClick={reload} />
+			<RequestState title={t('orderNumber', { orderId })}>
+				<Button label={t('retry')} onClick={reload} />
 			</RequestState>
 		)
 	}
 
-	const { deliveryAddress, statusName } = order
+	const { deliveryAddress } = order
+	const statusName = getOrderStatusName(order, language)
 
 	return (
 		<section
@@ -48,38 +58,40 @@ export default function OrderConfirmation({ orderId }) {
 			aria-labelledby="confirmation-title"
 		>
 			<header className={styles.intro}>
-				{statusName?.danish && (
+				{statusName && (
 					<p className={styles.status}>
-						Status: <strong>{statusName.danish}</strong>
+						{t('statusLabel')} <strong>{statusName}</strong>
 					</p>
 				)}
-				<h1 id="confirmation-title">Tak for din bestilling!</h1>
+				<h1 id="confirmation-title">{t('thanksForOrdering')}</h1>
 				<p>
-					Din ordre har nummer <strong>{order.id}</strong>.
+					{t('yourOrderNumber')} <strong>{order.id}</strong>.
 				</p>
 			</header>
 			<div className={styles.details}>
 				<section className={styles.card} aria-labelledby="order-lines">
-					<h2 id="order-lines">Din ordre</h2>
+					<h2 id="order-lines">{t('yourOrder')}</h2>
 					<table className={styles.lines}>
 						<thead>
 							<tr>
-								<th scope="col">Ret</th>
-								<th scope="col">Pris</th>
-								<th scope="col">Antal</th>
-								<th scope="col">I alt</th>
+								<th scope="col">{t('dish')}</th>
+								<th scope="col">{t('price')}</th>
+								<th scope="col">{t('quantity')}</th>
+								<th scope="col">{t('total')}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{order.lines.map((line) => (
 								<tr key={line.menuItemId}>
 									<th scope="row">{line.name}</th>
-									<td data-label="Pris">
-										{formatPrice(line.unitPrice)}
+									<td data-label={t('price')}>
+										{formatPrice(line.unitPrice, language)}
 									</td>
-									<td data-label="Antal">{line.quantity}</td>
-									<td data-label="I alt">
-										{formatPrice(line.subtotal)}
+									<td data-label={t('quantity')}>
+										{line.quantity}
+									</td>
+									<td data-label={t('total')}>
+										{formatPrice(line.subtotal, language)}
 									</td>
 								</tr>
 							))}
@@ -87,9 +99,9 @@ export default function OrderConfirmation({ orderId }) {
 						<tfoot>
 							<tr>
 								<th scope="row" colSpan={3}>
-									Ordretotal
+									{t('orderTotal')}
 								</th>
-								<td>{formatPrice(order.total)}</td>
+								<td>{formatPrice(order.total, language)}</td>
 							</tr>
 						</tfoot>
 					</table>
@@ -98,16 +110,16 @@ export default function OrderConfirmation({ orderId }) {
 					className={styles.card}
 					aria-labelledby="order-address"
 				>
-					<h2 id="order-address">Leveringsadresse</h2>
+					<h2 id="order-address">{t('deliveryAddress')}</h2>
 					<address className={styles.address}>
 						{formatDeliveryAddress(deliveryAddress, '\n')}
 						<br />
-						{getCountryName(deliveryAddress.country)}
+						{getCountryName(deliveryAddress.country, language)}
 					</address>
 				</section>
 			</div>
 			<Link className={styles.home} to="/">
-				Gå til forsiden
+				{t('goHome')}
 			</Link>
 		</section>
 	)

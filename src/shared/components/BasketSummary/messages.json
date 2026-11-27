@@ -1,0 +1,22 @@
+{
+	"da": {
+		"from": "Fra",
+		"removeItem": "Fjern {name}",
+		"decreaseQuantity": "Færre {name}",
+		"quantityLabel": "Antal:",
+		"increaseQuantity": "Flere {name}",
+		"unitPricePrefix": "à",
+		"removeFromBasket": "Fjern {name} fra kurven",
+		"remove": "Fjern"
+	},
+	"en": {
+		"from": "From",
+		"removeItem": "Remove {name}",
+		"decreaseQuantity": "Fewer {name}",
+		"quantityLabel": "Quantity:",
+		"increaseQuantity": "More {name}",
+		"unitPricePrefix": "at",
+		"removeFromBasket": "Remove {name} from the basket",
+		"remove": "Remove"
+	}
+}

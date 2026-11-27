@@ -1,11 +1,17 @@
-// Login and register know what these statuses mean for them. The client's message covers the rest, including 403.
-const AUTH_MESSAGES = {
-	400: 'Kontrollér dine oplysninger, og prøv igen.',
-	401: 'Email eller password er forkert. Prøv igen.',
-	404: 'Login og registrering er ikke tilgængeligt lige nu.',
-	409: 'Der findes allerede en konto med denne email.',
+import { translate } from '@/shared/i18n/translate.js'
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import messages from '@/shared/utils/authErrors.messages.json'
+
+const AUTH_MESSAGE_KEYS = {
+	400: 'checkAccountDetails',
+	401: 'invalidCredentials',
+	404: 'authUnavailable',
+	409: 'emailAlreadyInUse',
 }
 
-export function getAuthErrorMessage(error) {
-	return AUTH_MESSAGES[error.status] ?? error.message
+export function getAuthErrorMessage(error, language) {
+	const key = AUTH_MESSAGE_KEYS[error.status]
+	return key
+		? translate(messages, language, key)
+		: getRequestErrorMessage(error, language)
 }

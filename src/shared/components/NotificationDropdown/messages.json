@@ -1,0 +1,26 @@
+{
+	"da": {
+		"notificationsFailed": "Notifikationerne kunne ikke hentes.",
+		"markReadFailed": "Nogle notifikationer kunne ikke markeres som læst.",
+		"notifications": "Notifikationer",
+		"loadingNotifications": "Henter notifikationer…",
+		"noNotifications": "Du har ingen notifikationer.",
+		"feedbackForOrder": "Feedback til ordre {orderId}",
+		"feedback": "Feedback",
+		"oneUnreadNotification": "Notifikationer, {unreadCount} ulæst",
+		"unreadNotifications": "Notifikationer, {unreadCount} ulæste",
+		"notificationOrderStatus": "Ordre #{orderId} · {statusName}"
+	},
+	"en": {
+		"notificationsFailed": "Notifications could not be loaded.",
+		"markReadFailed": "Some notifications could not be marked as read.",
+		"notifications": "Notifications",
+		"loadingNotifications": "Loading notifications…",
+		"noNotifications": "You have no notifications.",
+		"feedbackForOrder": "Feedback for order {orderId}",
+		"feedback": "Feedback",
+		"oneUnreadNotification": "Notifications, {unreadCount} unread",
+		"unreadNotifications": "Notifications, {unreadCount} unread",
+		"notificationOrderStatus": "Order #{orderId} · {statusName}"
+	}
+}

@@ -1,5 +1,9 @@
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/customer-orders-page/messages.json'
 import { useCallback, useState } from 'react'
 import {
+	FeedbackAvailabilityError,
 	getOrderFeedbackAvailability,
 	submitOrderFeedback,
 } from '@/features/customer-orders-page/services/orderFeedbackService.js'
@@ -15,7 +19,11 @@ export function useOrderFeedback(orderId) {
 		[orderId],
 	)
 	const availability = useRequest(loadAvailability)
-	useRequestErrorNotification(availability.error)
+	useRequestErrorNotification(availability.error, (language) =>
+		availability.error instanceof FeedbackAvailabilityError
+			? translate(messages, language, 'feedbackAvailabilityFailed')
+			: getRequestErrorMessage(availability.error, language),
+	)
 	const notify = useNotification()
 	const [submission, setSubmission] = useState(null)
 	const isSubmitting = submission?.isSubmitting === true
@@ -37,17 +45,25 @@ export function useOrderFeedback(orderId) {
 				deliveryRating: Number(fields.get('deliveryRating')),
 			})
 			setSubmission({ isSubmitted: true })
-			notify('Tak for din feedback!', 'success')
+			notify(
+				(language) =>
+					translate(messages, language, 'thanksForFeedback'),
+				'success',
+			)
 		} catch (error) {
 			// This form is only available for delivered orders, a terminal status.
 			setSubmission(error.status === 409 ? { isSubmitted: true } : null)
 			if (error.status === 409) {
 				notify(
-					'Du har allerede givet feedback på denne ordre.',
+					(language) =>
+						translate(messages, language, 'feedbackAlreadySent'),
 					'warning',
 				)
 			} else if (error.status !== 401) {
-				notify(error.message, 'error')
+				notify(
+					(language) => getRequestErrorMessage(error, language),
+					'error',
+				)
 			}
 		}
 	}

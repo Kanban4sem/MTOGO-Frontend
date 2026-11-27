@@ -1,3 +1,9 @@
+import { translate } from '@/shared/i18n/translate.js'
+import { withErrorReference } from '@/shared/utils/errorReference.js'
+import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import messages from '@/shared/components/NotificationDropdown/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Dropdown from '@/shared/components/Dropdown/Dropdown.jsx'
@@ -8,15 +14,34 @@ import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
 import { getCustomerOrderFeedbackPath } from '@/shared/data/paths.js'
 
 export default function NotificationDropdown({ enabled }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const [isOpen, setIsOpen] = useState(false)
 	const { notifications, isLoading, loadError, readError } =
 		useOrderNotifications(enabled, isOpen)
 	const unreadCount = notifications.filter(({ read }) => !read).length
-	useNotificationMessage(isOpen ? loadError : '')
-	useNotificationMessage(isOpen && unreadCount > 0 ? readError : '')
+	useNotificationMessage(isOpen && loadError, (language) =>
+		withErrorReference(
+			translate(messages, language, 'notificationsFailed'),
+			loadError,
+			language,
+		),
+	)
+	useNotificationMessage(isOpen && unreadCount > 0 && readError, (language) =>
+		withErrorReference(
+			translate(messages, language, 'markReadFailed'),
+			readError,
+			language,
+		),
+	)
 	const label = unreadCount
-		? `Notifikationer, ${unreadCount} ${unreadCount === 1 ? 'ulæst' : 'ulæste'}`
-		: 'Notifikationer'
+		? t(
+				unreadCount === 1
+					? 'oneUnreadNotification'
+					: 'unreadNotifications',
+				{ unreadCount },
+			)
+		: t('notifications')
 
 	return (
 		<Dropdown
@@ -51,24 +76,30 @@ export default function NotificationDropdown({ enabled }) {
 		>
 			{isLoading && (
 				<li className={styles.empty} role="status">
-					Henter notifikationer…
+					{t('loadingNotifications')}
 				</li>
 			)}
 			{!isLoading && !loadError && notifications.length === 0 && (
-				<li className={styles.empty}>Du har ingen notifikationer.</li>
+				<li className={styles.empty}>{t('noNotifications')}</li>
 			)}
 			{notifications.map(({ id, orderId, status, statusName }) => (
 				<li className={styles.notification} key={id}>
 					<span>
-						Ordre #{orderId} · {statusName.danish}
+						{t('notificationOrderStatus', {
+							orderId,
+							statusName: getOrderStatusName(
+								{ status, statusName },
+								language,
+							),
+						})}
 					</span>
 					{status === ORDER_STATUS.DELIVERED && (
 						<Link
 							className={styles.feedback}
 							to={getCustomerOrderFeedbackPath(orderId)}
-							aria-label={`Feedback til ordre ${orderId}`}
+							aria-label={t('feedbackForOrder', { orderId })}
 						>
-							Feedback
+							{t('feedback')}
 						</Link>
 					)}
 				</li>

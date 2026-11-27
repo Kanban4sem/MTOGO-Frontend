@@ -1,8 +1,12 @@
-const formatter = new Intl.NumberFormat('da-DK', {
-	style: 'currency',
-	currency: 'DKK',
-})
+import { DEFAULT_LANGUAGE, LANGUAGES } from '@/shared/i18n/language.js'
 
-export function formatPrice(price) {
-	return formatter.format(price)
+const formatters = Object.fromEntries(
+	LANGUAGES.map(({ code, locale }) => [
+		code,
+		new Intl.NumberFormat(locale, { style: 'currency', currency: 'DKK' }),
+	]),
+)
+
+export function formatPrice(price, language = DEFAULT_LANGUAGE) {
+	return formatters[language].format(price)
 }

@@ -1,3 +1,7 @@
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/restaurant-menu-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import FeatureUnavailable from '@/shared/components/FeatureUnavailable/FeatureUnavailable.jsx'
@@ -20,42 +24,41 @@ import {
 import styles from '@/features/restaurant-menu-page/RestaurantMenu/RestaurantMenu.module.css'
 
 export default function RestaurantMenu({ restaurantId }) {
+	const t = useTranslations(messages)
 	const { restaurant, menus, isLoading, error } =
 		useRestaurantMenu(restaurantId)
-	useRequestErrorNotification(
-		error,
-		error &&
-			withErrorReference(
-				error.status === 404
-					? 'Restauranten findes ikke eller tager ikke imod bestillinger lige nu.'
-					: 'Vi kunne ikke hente menuen. Prøv at genindlæse siden om lidt.',
-				error,
-			),
+	useRequestErrorNotification(error, (language) =>
+		withErrorReference(
+			error.status === 404
+				? translate(messages, language, 'restaurantUnavailable')
+				: translate(messages, language, 'menuFailed'),
+			error,
+			language,
+		),
 	)
 
 	return (
 		<div className={styles.page}>
-			<Helmet title={restaurant?.name || 'Restaurantmenu'} />
+			<Helmet title={restaurant?.name || t('restaurantMenu')} />
 			<Link className={styles.back} to={RESTAURANTS_PATH}>
 				<span
 					className="chevron"
 					data-direction="left"
 					aria-hidden="true"
 				/>
-				Alle restauranter
+				{t('allRestaurants')}
 			</Link>
 			{isLoading ? (
-				<RequestState title="Vi finder menuen frem…" isLoading />
+				<RequestState title={t('loadingMenu')} isLoading />
 			) : error ? (
-				<Link to={RESTAURANTS_PATH}>Find en restaurant</Link>
+				<Link to={RESTAURANTS_PATH}>{t('findRestaurant')}</Link>
 			) : (
 				<>
 					<header className={styles.intro}>
 						<div>
 							<h1>{restaurant.name}</h1>
 							<p className={styles.description}>
-								Gå på opdagelse i menuen, og find det, du har
-								lyst til i dag.
+								{t('menuDescription')}
 							</p>
 						</div>
 					</header>
@@ -69,6 +72,7 @@ export default function RestaurantMenu({ restaurantId }) {
 }
 
 function Menus({ restaurant, menus }) {
+	const t = useTranslations(messages)
 	const { pauses, isLoading } = useMaintenance()
 	const orderingPause = pauses[MAINTENANCE_FEATURES.ORDERING]
 	const canOrder = !isLoading && !orderingPause
@@ -92,9 +96,8 @@ function Menus({ restaurant, menus }) {
 			<div className={canOrder ? styles.menuWithBasket : undefined}>
 				<div className={styles.menus}>
 					{menus.length === 0 ? (
-						<RequestState title="Menuen er på vej">
-							Restauranten har ingen aktiv menu lige nu. Kig forbi
-							igen senere.
+						<RequestState title={t('menuComing')}>
+							{t('noActiveMenu')}
 						</RequestState>
 					) : (
 						menus.map((menu) => (
@@ -106,13 +109,20 @@ function Menus({ restaurant, menus }) {
 								<div className={styles.menuHeading}>
 									<h2 id={`menu-${menu.id}`}>{menu.name}</h2>
 									{menu.description && (
-										<p>{menu.description}</p>
+										<p>
+											{menu.name === 'Menu' &&
+											menu.description ===
+												messages.da.seedMenuDescription
+												? t('seedMenuDescription')
+												: menu.description}
+										</p>
 									)}
 								</div>
 								{menu.items.length === 0 ? (
-									<RequestState title="Køkkenet gør klar">
-										Denne menu har ingen tilgængelige retter
-										lige nu.
+									<RequestState
+										title={t('kitchenGettingReady')}
+									>
+										{t('noAvailableDishes')}
 									</RequestState>
 								) : (
 									<ul className={styles.items}>
@@ -133,9 +143,7 @@ function Menus({ restaurant, menus }) {
 							</section>
 						))
 					)}
-					<p className={styles.priceNote}>
-						Alle priser er i danske kroner.
-					</p>
+					<p className={styles.priceNote}>{t('pricesInDKK')}</p>
 				</div>
 				{canOrder && (
 					<div className={styles.basketRail}>
@@ -158,6 +166,7 @@ function Menus({ restaurant, menus }) {
 }
 
 function MenuBar({ menus }) {
+	const t = useTranslations(messages)
 	const itemCount = menus.reduce(
 		(count, menu) => count + menu.items.length,
 		0,
@@ -165,9 +174,11 @@ function MenuBar({ menus }) {
 
 	return (
 		<div className={styles.menuBar}>
-			<span>Vores menu</span>
+			<span>{t('ourMenu')}</span>
 			<span>
-				{itemCount} {itemCount === 1 ? 'ret' : 'retter'}
+				{t(itemCount === 1 ? 'oneDish' : 'dishCount', {
+					count: itemCount,
+				})}
 			</span>
 		</div>
 	)
@@ -201,5 +212,6 @@ function MenuItem({ restaurantId, item, onAdd }) {
 }
 
 function Price({ price }) {
-	return <span className={styles.price}>{formatPrice(price)}</span>
+	const { language } = useLanguage()
+	return <span className={styles.price}>{formatPrice(price, language)}</span>
 }

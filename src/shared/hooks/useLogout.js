@@ -1,3 +1,5 @@
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/shared/hooks/useLogout.messages.json'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/shared/hooks/useAuth.js'
@@ -17,13 +19,18 @@ export function useLogout() {
 		navigate('/', { replace: true })
 		try {
 			await endSession()
-			notify('Du er logget ud.', 'success')
+			notify(
+				(language) => translate(messages, language, 'loggedOut'),
+				'success',
+			)
 		} catch (error) {
 			notify(
-				withErrorReference(
-					'Du er logget ud i denne browser. Serveren bekræftede ikke, at sessionen blev afsluttet.',
-					error,
-				),
+				(language) =>
+					withErrorReference(
+						translate(messages, language, 'logoutUnconfirmed'),
+						error,
+						language,
+					),
 				'warning',
 			)
 		} finally {

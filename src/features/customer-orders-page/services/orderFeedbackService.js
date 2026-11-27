@@ -2,6 +2,8 @@ import { postCustomerOrderFeedback } from '@/api/endpoints/orders.js'
 import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
 import { readOrderNotifications } from '@/shared/services/orderNotificationService.js'
 
+export class FeedbackAvailabilityError extends Error {}
+
 export async function getOrderFeedbackAvailability(orderId, signal) {
 	const notifications = await readOrderNotifications(signal)
 	const delivery = notifications.find(
@@ -10,7 +12,9 @@ export async function getOrderFeedbackAvailability(orderId, signal) {
 			notification.status === ORDER_STATUS.DELIVERED,
 	)
 	if (typeof delivery?.canGiveFeedback !== 'boolean') {
-		throw new Error('Vi kunne ikke se, om du kan give feedback på ordren.')
+		throw new FeedbackAvailabilityError(
+			'Delivery notification has no feedback availability',
+		)
 	}
 	return delivery.canGiveFeedback
 }

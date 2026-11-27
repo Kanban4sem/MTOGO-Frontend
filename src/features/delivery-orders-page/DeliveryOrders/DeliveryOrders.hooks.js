@@ -1,5 +1,8 @@
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/delivery-orders-page/messages.json'
 import { useRef, useState } from 'react'
-import { ORDER_STATUS } from '@/shared/data/orderStatus.js'
+import { getOrderStatusName, ORDER_STATUS } from '@/shared/data/orderStatus.js'
 import {
 	useNotification,
 	useRequestErrorNotification,
@@ -18,9 +21,10 @@ export function useDeliveryOrders(available) {
 		reload,
 		updateData,
 	} = useRequest(getDeliveryAgentOrders)
-	useRequestErrorNotification(
-		error,
-		error && `Vi kunne ikke hente ordrerne. ${error.message}`,
+	useRequestErrorNotification(error, (language) =>
+		translate(messages, language, 'ordersFailed', {
+			message: getRequestErrorMessage(error, language),
+		}),
 	)
 	const [filter, setFilter] = useState('active')
 	const [pendingOrderId, setPendingOrderId] = useState(null)
@@ -56,22 +60,27 @@ export function useDeliveryOrders(available) {
 					current.id === order.id ? order : current,
 				),
 			)
-			const status = `Ordre nr. ${order.id} · ${order.statusName.danish}`
-			notify(
-				action === 'TAKE'
-					? `${status} · Overtaget. Se den under Ordrer.`
-					: status,
-				'success',
-			)
+			notify((language) => {
+				const status = translate(messages, language, 'orderStatus', {
+					id: order.id,
+					statusName: getOrderStatusName(order, language),
+				})
+				return action === 'TAKE'
+					? translate(messages, language, 'orderTaken', { status })
+					: status
+			}, 'success')
 		} catch (error) {
 			if (error.status === 404 || error.status === 409) {
 				notify(
-					'Ordren kan have ændret sig. Listen opdateres.',
+					(language) => translate(messages, language, 'orderChanged'),
 					'warning',
 				)
 				reload()
 			} else if (error.status !== 401) {
-				notify(error.message, 'error')
+				notify(
+					(language) => getRequestErrorMessage(error, language),
+					'error',
+				)
 			}
 		} finally {
 			updating.current = false

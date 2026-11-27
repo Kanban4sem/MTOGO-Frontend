@@ -1,9 +1,14 @@
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import messages from '@/features/restaurant-menu-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useId } from 'react'
 import Button from '@/shared/components/Button/Button.jsx'
 import { useBasket } from '@/shared/hooks/useBasket.js'
 import styles from '@/features/restaurant-menu-page/AddToBasketButton/AddToBasketButton.module.css'
 
 export default function AddToBasketButton({ restaurantId, menuItem, onAdd }) {
+	const { language } = useLanguage()
+	const t = useTranslations(messages)
 	const { getQuantity, getAddBlockedReason, isFromOtherRestaurant } =
 		useBasket()
 	const reasonId = useId()
@@ -11,7 +16,7 @@ export default function AddToBasketButton({ restaurantId, menuItem, onAdd }) {
 	// Adding from another restaurant starts a new basket, so the current basket's limits don't apply.
 	const reason = isFromOtherRestaurant(restaurantId)
 		? ''
-		: getAddBlockedReason(menuItem.id)
+		: getAddBlockedReason(menuItem.id, language)
 	const isBlocked = reason !== ''
 
 	return (
@@ -21,8 +26,8 @@ export default function AddToBasketButton({ restaurantId, menuItem, onAdd }) {
 				label={
 					<>
 						{quantity > 0
-							? `Tilføj én mere (${quantity})`
-							: 'Læg i kurv'}
+							? t('addOneMore', { quantity })
+							: t('addToBasket')}
 						<span className="visuallyHidden">
 							: {menuItem.name}
 						</span>

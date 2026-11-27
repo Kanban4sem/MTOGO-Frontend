@@ -1,3 +1,5 @@
+import messages from '@/features/customer-orders-page/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useOrderFeedback } from '@/features/customer-orders-page/OrderFeedback/OrderFeedback.hooks.js'
@@ -7,47 +9,56 @@ import Input from '@/shared/components/Input/Input.jsx'
 import Select from '@/shared/components/Select/Select.jsx'
 import { ORDER_FEEDBACK_SECTION_ID } from '@/shared/data/paths.js'
 
-const RATING_OPTIONS = [
-	{ value: '', label: 'Vælg', disabled: true },
-	...[1, 2, 3, 4, 5, 6].map((rating) => ({ value: rating, label: rating })),
-]
-
 function OrderFeedbackForm({ isSubmitting, sendFeedback }) {
+	const t = useTranslations(messages)
+	const ratingOptions = [
+		{ value: '', label: t('choose'), disabled: true },
+		...[1, 2, 3, 4, 5, 6].map((rating) => ({
+			value: rating,
+			label: rating,
+		})),
+	]
 	return (
 		<form onSubmit={sendFeedback}>
 			<fieldset className={styles.fields} disabled={isSubmitting}>
-				<legend>Vurder din ordre</legend>
+				<legend>{t('rateYourOrder')}</legend>
 				<div className={styles.ratings}>
 					<Select
-						label="Maden"
+						label={t('rateFood')}
 						name="foodRating"
-						options={RATING_OPTIONS}
+						options={ratingOptions}
 						defaultValue=""
 						required
 					/>
 					<Select
-						label="Buddet"
+						label={t('rateCourier')}
 						name="deliveryRating"
-						options={RATING_OPTIONS}
+						options={ratingOptions}
 						defaultValue=""
 						required
 					/>
 					<Select
-						label="Den samlede oplevelse"
+						label={t('rateExperience')}
 						name="overallRating"
-						options={RATING_OPTIONS}
+						options={ratingOptions}
 						defaultValue=""
 						required
 					/>
 				</div>
-				<Input label="Titel (valgfri)" name="title" maxLength={100} />
+				<Input
+					label={t('optionalTitle')}
+					name="title"
+					maxLength={100}
+				/>
 				<label className={styles.comment}>
-					Kommentar (valgfri)
+					{t('optionalComment')}
 					<textarea name="description" rows={4} maxLength={1000} />
 				</label>
 				<Button
 					type="submit"
-					label={isSubmitting ? 'Sender feedback…' : 'Send feedback'}
+					label={
+						isSubmitting ? t('sendingFeedback') : t('sendFeedback')
+					}
 				/>
 			</fieldset>
 		</form>
@@ -55,6 +66,7 @@ function OrderFeedbackForm({ isSubmitting, sendFeedback }) {
 }
 
 export default function OrderFeedback({ orderId }) {
+	const t = useTranslations(messages)
 	const section = useRef(null)
 	const location = useLocation()
 	const { availability, isSubmitting, isSubmitted, sendFeedback } =
@@ -74,14 +86,14 @@ export default function OrderFeedback({ orderId }) {
 			aria-labelledby="order-feedback-title"
 			tabIndex={-1}
 		>
-			<h2 id="order-feedback-title">Feedback</h2>
+			<h2 id="order-feedback-title">{t('feedback')}</h2>
 			{isSubmitted ? (
-				<p>Feedback modtaget.</p>
+				<p>{t('feedbackReceived')}</p>
 			) : availability.isLoading ? (
-				<p role="status">Henter feedbackstatus…</p>
+				<p role="status">{t('loadingFeedback')}</p>
 			) : availability.error ? (
 				<Button
-					label="Prøv igen"
+					label={t('retry')}
 					variant="secondary"
 					onClick={availability.reload}
 				/>

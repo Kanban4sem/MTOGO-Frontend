@@ -1,3 +1,5 @@
+import messages from '@/app/routes/ProtectedRoute.messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Fragment } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
@@ -11,17 +13,18 @@ export default function ProtectedRoute({
 	deniedLayout: DeniedLayout = Fragment,
 	children,
 }) {
+	const t = useTranslations(messages)
 	const { user, isAuthenticated, isLoading, isSessionExpired } = useAuth()
 	const { pathname, search } = useLocation()
 
 	if (isLoading) {
-		return <RequestState title="Vi tjekker dit login…" isLoading />
+		return <RequestState title={t('checkingLogin')} isLoading />
 	}
 	if (isAuthenticated) {
 		if (requiredRole && user.role !== requiredRole) {
 			return (
 				<DeniedLayout>
-					<RequestState title="Du har ikke adgang til denne side" />
+					<RequestState title={t('accessDenied')} />
 				</DeniedLayout>
 			)
 		}

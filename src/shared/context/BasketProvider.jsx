@@ -14,8 +14,9 @@ import {
 	removeMenuItem,
 } from '@/shared/utils/basket.js'
 import {
+	formatBasketLimit,
 	getAddBlockedReason,
-	getLimitMessage,
+	getBasketLimitMessageKey,
 } from '@/shared/utils/basketMessages.js'
 
 const BASKET_KEY = 'mtogo:basket'
@@ -41,15 +42,18 @@ function storeBasket(basket) {
 export function BasketProvider({ children }) {
 	const [basket, setBasket] = useState(readStoredBasket)
 	const notify = useNotification()
-	const limitMessage = getLimitMessage(basket)
-	const previousLimitMessage = useRef(limitMessage)
+	const limitKey = getBasketLimitMessageKey(basket)
+	const previousLimitKey = useRef(limitKey)
 
 	useEffect(() => {
-		if (limitMessage && limitMessage !== previousLimitMessage.current) {
-			notify(limitMessage, 'warning')
+		if (limitKey && limitKey !== previousLimitKey.current) {
+			notify(
+				(language) => formatBasketLimit(limitKey, language),
+				'warning',
+			)
 		}
-		previousLimitMessage.current = limitMessage
-	}, [limitMessage, notify])
+		previousLimitKey.current = limitKey
+	}, [limitKey, notify])
 
 	useEffect(() => {
 		storeBasket(basket)
@@ -88,8 +92,8 @@ export function BasketProvider({ children }) {
 				isEmpty: basket.lines.length === 0,
 				getQuantity: (menuItemId) =>
 					findLine(basket, menuItemId)?.quantity ?? 0,
-				getAddBlockedReason: (menuItemId) =>
-					getAddBlockedReason(basket, menuItemId),
+				getAddBlockedReason: (menuItemId, language) =>
+					getAddBlockedReason(basket, menuItemId, language),
 				isFromOtherRestaurant: (restaurantId) =>
 					isFromOtherRestaurant(basket, restaurantId),
 				addMenuItem: (restaurant, menuItem) =>

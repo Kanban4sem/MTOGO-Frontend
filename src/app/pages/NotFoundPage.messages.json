@@ -1,0 +1,14 @@
+{
+	"da": {
+		"pageNotFoundTitle": "404 – Siden blev ikke fundet",
+		"pageNotFound": "Denne side er desværre ikke på menuen!",
+		"error404": "Fejl 404.",
+		"backHome": "Tilbage til forsiden"
+	},
+	"en": {
+		"pageNotFoundTitle": "404 – Page not found",
+		"pageNotFound": "This page is off the menu!",
+		"error404": "Error 404.",
+		"backHome": "Back to the homepage"
+	}
+}

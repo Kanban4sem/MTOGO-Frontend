@@ -1,0 +1,30 @@
+{
+	"da": {
+		"home": "Forside",
+		"goodFood": "God mad.",
+		"rightTo": "Lige til",
+		"yourDoor": "døren.",
+		"heroDescription": "Fra den første sprøde bid til din nye yndlingsret. Find noget, du har lyst til, hos vores restauranter.",
+		"exploreRestaurants": "Udforsk restauranter",
+		"heroImage": "Kebab med sprød salat, pommes frites og sodavand",
+		"featuredRestaurants": "Fremhævede restauranter",
+		"featuredDescription": "Din næste favorit venter lige rundt om hjørnet.",
+		"enjoyYourMeal": "Velbekomme.",
+		"trustedByLabel": "Trusted by – eksempellogoer",
+		"trustedBy": "TRUSTED BY"
+	},
+	"en": {
+		"home": "Home",
+		"goodFood": "Good food.",
+		"rightTo": "Right to",
+		"yourDoor": "your door.",
+		"heroDescription": "From the first crispy bite to your new favourite dish. Find something you’re craving from our restaurants.",
+		"exploreRestaurants": "Explore restaurants",
+		"heroImage": "Kebab with crisp salad, fries and a soft drink",
+		"featuredRestaurants": "Featured restaurants",
+		"featuredDescription": "Your next favourite is just around the corner.",
+		"enjoyYourMeal": "Enjoy your meal.",
+		"trustedByLabel": "Trusted by – example logos",
+		"trustedBy": "TRUSTED BY"
+	}
+}

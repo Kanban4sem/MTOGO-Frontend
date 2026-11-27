@@ -1,3 +1,6 @@
+import messages from '@/app/routes/AppRoutes.messages.json'
+import RequestState from '@/shared/components/RequestState/RequestState.jsx'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import HomeLayout from '@/app/layouts/HomeLayout.jsx'
 import DeliveryAgentLayout from '@/app/layouts/DeliveryAgentLayout.jsx'
 import {
@@ -6,20 +9,6 @@ import {
 	Route,
 	RouterProvider,
 } from 'react-router-dom'
-import LoginPage from '@/app/pages/LoginPage.jsx'
-import RegisterPage from '@/app/pages/RegisterPage.jsx'
-import ProfilePage from '@/app/pages/ProfilePage.jsx'
-import HomePage from '@/app/pages/HomePage.jsx'
-import RestaurantsPage from '@/app/pages/RestaurantsPage.jsx'
-import RestaurantMenuPage from '@/app/pages/RestaurantMenuPage.jsx'
-import CheckoutPage from '@/app/pages/CheckoutPage.jsx'
-import OrderConfirmationPage from '@/app/pages/OrderConfirmationPage.jsx'
-import CustomerOrdersPage from '@/app/pages/CustomerOrdersPage.jsx'
-import CustomerSettingsPage from '@/app/pages/CustomerSettingsPage.jsx'
-import DeliveryOrdersPage from '@/app/pages/DeliveryOrdersPage.jsx'
-import RestaurantOrdersPage from '@/app/pages/RestaurantOrdersPage.jsx'
-import RestaurantProfilePage from '@/app/pages/RestaurantProfilePage.jsx'
-import NotFoundPage from '@/app/pages/NotFoundPage.jsx'
 import {
 	CHECKOUT_PATH,
 	CUSTOMER_ORDERS_PATH,
@@ -36,54 +25,100 @@ import {
 	RESTAURANT_PROFILE_PATH,
 } from '@/shared/data/paths.js'
 
+function loadPage(importPage) {
+	return async () => ({ Component: (await importPage()).default })
+}
+
+const loadLoginPage = loadPage(() => import('@/app/pages/LoginPage.jsx'))
+const loadRegisterPage = loadPage(() => import('@/app/pages/RegisterPage.jsx'))
+const loadProfilePage = loadPage(() => import('@/app/pages/ProfilePage.jsx'))
+const loadHomePage = loadPage(() => import('@/app/pages/HomePage.jsx'))
+const loadRestaurantsPage = loadPage(
+	() => import('@/app/pages/RestaurantsPage.jsx'),
+)
+const loadRestaurantMenuPage = loadPage(
+	() => import('@/app/pages/RestaurantMenuPage.jsx'),
+)
+const loadCheckoutPage = loadPage(() => import('@/app/pages/CheckoutPage.jsx'))
+const loadOrderConfirmationPage = loadPage(
+	() => import('@/app/pages/OrderConfirmationPage.jsx'),
+)
+const loadCustomerOrdersPage = loadPage(
+	() => import('@/app/pages/CustomerOrdersPage.jsx'),
+)
+const loadCustomerSettingsPage = loadPage(
+	() => import('@/app/pages/CustomerSettingsPage.jsx'),
+)
+const loadDeliveryOrdersPage = loadPage(
+	() => import('@/app/pages/DeliveryOrdersPage.jsx'),
+)
+const loadRestaurantOrdersPage = loadPage(
+	() => import('@/app/pages/RestaurantOrdersPage.jsx'),
+)
+const loadRestaurantProfilePage = loadPage(
+	() => import('@/app/pages/RestaurantProfilePage.jsx'),
+)
+const loadNotFoundPage = loadPage(() => import('@/app/pages/NotFoundPage.jsx'))
+
+async function loadAvailableDeliveryOrders() {
+	const { default: DeliveryOrdersPage } =
+		await import('@/app/pages/DeliveryOrdersPage.jsx')
+	return { Component: () => <DeliveryOrdersPage available /> }
+}
+
+function AppLoading() {
+	const t = useTranslations(messages)
+	return <RequestState title={t('loadingPage')} isLoading />
+}
+
 const router = createBrowserRouter(
 	createRoutesFromElements(
-		<>
+		<Route HydrateFallback={AppLoading}>
 			<Route path={DASHBOARD_PATH} element={<DeliveryAgentLayout />}>
-				<Route index element={<DeliveryOrdersPage available />} />
+				<Route index lazy={loadAvailableDeliveryOrders} />
 				<Route
 					path={DASHBOARD_ORDERS_PATH}
-					element={<DeliveryOrdersPage />}
+					lazy={loadDeliveryOrdersPage}
 				/>
 			</Route>
 			<Route element={<HomeLayout />}>
-				<Route path="/" element={<HomePage />} />
-				<Route path={RESTAURANTS_PATH} element={<RestaurantsPage />} />
-				<Route path={PROFILE_PATH} element={<ProfilePage />} />
+				<Route path="/" lazy={loadHomePage} />
+				<Route path={RESTAURANTS_PATH} lazy={loadRestaurantsPage} />
+				<Route path={PROFILE_PATH} lazy={loadProfilePage} />
 				<Route
 					path={CUSTOMER_SETTINGS_PATH}
-					element={<CustomerSettingsPage />}
+					lazy={loadCustomerSettingsPage}
 				/>
 				<Route
 					path={RESTAURANT_ORDERS_PATH}
-					element={<RestaurantOrdersPage />}
+					lazy={loadRestaurantOrdersPage}
 				/>
 				<Route
 					path={RESTAURANT_PROFILE_PATH}
-					element={<RestaurantProfilePage />}
+					lazy={loadRestaurantProfilePage}
 				/>
 				<Route
 					path={CUSTOMER_ORDERS_PATH}
-					element={<CustomerOrdersPage />}
+					lazy={loadCustomerOrdersPage}
 				/>
 				<Route
 					path={CUSTOMER_ORDER_ROUTE}
-					element={<CustomerOrdersPage />}
+					lazy={loadCustomerOrdersPage}
 				/>
 				<Route
 					path={RESTAURANT_MENU_ROUTE}
-					element={<RestaurantMenuPage />}
+					lazy={loadRestaurantMenuPage}
 				/>
-				<Route path={CHECKOUT_PATH} element={<CheckoutPage />} />
+				<Route path={CHECKOUT_PATH} lazy={loadCheckoutPage} />
 				<Route
 					path={ORDER_CONFIRMATION_ROUTE}
-					element={<OrderConfirmationPage />}
+					lazy={loadOrderConfirmationPage}
 				/>
-				<Route path="*" element={<NotFoundPage />} />
+				<Route path="*" lazy={loadNotFoundPage} />
 			</Route>
-			<Route path={LOGIN_PATH} element={<LoginPage />} />
-			<Route path="/register" element={<RegisterPage />} />
-		</>,
+			<Route path={LOGIN_PATH} lazy={loadLoginPage} />
+			<Route path="/register" lazy={loadRegisterPage} />
+		</Route>,
 	),
 )
 

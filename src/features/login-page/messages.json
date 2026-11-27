@@ -1,0 +1,20 @@
+{
+	"da": {
+		"login": "Log ind",
+		"email": "Email",
+		"password": "Password",
+		"sessionExpired": "Din session er udløbet. Log ind igen.",
+		"loggingIn": "Logger ind…",
+		"noAccount": "Har du ikke en konto?",
+		"createAnAccount": "Opret en konto"
+	},
+	"en": {
+		"login": "Log in",
+		"email": "Email",
+		"password": "Password",
+		"sessionExpired": "Your session has expired. Log in again.",
+		"loggingIn": "Logging in…",
+		"noAccount": "Don’t have an account?",
+		"createAnAccount": "Create an account"
+	}
+}

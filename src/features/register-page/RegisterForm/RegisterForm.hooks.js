@@ -1,3 +1,5 @@
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/register-page/messages.json'
 import { useRef, useState } from 'react'
 import { LOGIN_PATH } from '@/shared/data/paths.js'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -5,9 +7,8 @@ import { useNotification } from '@/shared/hooks/useNotification.js'
 import { useMaintenance } from '@/shared/hooks/useMaintenance.js'
 import { registerAccount } from '@/shared/services/userService.js'
 import { getAuthErrorMessage } from '@/shared/utils/authErrors.js'
-import { REGISTER_STEPS } from '@/features/register-page/RegisterForm/registerFields.js'
 
-export function useRegister() {
+export function useRegister(stepCount) {
 	const navigate = useNavigate()
 	const { state: navigation } = useLocation()
 	// The address login should return to, kept through registration.
@@ -18,7 +19,7 @@ export function useRegister() {
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const registrationRef = useRef({})
 	const headingRef = useRef(null)
-	const isLastStep = stepIndex === REGISTER_STEPS.length - 1
+	const isLastStep = stepIndex === stepCount - 1
 
 	function changeStep(nextStepIndex) {
 		setStepIndex(nextStepIndex)
@@ -39,7 +40,11 @@ export function useRegister() {
 
 		if (!isLastStep) {
 			if (registration.password !== registration.confirmPassword) {
-				notify('De to adgangskoder skal være ens.', 'warning')
+				notify(
+					(language) =>
+						translate(messages, language, 'passwordsMustMatch'),
+					'warning',
+				)
 				return
 			}
 			changeStep(stepIndex + 1)
@@ -53,7 +58,7 @@ export function useRegister() {
 		]
 		if (address.some(Boolean) && !address.every(Boolean)) {
 			notify(
-				'Udfyld både postnummer, by og land, eller lad hele adressen være tom.',
+				(language) => translate(messages, language, 'completeAddress'),
 				'warning',
 			)
 			return
@@ -63,7 +68,10 @@ export function useRegister() {
 		try {
 			await registerAccount(registration)
 			registrationRef.current = {}
-			notify('Din konto er oprettet. Du kan nu logge ind.', 'success')
+			notify(
+				(language) => translate(messages, language, 'accountCreated'),
+				'success',
+			)
 			navigate(LOGIN_PATH, {
 				replace: true,
 				state: {
@@ -73,7 +81,7 @@ export function useRegister() {
 			})
 		} catch (error) {
 			if (recordPause(error)) return
-			notify(getAuthErrorMessage(error), 'error')
+			notify((language) => getAuthErrorMessage(error, language), 'error')
 			if (error.status === 409) changeStep(0)
 		} finally {
 			setIsSubmitting(false)

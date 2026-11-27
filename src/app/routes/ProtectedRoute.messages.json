@@ -1,0 +1,10 @@
+{
+	"da": {
+		"checkingLogin": "Vi tjekker dit login…",
+		"accessDenied": "Du har ikke adgang til denne side"
+	},
+	"en": {
+		"checkingLogin": "Checking your login…",
+		"accessDenied": "You do not have access to this page"
+	}
+}

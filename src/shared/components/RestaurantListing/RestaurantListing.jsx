@@ -1,3 +1,7 @@
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/shared/components/RestaurantListing/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Link } from 'react-router-dom'
 import Button from '@/shared/components/Button/Button.jsx'
 import FoodImage from '@/shared/components/FoodImage/FoodImage.jsx'
@@ -11,23 +15,24 @@ export default function RestaurantListing({
 	limit,
 	headingLevel: Heading = 'h2',
 }) {
+	const t = useTranslations(messages)
 	const { restaurants, isLoading, error, retry } = useRestaurants(limit)
-	useRequestErrorNotification(
-		error,
-		error && `Vi kunne ikke hente restauranterne. ${error.message}`,
+	useRequestErrorNotification(error, (language) =>
+		translate(messages, language, 'restaurantsFailed', {
+			message: getRequestErrorMessage(error, language),
+		}),
 	)
 
 	if (isLoading) {
-		return <RequestState title="Vi finder restauranterne frem…" isLoading />
+		return <RequestState title={t('loadingRestaurants')} isLoading />
 	}
 	if (error) {
-		return <Button label="Hent restauranter igen" onClick={retry} />
+		return <Button label={t('retryRestaurants')} onClick={retry} />
 	}
 	if (restaurants.length === 0) {
 		return (
-			<RequestState title="Der er lidt stille i køkkenet">
-				Ingen restauranter tager imod bestillinger lige nu. Kig forbi
-				igen senere.
+			<RequestState title={t('quietKitchen')}>
+				{t('noRestaurants')}
 			</RequestState>
 		)
 	}
@@ -39,7 +44,9 @@ export default function RestaurantListing({
 					key={restaurant.id}
 					className={styles.card}
 					to={getRestaurantMenuPath(restaurant.id)}
-					aria-label={`Se udvalg hos ${restaurant.name}`}
+					aria-label={t('seeRestaurantMenu', {
+						name: restaurant.name,
+					})}
 				>
 					<div className={styles.imageWrap}>
 						<FoodImage
@@ -54,10 +61,10 @@ export default function RestaurantListing({
 							<p>
 								{restaurant.description ||
 									restaurant.preview?.description ||
-									'Se restaurantens menu og find din næste favorit.'}
+									t('restaurantListingDescription')}
 							</p>
 						</div>
-						<span className={styles.cardCta}>Se udvalg</span>
+						<span className={styles.cardCta}>{t('seeMenu')}</span>
 					</div>
 				</Link>
 			))}

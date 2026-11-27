@@ -1,0 +1,20 @@
+{
+	"da": {
+		"rejectedInput": "Oplysningerne blev afvist. Kontrollér dem, og prøv igen.",
+		"forbidden": "Du har ikke adgang til denne handling.",
+		"noLongerExists": "Det, du leder efter, findes ikke længere.",
+		"changed": "Det er ændret i mellemtiden. Opdatér siden, og prøv igen.",
+		"serverError": "Der opstod en serverfejl. Prøv igen senere.",
+		"requestFailed": "Forespørgslen kunne ikke gennemføres.",
+		"connectionError": "Vi kunne ikke få forbindelse til MTOGO. Tjek din internetforbindelse, og prøv igen."
+	},
+	"en": {
+		"rejectedInput": "The information was rejected. Check it and try again.",
+		"forbidden": "You do not have permission to do this.",
+		"noLongerExists": "What you are looking for no longer exists.",
+		"changed": "This has changed in the meantime. Refresh the page and try again.",
+		"serverError": "A server error occurred. Please try again later.",
+		"requestFailed": "The request could not be completed.",
+		"connectionError": "We couldn't connect to MTOGO. Check your internet connection and try again."
+	}
+}

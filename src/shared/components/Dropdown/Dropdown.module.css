@@ -2,6 +2,22 @@
 	position: relative;
 }
 
+.whiteTrigger {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.75rem;
+	min-height: 2.75rem;
+	padding: calc(var(--mtogo-component-padding) / 2);
+	border: 1px solid var(--mtogo-border);
+	border-radius: var(--mtogo-border-radius);
+	background: var(--mtogo-surface);
+	color: var(--mtogo-text-primary);
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
 .chevron {
 	display: inline-block;
 	width: 0.45em;
@@ -27,7 +43,8 @@
 	box-shadow: var(--mtogo-dropdown-shadow);
 }
 
-.links a {
+.links a,
+.action {
 	display: block;
 	padding: 0.65rem 0.75rem;
 	border-radius: var(--mtogo-border-radius);
@@ -36,7 +53,30 @@
 	text-decoration: none;
 }
 
+.action {
+	width: 100%;
+	border: 0;
+	background: transparent;
+	font: inherit;
+	font-weight: 600;
+	text-align: start;
+	cursor: pointer;
+}
+
 .links a:hover,
-.links a:focus-visible {
+.links a:focus-visible,
+.action:hover,
+.action:focus-visible {
 	background: var(--mtogo-highlight);
+}
+
+.white .whiteTrigger:is(:hover, :focus-visible) {
+	border-color: var(--mtogo-border);
+	background: var(--mtogo-surface);
+	color: var(--mtogo-color-hover);
+}
+
+.white .links :is(a, .action):is(:hover, :focus-visible) {
+	background: var(--mtogo-color);
+	color: var(--mtogo-surface);
 }

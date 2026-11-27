@@ -6,7 +6,9 @@ export default function Dropdown({
 	label,
 	ariaLabel,
 	links,
+	actions,
 	children,
+	variant,
 	className,
 	buttonClassName,
 	listClassName,
@@ -19,6 +21,7 @@ export default function Dropdown({
 	const list = useRef(null)
 	const [openedBy, setOpenedBy] = useState(null)
 	const isOpen = openedBy !== null
+	const isWhite = variant === 'white'
 
 	const closeDropdown = useCallback(() => {
 		setOpenedBy(null)
@@ -78,16 +81,19 @@ export default function Dropdown({
 	return (
 		<div
 			ref={dropdown}
-			className={
-				className ? `${styles.dropdown} ${className}` : styles.dropdown
-			}
+			className={[styles.dropdown, isWhite && styles.white, className]
+				.filter(Boolean)
+				.join(' ')}
 			onPointerEnter={openOnHover ? openFromHover : undefined}
 			onPointerLeave={openOnHover ? closeAfterHover : undefined}
 			onBlur={closeOnFocusOut}
 		>
 			<button
 				ref={button}
-				className={buttonClassName}
+				className={
+					buttonClassName ??
+					(isWhite ? styles.whiteTrigger : undefined)
+				}
 				type="button"
 				aria-label={ariaLabel}
 				aria-expanded={isOpen}
@@ -108,13 +114,30 @@ export default function Dropdown({
 						: styles.links
 				}
 				hidden={!isOpen}
-				tabIndex={links ? undefined : 0}
+				tabIndex={links || actions ? undefined : 0}
 			>
 				{links?.map(({ label, to }) => (
 					<li key={to}>
 						<Link to={to} onClick={closeDropdown}>
 							{label}
 						</Link>
+					</li>
+				))}
+				{actions?.map(({ id, label, lang, selected, onSelect }) => (
+					<li key={id}>
+						<button
+							className={styles.action}
+							type="button"
+							lang={lang}
+							aria-pressed={selected}
+							onClick={() => {
+								button.current.focus()
+								closeDropdown()
+								onSelect()
+							}}
+						>
+							{label}
+						</button>
 					</li>
 				))}
 				{children}

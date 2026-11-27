@@ -1,0 +1,8 @@
+{
+	"da": {
+		"errorReference": "Fejlreference: {errorId}"
+	},
+	"en": {
+		"errorReference": "Error reference: {errorId}"
+	}
+}

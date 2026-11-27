@@ -1,12 +1,18 @@
+import messages from '@/features/register-page/messages.json'
+import { useLanguage } from '@/shared/i18n/useLanguage.js'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Link } from 'react-router-dom'
 import { LOGIN_PATH } from '@/shared/data/paths.js'
 import FormFields from '@/shared/components/FormFields/FormFields.jsx'
 import Button from '@/shared/components/Button/Button.jsx'
-import { REGISTER_STEPS } from '@/features/register-page/RegisterForm/registerFields.js'
+import { getRegisterSteps } from '@/features/register-page/RegisterForm/registerFields.js'
 import { useRegister } from '@/features/register-page/RegisterForm/RegisterForm.hooks.js'
 import styles from '@/features/register-page/RegisterForm/RegisterForm.module.css'
 
 function RegisterForm() {
+	const t = useTranslations(messages)
+	const { language } = useLanguage()
+	const steps = getRegisterSteps(t, language)
 	const {
 		stepIndex,
 		headingRef,
@@ -15,23 +21,23 @@ function RegisterForm() {
 		goBack,
 		isSubmitting,
 		returnTo,
-	} = useRegister()
+	} = useRegister(steps.length)
 
 	return (
 		<section className={styles.register} aria-labelledby="register-title">
 			<h1 id="register-title" ref={headingRef} tabIndex={-1}>
-				Opret konto
+				{t('createAccount')}
 			</h1>
 			<p className={styles.stepIndicator} aria-live="polite">
-				Trin {stepIndex + 1} af {REGISTER_STEPS.length} ·{' '}
-				{REGISTER_STEPS[stepIndex].label}
+				{t('step')} {stepIndex + 1} {t('stepOf')} {steps.length} ·{' '}
+				{steps[stepIndex].label}
 			</p>
 			<form
 				className={styles.form}
 				onSubmit={submitRegistration}
 				aria-busy={isSubmitting}
 			>
-				{REGISTER_STEPS.map(({ name, fields }, index) => (
+				{steps.map(({ name, fields }, index) => (
 					<fieldset
 						key={name}
 						className={styles.step}
@@ -39,7 +45,7 @@ function RegisterForm() {
 						disabled={stepIndex !== index || isSubmitting}
 					>
 						<legend className={styles.stepLegend}>
-							{REGISTER_STEPS[index].label}
+							{steps[index].label}
 						</legend>
 						<FormFields fields={fields} />
 					</fieldset>
@@ -47,7 +53,7 @@ function RegisterForm() {
 				<div className={styles.actions}>
 					{stepIndex > 0 && (
 						<Button
-							label="Tilbage"
+							label={t('back')}
 							onClick={goBack}
 							disabled={isSubmitting}
 						/>
@@ -55,10 +61,10 @@ function RegisterForm() {
 					<Button
 						label={
 							isSubmitting
-								? 'Opretter konto…'
+								? t('creatingAccount')
 								: isLastStep
-									? 'Opret konto'
-									: 'Gå videre'
+									? t('createAccount')
+									: t('continue')
 						}
 						type="submit"
 						disabled={isSubmitting}
@@ -66,9 +72,9 @@ function RegisterForm() {
 				</div>
 			</form>
 			<p>
-				Har du allerede en konto?{' '}
+				{t('alreadyHaveAccount')}{' '}
 				<Link to={LOGIN_PATH} state={{ returnTo }}>
-					Log ind
+					{t('login')}
 				</Link>
 			</p>
 		</section>

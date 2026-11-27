@@ -3,7 +3,6 @@ import {
 	markOrderNotificationAsRead,
 	readOrderNotifications,
 } from '@/shared/services/orderNotificationService.js'
-import { withErrorReference } from '@/shared/utils/errorReference.js'
 
 const POLL_INTERVAL_MS = 30_000
 
@@ -11,9 +10,9 @@ export function useOrderNotifications(enabled, isOpen) {
 	const [request, setRequest] = useState({
 		notifications: [],
 		isLoading: enabled,
-		loadError: '',
+		loadError: null,
 	})
-	const [readError, setReadError] = useState('')
+	const [readError, setReadError] = useState(null)
 	const session = useRef(null)
 	const { notifications } = request
 
@@ -43,7 +42,7 @@ export function useOrderNotifications(enabled, isOpen) {
 								: notification,
 						),
 						isLoading: false,
-						loadError: '',
+						loadError: null,
 					}
 				})
 			} catch (error) {
@@ -51,10 +50,7 @@ export function useOrderNotifications(enabled, isOpen) {
 					setRequest((current) => ({
 						...current,
 						isLoading: false,
-						loadError: withErrorReference(
-							'Notifikationerne kunne ikke hentes.',
-							error,
-						),
+						loadError: error,
 					}))
 			} finally {
 				if (!signal.aborted)
@@ -93,14 +89,7 @@ export function useOrderNotifications(enabled, isOpen) {
 			)
 			for (const id of unreadIds) pendingIds.delete(id)
 			const failure = results.find(({ status }) => status === 'rejected')
-			setReadError(
-				failure
-					? withErrorReference(
-							'Nogle notifikationer kunne ikke markeres som læst.',
-							failure.reason,
-						)
-					: '',
-			)
+			setReadError(failure?.reason ?? null)
 			if (readIds.size > 0)
 				setRequest((current) => ({
 					...current,

@@ -1,3 +1,7 @@
+import { getRequestErrorMessage } from '@/shared/utils/requestErrors.js'
+import { getOrderStatusName } from '@/shared/data/orderStatus.js'
+import { translate } from '@/shared/i18n/translate.js'
+import messages from '@/features/restaurant-orders-page/messages.json'
 import { useState } from 'react'
 import {
 	useNotification,
@@ -17,9 +21,10 @@ export function useRestaurantOrders() {
 		reload,
 		updateData,
 	} = useRequest(getRestaurantOrders)
-	useRequestErrorNotification(
-		error,
-		error && `Vi kunne ikke hente ordrerne. ${error.message}`,
+	useRequestErrorNotification(error, (language) =>
+		translate(messages, language, 'ordersFailed', {
+			message: getRequestErrorMessage(error, language),
+		}),
 	)
 	const [pendingOrderId, setPendingOrderId] = useState(null)
 	const notify = useNotification()
@@ -34,18 +39,25 @@ export function useRestaurantOrders() {
 				),
 			)
 			notify(
-				`Ordre nr. ${order.id} · ${order.statusName.danish}`,
+				(language) =>
+					translate(messages, language, 'orderStatus', {
+						id: order.id,
+						statusName: getOrderStatusName(order, language),
+					}),
 				'success',
 			)
 		} catch (error) {
 			if (error.status === 404 || error.status === 409) {
 				reload()
 				notify(
-					'Ordren kan have ændret sig. Listen opdateres.',
+					(language) => translate(messages, language, 'orderChanged'),
 					'warning',
 				)
 			} else if (error.status !== 401) {
-				notify(error.message, 'error')
+				notify(
+					(language) => getRequestErrorMessage(error, language),
+					'error',
+				)
 			}
 		} finally {
 			setPendingOrderId(null)

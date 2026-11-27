@@ -1,0 +1,40 @@
+{
+	"da": {
+		"orders": "Ordrer",
+		"ordersFailed": "Vi kunne ikke hente ordrerne. {message}",
+		"orderStatus": "Ordre nr. {id} · {statusName}",
+		"orderChanged": "Ordren kan have ændret sig. Listen opdateres.",
+		"latest": "Nyeste",
+		"accept": "Acceptér",
+		"reject": "Afvis",
+		"markReady": "Markér som klar",
+		"orderNumberLabel": "Ordre nr.",
+		"orderLines": "Ordrelinjer",
+		"total": "I alt",
+		"orderAction": "{label}, ordre nr. {id}",
+		"refreshOrders": "Opdatér ordrer",
+		"filterByStatus": "Filtrér efter status",
+		"loadingOrders": "Henter ordrer…",
+		"noRestaurantOrders": "Restauranten har ingen ordrer endnu",
+		"restaurantOrders": "Restaurantens ordrer"
+	},
+	"en": {
+		"orders": "Orders",
+		"ordersFailed": "We couldn't load the orders. {message}",
+		"orderStatus": "Order no. {id} · {statusName}",
+		"orderChanged": "The order may have changed. Refreshing the list.",
+		"latest": "Latest",
+		"accept": "Accept",
+		"reject": "Reject",
+		"markReady": "Mark as ready",
+		"orderNumberLabel": "Order no.",
+		"orderLines": "Order items",
+		"total": "Total",
+		"orderAction": "{label}, order no. {id}",
+		"refreshOrders": "Refresh orders",
+		"filterByStatus": "Filter by status",
+		"loadingOrders": "Loading orders…",
+		"noRestaurantOrders": "The restaurant has no orders yet",
+		"restaurantOrders": "Restaurant orders"
+	}
+}

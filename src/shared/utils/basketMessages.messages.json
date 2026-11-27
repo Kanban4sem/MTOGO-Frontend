@@ -1,0 +1,20 @@
+{
+	"da": {
+		"basketLimits": "Højst {maxItems} forskellige retter og {maxQuantity} stk. af hver.",
+		"quantityLimit": "Højst {maxQuantity} stk.",
+		"basketFull": "Kurven er fuld",
+		"basketFullDetails": "Kurven er fuld. Den kan højst have {maxItems} forskellige retter.",
+		"quantityLimitDetails": "Du kan højst bestille {maxQuantity} stk. af hver ret.",
+		"oneItem": "{count} vare",
+		"manyItems": "{count} varer"
+	},
+	"en": {
+		"basketLimits": "Up to {maxItems} different dishes and {maxQuantity} of each.",
+		"quantityLimit": "Up to {maxQuantity} per dish.",
+		"basketFull": "The basket is full",
+		"basketFullDetails": "Your basket is full. It can hold up to {maxItems} different dishes.",
+		"quantityLimitDetails": "You can order up to {maxQuantity} of each dish.",
+		"oneItem": "{count} item",
+		"manyItems": "{count} items"
+	}
+}

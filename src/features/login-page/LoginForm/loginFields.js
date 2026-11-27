@@ -1,7 +1,7 @@
 export const LOGIN_FIELDS = [
 	{
 		name: 'email',
-		label: 'Email',
+		labelKey: 'email',
 		type: 'email',
 		maxLength: 254,
 		autoComplete: 'username',
@@ -9,7 +9,7 @@ export const LOGIN_FIELDS = [
 	},
 	{
 		name: 'password',
-		label: 'Password',
+		labelKey: 'password',
 		type: 'password',
 		maxLength: 72,
 		autoComplete: 'current-password',

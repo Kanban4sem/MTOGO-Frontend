@@ -34,7 +34,11 @@ export function useLogin() {
 			})
 			navigate(getReturnAddress(navigation?.returnTo), { replace: true })
 		} catch (error) {
-			if (!recordPause(error)) notify(getAuthErrorMessage(error), 'error')
+			if (!recordPause(error))
+				notify(
+					(language) => getAuthErrorMessage(error, language),
+					'error',
+				)
 		} finally {
 			setIsSubmitting(false)
 		}

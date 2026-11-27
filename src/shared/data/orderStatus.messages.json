@@ -1,0 +1,18 @@
+{
+	"da": {
+		"PLACED": "Bestilt",
+		"ACCEPTED": "Accepteret",
+		"REJECTED": "Afvist",
+		"READY": "Klar til afhentning",
+		"PICKED_UP": "Afhentet",
+		"DELIVERED": "Leveret"
+	},
+	"en": {
+		"PLACED": "Placed",
+		"ACCEPTED": "Accepted",
+		"REJECTED": "Rejected",
+		"READY": "Ready for pickup",
+		"PICKED_UP": "Picked up",
+		"DELIVERED": "Delivered"
+	}
+}

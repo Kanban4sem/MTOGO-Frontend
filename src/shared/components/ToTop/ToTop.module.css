@@ -1,0 +1,14 @@
+.button {
+	inline-size: 2.75rem;
+	box-shadow: var(--mtogo-dropdown-shadow);
+	pointer-events: auto;
+}
+
+.chevron {
+	flex: none;
+	inline-size: 0.65rem;
+	block-size: 0.65rem;
+	border-block-start: 2px solid currentColor;
+	border-inline-start: 2px solid currentColor;
+	transform: translateY(0.15rem) rotate(45deg);
+}

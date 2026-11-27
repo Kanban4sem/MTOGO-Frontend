@@ -1,3 +1,5 @@
+import messages from '@/shared/components/MaintenanceGate/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useState } from 'react'
 import FeatureUnavailable from '@/shared/components/FeatureUnavailable/FeatureUnavailable.jsx'
 import RequestState from '@/shared/components/RequestState/RequestState.jsx'
@@ -8,6 +10,7 @@ export default function MaintenanceGate({
 	keepOpenOnPause = false,
 	children,
 }) {
+	const t = useTranslations(messages)
 	const { pauses, isLoading } = useMaintenance()
 	const [hasOpened, setHasOpened] = useState(false)
 	const isPaused = pauses[feature] === true
@@ -16,6 +19,6 @@ export default function MaintenanceGate({
 	}
 	if (isPaused && !hasOpened) return <FeatureUnavailable feature={feature} />
 	if (isLoading)
-		return <RequestState title="Vi tjekker tilgængeligheden…" isLoading />
+		return <RequestState title={t('checkingAvailability')} isLoading />
 	return children
 }

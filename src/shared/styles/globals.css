@@ -187,6 +187,13 @@ a {
 	margin-bottom: 1rem;
 }
 
+.authNavigation {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
 .homeLayout {
 	max-width: calc(var(--page-width) + var(--page-gutter) * 2);
 	margin: 0 auto;
@@ -317,6 +324,10 @@ a {
 }
 
 .dashboardBrand {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
 	align-self: flex-start;
 }
 

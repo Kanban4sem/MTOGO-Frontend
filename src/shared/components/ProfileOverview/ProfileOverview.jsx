@@ -1,8 +1,11 @@
+import messages from '@/shared/components/ProfileOverview/messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { useId } from 'react'
 import AccountDetails from '@/shared/components/AccountDetails/AccountDetails.jsx'
 import styles from '@/shared/components/ProfileOverview/ProfileOverview.module.css'
 
 export default function ProfileOverview({ title, user, actions }) {
+	const t = useTranslations(messages)
 	const titleId = useId()
 	const names = [user?.profile?.firstName, user?.profile?.lastName]
 	const initials = names
@@ -26,7 +29,7 @@ export default function ProfileOverview({ title, user, actions }) {
 				{actions && <div className={styles.actions}>{actions}</div>}
 			</header>
 			<div className={styles.details}>
-				<h2>Kontodetaljer</h2>
+				<h2>{t('accountDetails')}</h2>
 				<AccountDetails user={user} />
 			</div>
 		</section>

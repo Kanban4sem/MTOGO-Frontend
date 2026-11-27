@@ -1,0 +1,16 @@
+{
+	"da": {
+		"missingStreet": "Skriv vej og husnummer.",
+		"streetTooLong": "Vej og husnummer må højst være {maxLength} tegn.",
+		"invalidPostalCode": "Postnummeret skal være præcis 4 cifre.",
+		"missingCity": "Skriv byen.",
+		"cityTooLong": "Byen må højst være {maxLength} tegn."
+	},
+	"en": {
+		"missingStreet": "Enter a street and house number.",
+		"streetTooLong": "The street and house number must be at most {maxLength} characters.",
+		"invalidPostalCode": "The postal code must be exactly 4 digits.",
+		"missingCity": "Enter a city.",
+		"cityTooLong": "The city must be at most {maxLength} characters."
+	}
+}

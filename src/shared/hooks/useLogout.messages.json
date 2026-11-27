@@ -1,0 +1,10 @@
+{
+	"da": {
+		"loggedOut": "Du er logget ud.",
+		"logoutUnconfirmed": "Du er logget ud i denne browser. Serveren bekræftede ikke, at sessionen blev afsluttet."
+	},
+	"en": {
+		"loggedOut": "You are logged out.",
+		"logoutUnconfirmed": "You are logged out in this browser. The server did not confirm that your session ended."
+	}
+}

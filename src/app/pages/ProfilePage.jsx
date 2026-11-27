@@ -1,3 +1,5 @@
+import messages from '@/app/pages/ProfilePage.messages.json'
+import { useTranslations } from '@/shared/i18n/useTranslations.js'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import ProtectedRoute from '@/app/routes/ProtectedRoute.jsx'
@@ -11,24 +13,25 @@ import { useAuth } from '@/shared/hooks/useAuth.js'
 
 // Not limited to customers: any logged-in user who opens the profile sees their own account details.
 export default function ProfilePage() {
+	const t = useTranslations(messages)
 	const { user } = useAuth()
 	const isCustomer = user?.role === USER_ROLES.CUSTOMER
 
 	return (
 		<>
-			<Helmet title="Min profil" />
+			<Helmet title={t('myProfile')} />
 			<ProtectedRoute>
 				<ProfileOverview
-					title="Min profil"
+					title={t('myProfile')}
 					user={user}
 					actions={
 						isCustomer && (
 							<>
 								<Link to={CUSTOMER_ORDERS_PATH}>
-									Mine ordrer
+									{t('myOrders')}
 								</Link>
 								<Link to={CUSTOMER_SETTINGS_PATH}>
-									Indstillinger
+									{t('settings')}
 								</Link>
 							</>
 						)

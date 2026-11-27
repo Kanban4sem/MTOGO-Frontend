@@ -1,0 +1,42 @@
+{
+	"da": {
+		"orderConfirmation": "Ordrebekræftelse",
+		"orderNotFoundNotice": "Ordren blev ikke fundet.",
+		"confirmationFailed": "Vi kunne ikke hente ordre nr. {orderId}. {message}",
+		"loadingYourOrder": "Henter din ordre…",
+		"orderNotFound": "Ordren blev ikke fundet",
+		"orderNumber": "Ordre nr. {orderId}",
+		"retry": "Prøv igen",
+		"statusLabel": "Status:",
+		"thanksForOrdering": "Tak for din bestilling!",
+		"yourOrderNumber": "Din ordre har nummer",
+		"yourOrder": "Din ordre",
+		"dish": "Ret",
+		"price": "Pris",
+		"quantity": "Antal",
+		"total": "I alt",
+		"orderTotal": "Ordretotal",
+		"deliveryAddress": "Leveringsadresse",
+		"goHome": "Gå til forsiden"
+	},
+	"en": {
+		"orderConfirmation": "Order confirmation",
+		"orderNotFoundNotice": "The order was not found.",
+		"confirmationFailed": "We couldn't load order no. {orderId}. {message}",
+		"loadingYourOrder": "Loading your order…",
+		"orderNotFound": "Order not found",
+		"orderNumber": "Order no. {orderId}",
+		"retry": "Try again",
+		"statusLabel": "Status:",
+		"thanksForOrdering": "Thanks for your order!",
+		"yourOrderNumber": "Your order number is",
+		"yourOrder": "Your order",
+		"dish": "Dish",
+		"price": "Price",
+		"quantity": "Quantity",
+		"total": "Total",
+		"orderTotal": "Order total",
+		"deliveryAddress": "Delivery address",
+		"goHome": "Go to the homepage"
+	}
+}
